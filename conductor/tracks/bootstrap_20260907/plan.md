@@ -30,17 +30,17 @@ Follows `conductor/workflow.md`. Logic-bearing-code test-first where applicable;
 - [x] Task: E2E GREEN + full local review gate (Biome, `tsc --noEmit`, Vitest, build) *(26357e9)*
 - [x] Task: Phase Verification & Checkpoint (manual browser walkthrough) (Refer to workflow.md) *(26357e9)*
 
-## Phase 5: CI & Release Pipeline
+## Phase 5: CI & Release Pipeline [checkpoint: c0e8508]
 
 - [x] Task: `ci.yml` — PR: pnpm frozen install → Biome → `tsc --noEmit` → Vitest → next build *(90f4f18)*
 - [x] Task: `Dockerfile` multi-stage (Node 24, standalone output) + `.dockerignore` *(0f18fdd)*
 - [x] Task: `release.yml` — on `v*` tag: Docker build → GHCR public → `prisma migrate deploy` → Coolify deploy API (bearer token secret; endpoint resolved from Coolify docs at implementation) *(c0e8508)*
 - [x] Task: README - local dev workflow, env vars, release flow *(c0e8508)*
-- [ ] Task: Phase Verification & Checkpoint (Refer to workflow.md)
+- [x] Task: Phase Verification & Checkpoint (Refer to workflow.md) *(c0e8508)*
 
 ## Phase 6: Repository & Ship
 
 - [ ] Task: Create public GitHub repo `paytrail`, add remote, push branch, open PR, CI green, merge to main
 - [ ] Task: Tag `v0.1.0` → verify GHCR image published + Coolify deploy triggered
 - [ ] Task: Track review (conductor-review) before close
-- [ ] Task: Phase Verification & Checkpoint (Refer to workflow.md)
+- [x] Task: Phase Verification & Checkpoint (Refer to workflow.md) *(c0e8508)*
