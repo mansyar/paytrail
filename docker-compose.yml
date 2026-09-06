@@ -1,0 +1,12 @@
+# Local development database. NON-PERSISTENT by design (spec: bootstrap_20260907):
+# no volumes, no restart policy — `docker compose down` discards all data.
+services:
+  db:
+    image: postgres:17
+    environment:
+      POSTGRES_USER: paytrail
+      POSTGRES_PASSWORD: paytrail
+      POSTGRES_DB: paytrail
+    ports:
+      - "5432:5432"
+    restart: "no"

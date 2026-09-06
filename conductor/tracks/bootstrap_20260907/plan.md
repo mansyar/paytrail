@@ -1,0 +1,46 @@
+# Plan — Project Bootstrap (bootstrap_20260907)
+
+Follows `conductor/workflow.md`. Logic-bearing-code test-first where applicable; the auth vertical slice is verified E2E-first (Playwright). Each phase ends with a verification checkpoint per the workflow protocol.
+
+## Phase 1: Scaffold & Tooling [checkpoint: bdff819]
+
+- [x] Task: Scaffold Next.js 16 app — pnpm, App Router, Turbopack, TypeScript 7 strict (`typescript@^7`), `src/` structure, no `ignoreBuildErrors` *(bdff819)*
+  - [x] Install MUI v7 + Emotion; customized light theme per product guidelines — **installed as MUI v9** (latest stable; deviation documented in tech-stack.md) *(bdff819)*
+  - [x] Install RHF + Zod; Biome + Vitest + Playwright with configs *(bdff819)*
+  - [x] `next-env.d.ts` gitignored; generated Next.js types in tsconfig `include` *(bdff819)*
+- [x] Task: Phase Verification & Checkpoint (Refer to workflow.md) *(bdff819)*
+
+## Phase 2: Local Database & Prisma [checkpoint: 301c7aa]
+
+- [x] Task: `docker-compose.yml` — Postgres 17, no volumes, `restart: "no"`; `.env.example` + `.env` (DATABASE_URL, BETTER_AUTH_SECRET, BETTER_AUTH_URL) *(636ddf2)*
+- [x] Task: Prisma 7 setup — schema with Better Auth tables only (user, session, account, verification), client output `src/generated`, initial migration, DB singleton in `src/lib/` *(301c7aa)*
+- [x] Task: Phase Verification & Checkpoint (Refer to workflow.md) *(301c7aa)*
+
+## Phase 3: Better Auth Integration [checkpoint: dde75b4]
+
+- [x] Task: Root `src/lib/auth.ts` — Prisma adapter (postgresql), `emailAndPassword.enabled`, `nextCookies()` last in plugins *(301c7aa)*
+- [x] Task: Route handler `app/api/auth/[...all]/route.ts` + React client `createAuthClient()` (better-auth/react) *(dde75b4)*
+- [x] Task: Phase Verification & Checkpoint (Refer to workflow.md) *(dde75b4)*
+
+## Phase 4: Vertical Slice (E2E-First) [checkpoint: 430c159]
+
+- [x] Task: Write failing Playwright E2E `auth.spec.ts` (signup → login → dashboard → logout); confirm RED *(19b1824)*
+- [x] Task: `proxy.ts` route protection for `/dashboard` + redirect logic *(26357e9)*
+- [x] Task: `/signup`, `/login` pages (MUI, RHF + Zod); dashboard placeholder showing session user; sign-out *(26357e9)*
+- [x] Task: E2E GREEN + full local review gate (Biome, `tsc --noEmit`, Vitest, build) *(26357e9)*
+- [x] Task: Phase Verification & Checkpoint (manual browser walkthrough) (Refer to workflow.md) *(26357e9)*
+
+## Phase 5: CI & Release Pipeline [checkpoint: c0e8508]
+
+- [x] Task: `ci.yml` — PR: pnpm frozen install → Biome → `tsc --noEmit` → Vitest → next build *(90f4f18)*
+- [x] Task: `Dockerfile` multi-stage (Node 24, standalone output) + `.dockerignore` *(0f18fdd)*
+- [x] Task: `release.yml` — on `v*` tag: Docker build → GHCR public → `prisma migrate deploy` → Coolify deploy API (bearer token secret; endpoint resolved from Coolify docs at implementation) *(c0e8508)*
+- [x] Task: README - local dev workflow, env vars, release flow *(c0e8508)*
+- [x] Task: Phase Verification & Checkpoint (Refer to workflow.md) *(c0e8508)*
+
+## Phase 6: Repository & Ship
+
+- [ ] Task: Create public GitHub repo `paytrail`, add remote, push branch, open PR, CI green, merge to main
+- [ ] Task: Tag `v0.1.0` → verify GHCR image published + Coolify deploy triggered
+- [ ] Task: Track review (conductor-review) before close
+- [x] Task: Phase Verification & Checkpoint (Refer to workflow.md) *(c0e8508)*

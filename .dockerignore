@@ -1,0 +1,19 @@
+.git
+.github
+.next
+node_modules
+src/generated
+e2e
+playwright-report
+test-results
+conductor
+docs
+.env
+.env.example
+*.md
+!README.md
+# agent tooling (auto-installed by prisma init; contains OS-specific links)
+.claude
+.windsurf
+.agents
+skills-lock.json

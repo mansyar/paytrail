@@ -6,7 +6,7 @@
 
 | Layer | Technology | Version | Notes |
 |---|---|---|---|
-| Language | TypeScript | **7.x** | Native Go compiler (GA 2026-07-08), strict mode default. `next build` typecheck disabled (needs old JS API, lands in 7.1); `tsc --noEmit` runs as an explicit CI step |
+| Language | TypeScript | **7.x** | Native Go compiler (GA 2026-07-08), strict mode default. Next.js 16 officially supports TS 7: `next build` type-checks via the project-local native `tsc` CLI by default (verified against nextjs.org TypeScript config docs, Sep 2026). `ignoreBuildErrors` must NOT be set. Explicit `tsc --noEmit` also runs as an independent CI step for fast pre-build feedback |
 | Runtime | Node.js | **24 LTS** | Base for Next.js + Docker |
 | Framework | Next.js | **16** (16.3.x LTS) | App Router, Server Actions, Turbopack default, `proxy.ts` for route protection |
 | UI Library | React | **19.2** | Per Next.js 16 pairing |
@@ -16,7 +16,7 @@
 
 | Layer | Technology | Notes |
 |---|---|---|
-| Component library | MUI v7 + Emotion | Customized light theme, per product guidelines |
+| Component library | MUI **v9** + Emotion | Customized light theme, per product guidelines. **Deviation note (2026-09-07):** spec planned v7; `pnpm add @mui/material` resolves to v9 (9.4.0) as current stable — documented per workflow principle #2. Includes `@mui/material-nextjs` for App Router cache provider |
 | Icons | MUI Icons | |
 | Forms | React Hook Form + Zod | Zod for client + server validation |
 
