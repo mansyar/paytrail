@@ -8,19 +8,19 @@ Follows `conductor/workflow.md`. Logic-bearing-code test-first where applicable;
   - [x] Install MUI v7 + Emotion; customized light theme per product guidelines — **installed as MUI v9** (latest stable; deviation documented in tech-stack.md) *(bdff819)*
   - [x] Install RHF + Zod; Biome + Vitest + Playwright with configs *(bdff819)*
   - [x] `next-env.d.ts` gitignored; generated Next.js types in tsconfig `include` *(bdff819)*
-- [~] Task: Phase Verification & Checkpoint (Refer to workflow.md)
+- [x] Task: Phase Verification & Checkpoint (Refer to workflow.md) *(bdff819)*
 
 ## Phase 2: Local Database & Prisma [checkpoint: 301c7aa]
 
 - [x] Task: `docker-compose.yml` — Postgres 17, no volumes, `restart: "no"`; `.env.example` + `.env` (DATABASE_URL, BETTER_AUTH_SECRET, BETTER_AUTH_URL) *(636ddf2)*
 - [x] Task: Prisma 7 setup — schema with Better Auth tables only (user, session, account, verification), client output `src/generated`, initial migration, DB singleton in `src/lib/` *(301c7aa)*
-- [~] Task: Phase Verification & Checkpoint (Refer to workflow.md)
+- [x] Task: Phase Verification & Checkpoint (Refer to workflow.md) *(301c7aa)*
 
-## Phase 3: Better Auth Integration
+## Phase 3: Better Auth Integration [checkpoint: dde75b4]
 
 - [x] Task: Root `src/lib/auth.ts` — Prisma adapter (postgresql), `emailAndPassword.enabled`, `nextCookies()` last in plugins *(301c7aa)*
 - [x] Task: Route handler `app/api/auth/[...all]/route.ts` + React client `createAuthClient()` (better-auth/react) *(dde75b4)*
-- [~] Task: Phase Verification & Checkpoint (Refer to workflow.md)
+- [x] Task: Phase Verification & Checkpoint (Refer to workflow.md) *(dde75b4)*
 
 ## Phase 4: Vertical Slice (E2E-First)
 
