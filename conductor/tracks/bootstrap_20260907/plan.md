@@ -4,11 +4,11 @@ Follows `conductor/workflow.md`. Logic-bearing-code test-first where applicable;
 
 ## Phase 1: Scaffold & Tooling
 
-- [~] Task: Scaffold Next.js 16 app — pnpm, App Router, Turbopack, TypeScript 7 strict (`typescript@^7`), `src/` structure, no `ignoreBuildErrors`
-  - [ ] Install MUI v7 + Emotion; customized light theme per product guidelines
-  - [ ] Install RHF + Zod; Biome + Vitest + Playwright with configs
-  - [ ] `next-env.d.ts` gitignored; generated Next.js types in tsconfig `include`
-- [ ] Task: Phase Verification & Checkpoint (Refer to workflow.md)
+- [x] Task: Scaffold Next.js 16 app — pnpm, App Router, Turbopack, TypeScript 7 strict (`typescript@^7`), `src/` structure, no `ignoreBuildErrors` *(bdff819)*
+  - [x] Install MUI v7 + Emotion; customized light theme per product guidelines — **installed as MUI v9** (latest stable; deviation documented in tech-stack.md) *(bdff819)*
+  - [x] Install RHF + Zod; Biome + Vitest + Playwright with configs *(bdff819)*
+  - [x] `next-env.d.ts` gitignored; generated Next.js types in tsconfig `include` *(bdff819)*
+- [~] Task: Phase Verification & Checkpoint (Refer to workflow.md)
 
 ## Phase 2: Local Database & Prisma
 
