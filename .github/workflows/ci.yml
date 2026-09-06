@@ -8,6 +8,22 @@ on:
 jobs:
   verify:
     runs-on: ubuntu-latest
+    env:
+      DATABASE_URL: postgresql://paytrail:paytrail@localhost:5432/paytrail?schema=public
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_USER: paytrail
+          POSTGRES_PASSWORD: paytrail
+          POSTGRES_DB: paytrail
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U paytrail"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
     steps:
       - uses: actions/checkout@v4
 
@@ -28,6 +44,9 @@ jobs:
       # Generate route types (.next/types) that tsconfig includes — LayoutProps etc.
       - name: Generate Next.js route types
         run: pnpm exec next typegen
+
+      - name: Apply migrations
+        run: pnpm exec prisma migrate deploy
 
       - name: Lint (Biome)
         run: pnpm exec biome ci .
