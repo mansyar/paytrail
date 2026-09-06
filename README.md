@@ -64,9 +64,8 @@ Repository secrets required by the release workflow:
 | Secret | Value |
 | --- | --- |
 | `PROD_DATABASE_URL` | Production Postgres connection string |
-| `COOLIFY_URL` | Base URL of the Coolify instance (no trailing slash) |
-| `COOLIFY_TOKEN` | Coolify API token with the `deploy` ability |
-| `COOLIFY_APP_UUID` | UUID of the PayTrail application in Coolify |
+| `COOLIFY_WEBHOOK_URL` | Coolify deploy webhook URL for the app (Settings → Deploy webhook) |
+| `COOLIFY_TOKEN` | Coolify token sent as `Authorization: Bearer` on the webhook call |
 
 Migrations run **before** the new image is pulled; keep them backward-compatible with the currently running release.
 

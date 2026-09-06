@@ -64,11 +64,7 @@ jobs:
 
       - name: Trigger Coolify deployment
         run: |
-          RESP=$(curl -sS -w "\n%{http_code}" -X POST "${{ secrets.COOLIFY_URL }}/api/v1/deploy" \
-            -H "Authorization: Bearer ${{ secrets.COOLIFY_TOKEN }}" \
-            -H "Content-Type: application/json" \
-            -d '{"uuid": "${{ secrets.COOLIFY_APP_UUID }}", "force": false}')
-          CODE=$(echo "$RESP" | tail -n1)
-          BODY=$(echo "$RESP" | head -n -1)
-          echo "Coolify responded ($CODE): $BODY"
+          CODE=$(curl -sS -o /dev/null -w "%{http_code}" -X POST "${{ secrets.COOLIFY_WEBHOOK_URL }}" \
+            -H "Authorization: Bearer ${{ secrets.COOLIFY_TOKEN }}")
+          echo "Coolify webhook responded ($CODE)"
           if [ "$CODE" != "200" ]; then exit 1; fi
