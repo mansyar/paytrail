@@ -34,8 +34,8 @@ Follows `conductor/workflow.md`. Logic-bearing-code test-first where applicable;
 
 - [x] Task: `ci.yml` — PR: pnpm frozen install → Biome → `tsc --noEmit` → Vitest → next build *(90f4f18)*
 - [x] Task: `Dockerfile` multi-stage (Node 24, standalone output) + `.dockerignore` *(0f18fdd)*
-- [~] Task: `release.yml` — on `v*` tag: Docker build → GHCR public → `prisma migrate deploy` → Coolify deploy API (bearer token secret; endpoint resolved from Coolify docs at implementation)
-- [ ] Task: README — local dev workflow, env vars, release flow
+- [x] Task: `release.yml` — on `v*` tag: Docker build → GHCR public → `prisma migrate deploy` → Coolify deploy API (bearer token secret; endpoint resolved from Coolify docs at implementation) *(c0e8508)*
+- [x] Task: README - local dev workflow, env vars, release flow *(c0e8508)*
 - [ ] Task: Phase Verification & Checkpoint (Refer to workflow.md)
 
 ## Phase 6: Repository & Ship
