@@ -94,11 +94,14 @@ export function SignUpForm() {
 			</Button>
 			<Stack direction="row" sx={{ justifyContent: "center" }} spacing={0.5}>
 				<Typography variant="body2">Already have an account?</Typography>{" "}
-				<NextLink href="/login" passHref legacyBehavior>
-					<Link underline="hover" variant="body2">
-						Sign in
-					</Link>
-				</NextLink>
+				<Link
+					component={NextLink}
+					href="/login"
+					underline="hover"
+					variant="body2"
+				>
+					Sign in
+				</Link>
 			</Stack>
 		</Stack>
 	);

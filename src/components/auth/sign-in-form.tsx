@@ -84,11 +84,14 @@ export function SignInForm() {
 			</Button>
 			<Stack direction="row" sx={{ justifyContent: "center" }} spacing={0.5}>
 				<Typography variant="body2">New to PayTrail?</Typography>
-				<NextLink href="/signup" passHref legacyBehavior>
-					<Link underline="hover" variant="body2">
-						Create account
-					</Link>
-				</NextLink>
+				<Link
+					component={NextLink}
+					href="/signup"
+					underline="hover"
+					variant="body2"
+				>
+					Create account
+				</Link>
 			</Stack>
 		</Stack>
 	);
