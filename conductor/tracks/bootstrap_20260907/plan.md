@@ -32,7 +32,7 @@ Follows `conductor/workflow.md`. Logic-bearing-code test-first where applicable;
 
 ## Phase 5: CI & Release Pipeline
 
-- [ ] Task: `ci.yml` — PR: pnpm frozen install → Biome → `tsc --noEmit` → Vitest → next build
+- [~] Task: `ci.yml` — PR: pnpm frozen install → Biome → `tsc --noEmit` → Vitest → next build
 - [ ] Task: `Dockerfile` multi-stage (Node 24, standalone output) + `.dockerignore`
 - [ ] Task: `release.yml` — on `v*` tag: Docker build → GHCR public → `prisma migrate deploy` → Coolify deploy API (bearer token secret; endpoint resolved from Coolify docs at implementation)
 - [ ] Task: README — local dev workflow, env vars, release flow
