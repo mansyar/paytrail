@@ -1,9 +1,9 @@
+verifyDepsBeforeRun: false
+
 allowBuilds:
-  '@prisma/engines': set this to true or false
-  prisma: set this to true or false
+  '@prisma/client': false
+  '@prisma/engines': true
+  better-sqlite3: false
+  prisma: true
   sharp: false
   unrs-resolver: false
-
-onlyBuiltDependencies:
-  - '@prisma/engines'
-  - prisma

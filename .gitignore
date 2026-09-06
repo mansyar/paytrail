@@ -46,5 +46,10 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
+# prisma generated client
+src/generated/
+
 # env template is tracked; actual .env is not
 !.env.example
+
+/src/generated/prisma
