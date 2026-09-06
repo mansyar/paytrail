@@ -46,6 +46,12 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
+# agent tooling (auto-installed by prisma init; local only)
+.claude/
+.windsurf/
+.agents/
+skills-lock.json
+
 # prisma generated client
 src/generated/
 
