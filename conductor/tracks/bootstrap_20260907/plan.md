@@ -19,7 +19,7 @@ Follows `conductor/workflow.md`. Logic-bearing-code test-first where applicable;
 ## Phase 3: Better Auth Integration
 
 - [x] Task: Root `src/lib/auth.ts` — Prisma adapter (postgresql), `emailAndPassword.enabled`, `nextCookies()` last in plugins *(301c7aa)*
-- [ ] Task: Route handler `app/api/auth/[...all]/route.ts` + React client `createAuthClient()` (better-auth/react)
+- [~] Task: Route handler `app/api/auth/[...all]/route.ts` + React client `createAuthClient()` (better-auth/react)
 - [ ] Task: Phase Verification & Checkpoint (Refer to workflow.md)
 
 ## Phase 4: Vertical Slice (E2E-First)
