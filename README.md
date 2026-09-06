@@ -1,36 +1,75 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# PayTrail
 
-## Getting Started
+Client and invoice manager for solo freelancers. Fastest path from work done to invoice sent: under 2 minutes and under 10 clicks from dashboard to a sent invoice.
 
-First, run the development server:
+## Stack
+
+- Next.js 16 (App Router, Turbopack) · React 19 · TypeScript 7 (native tsc)
+- MUI v9 · Emotion
+- Better Auth 1.7 (credentials, Argon2id) · Prisma 7 (driver adapter `@prisma/adapter-pg`) · PostgreSQL 17
+- Biome (lint + format) · Vitest (unit) · Playwright (E2E)
+- GitHub Actions (CI on PR, release on `v*` tag) · Docker · GHCR · Coolify
+
+## Prerequisites
+
+- Node.js 24, pnpm 11 (via Corepack)
+- Docker (for the local Postgres)
+
+## Getting started
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+pnpm install
+docker compose up -d          # local postgres 17 (non-persistent by design)
+cp .env.example .env          # then fill in BETTER_AUTH_SECRET
+pnpm exec prisma migrate dev  # apply schema, generates client to src/generated
+pnpm dev                      # http://localhost:3000
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Commands
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+| Command | Purpose |
+| --- | --- |
+| `pnpm dev` | Dev server (Turbopack) |
+| `pnpm build` | Production build (type-checks via the native tsc CLI) |
+| `pnpm exec tsc --noEmit` | Standalone typecheck |
+| `pnpm biome check --write .` | Lint + format |
+| `pnpm vitest` / `pnpm vitest run` | Unit tests (watch / single run) |
+| `pnpm exec playwright test` | E2E tests (starts dev server automatically) |
+| `pnpm exec prisma migrate dev` | Create/apply a migration locally |
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+> After editing `prisma/schema.prisma`, run `pnpm exec prisma generate` if `migrate dev` doesn't regenerate the client.
 
-## Learn More
+## Environment variables
 
-To learn more about Next.js, take a look at the following resources:
+| Variable | Used for |
+| --- | --- |
+| `DATABASE_URL` | Prisma connection string (local + prod) |
+| `BETTER_AUTH_SECRET` | Auth session signing secret |
+| `BETTER_AUTH_URL` | Base URL of the app (auth origins) |
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+See `.env.example` for the template. Never commit `.env`.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Deployment
 
-## Deploy on Vercel
+Tag a release on `main`:
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+```bash
+git tag v0.1.0 && git push origin v0.1.0
+```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+The release workflow then: builds the Docker image → pushes to GHCR (`ghcr.io/<owner>/paytrail`, public) → applies `prisma migrate deploy` against production → triggers a Coolify deployment.
+
+Repository secrets required by the release workflow:
+
+| Secret | Value |
+| --- | --- |
+| `PROD_DATABASE_URL` | Production Postgres connection string |
+| `COOLIFY_URL` | Base URL of the Coolify instance (no trailing slash) |
+| `COOLIFY_TOKEN` | Coolify API token with the `deploy` ability |
+| `COOLIFY_APP_UUID` | UUID of the PayTrail application in Coolify |
+
+Migrations run **before** the new image is pulled; keep them backward-compatible with the currently running release.
+
+## Testing policy
+
+Unit tests (Vitest, `src/lib/`) cover logic-bearing code only: pricing math, invoice numbering, FX snapshots, rate-table matching, ownership guards, parsing. UI is covered by Playwright E2E flows and manual verification.
