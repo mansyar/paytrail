@@ -24,7 +24,7 @@ Follows `conductor/workflow.md`. Logic-bearing-code test-first where applicable;
 
 ## Phase 4: Vertical Slice (E2E-First)
 
-- [ ] Task: Write failing Playwright E2E `auth.spec.ts` (signup → login → dashboard → logout); confirm RED
+- [~] Task: Write failing Playwright E2E `auth.spec.ts` (signup → login → dashboard → logout); confirm RED
 - [ ] Task: `proxy.ts` route protection for `/dashboard` + redirect logic
 - [ ] Task: `/signup`, `/login` pages (MUI, RHF + Zod); dashboard placeholder showing session user; sign-out
 - [ ] Task: E2E GREEN + full local review gate (Biome, `tsc --noEmit`, Vitest, build)
