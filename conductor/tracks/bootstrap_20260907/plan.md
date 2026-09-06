@@ -2,7 +2,7 @@
 
 Follows `conductor/workflow.md`. Logic-bearing-code test-first where applicable; the auth vertical slice is verified E2E-first (Playwright). Each phase ends with a verification checkpoint per the workflow protocol.
 
-## Phase 1: Scaffold & Tooling
+## Phase 1: Scaffold & Tooling [checkpoint: bdff819]
 
 - [x] Task: Scaffold Next.js 16 app — pnpm, App Router, Turbopack, TypeScript 7 strict (`typescript@^7`), `src/` structure, no `ignoreBuildErrors` *(bdff819)*
   - [x] Install MUI v7 + Emotion; customized light theme per product guidelines — **installed as MUI v9** (latest stable; deviation documented in tech-stack.md) *(bdff819)*
