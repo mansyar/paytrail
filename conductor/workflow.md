@@ -205,7 +205,7 @@ pnpm exec playwright test --project=chromium --viewport "390,844"   # mobile vie
 
 ```bash
 pnpm biome check --write .                     # lint + format (auto-fix)
-pnpm exec tsc --noEmit                         # typecheck (next build typecheck is disabled for TS7)
+pnpm exec tsc --noEmit                         # typecheck (native CLI; next build also type-checks via project-local tsc)
 pnpm vitest run                                # full test suite, single run
 pnpm build                                     # production build check
 ```
