@@ -10,15 +10,15 @@ Follows `conductor/workflow.md`. Logic-bearing-code test-first where applicable;
   - [x] `next-env.d.ts` gitignored; generated Next.js types in tsconfig `include` *(bdff819)*
 - [~] Task: Phase Verification & Checkpoint (Refer to workflow.md)
 
-## Phase 2: Local Database & Prisma
+## Phase 2: Local Database & Prisma [checkpoint: 301c7aa]
 
-- [ ] Task: `docker-compose.yml` — Postgres 17, no volumes, `restart: "no"`; `.env.example` + `.env` (DATABASE_URL, BETTER_AUTH_SECRET, BETTER_AUTH_URL)
-- [ ] Task: Prisma 7 setup — schema with Better Auth tables only (user, session, account, verification), client output `src/generated`, initial migration, DB singleton in `src/lib/`
-- [ ] Task: Phase Verification & Checkpoint (Refer to workflow.md)
+- [x] Task: `docker-compose.yml` — Postgres 17, no volumes, `restart: "no"`; `.env.example` + `.env` (DATABASE_URL, BETTER_AUTH_SECRET, BETTER_AUTH_URL) *(636ddf2)*
+- [x] Task: Prisma 7 setup — schema with Better Auth tables only (user, session, account, verification), client output `src/generated`, initial migration, DB singleton in `src/lib/` *(301c7aa)*
+- [~] Task: Phase Verification & Checkpoint (Refer to workflow.md)
 
 ## Phase 3: Better Auth Integration
 
-- [ ] Task: Root `src/lib/auth.ts` — Prisma adapter (postgresql), `emailAndPassword.enabled`, `nextCookies()` last in plugins
+- [x] Task: Root `src/lib/auth.ts` — Prisma adapter (postgresql), `emailAndPassword.enabled`, `nextCookies()` last in plugins *(301c7aa)*
 - [ ] Task: Route handler `app/api/auth/[...all]/route.ts` + React client `createAuthClient()` (better-auth/react)
 - [ ] Task: Phase Verification & Checkpoint (Refer to workflow.md)
 
