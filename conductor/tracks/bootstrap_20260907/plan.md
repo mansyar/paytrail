@@ -22,7 +22,7 @@ Follows `conductor/workflow.md`. Logic-bearing-code test-first where applicable;
 - [x] Task: Route handler `app/api/auth/[...all]/route.ts` + React client `createAuthClient()` (better-auth/react) *(dde75b4)*
 - [x] Task: Phase Verification & Checkpoint (Refer to workflow.md) *(dde75b4)*
 
-## Phase 4: Vertical Slice (E2E-First)
+## Phase 4: Vertical Slice (E2E-First) [checkpoint: 430c159]
 
 - [x] Task: Write failing Playwright E2E `auth.spec.ts` (signup → login → dashboard → logout); confirm RED *(19b1824)*
 - [x] Task: `proxy.ts` route protection for `/dashboard` + redirect logic *(26357e9)*
