@@ -25,6 +25,10 @@ jobs:
       - name: Generate Prisma client
         run: pnpm exec prisma generate
 
+      # Generate route types (.next/types) that tsconfig includes — LayoutProps etc.
+      - name: Generate Next.js route types
+        run: pnpm exec next typegen
+
       - name: Lint (Biome)
         run: pnpm exec biome ci .
 
