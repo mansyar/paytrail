@@ -16,7 +16,7 @@
 
 | Layer | Technology | Notes |
 |---|---|---|
-| Component library | MUI v7 + Emotion | Customized light theme, per product guidelines |
+| Component library | MUI **v9** + Emotion | Customized light theme, per product guidelines. **Deviation note (2026-09-07):** spec planned v7; `pnpm add @mui/material` resolves to v9 (9.4.0) as current stable — documented per workflow principle #2. Includes `@mui/material-nextjs` for App Router cache provider |
 | Icons | MUI Icons | |
 | Forms | React Hook Form + Zod | Zod for client + server validation |
 

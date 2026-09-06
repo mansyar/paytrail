@@ -4,7 +4,7 @@ Follows `conductor/workflow.md`. Logic-bearing-code test-first where applicable;
 
 ## Phase 1: Scaffold & Tooling
 
-- [ ] Task: Scaffold Next.js 16 app — pnpm, App Router, Turbopack, TypeScript 7 strict (`typescript@^7`), `src/` structure, no `ignoreBuildErrors`
+- [~] Task: Scaffold Next.js 16 app — pnpm, App Router, Turbopack, TypeScript 7 strict (`typescript@^7`), `src/` structure, no `ignoreBuildErrors`
   - [ ] Install MUI v7 + Emotion; customized light theme per product guidelines
   - [ ] Install RHF + Zod; Biome + Vitest + Playwright with configs
   - [ ] `next-env.d.ts` gitignored; generated Next.js types in tsconfig `include`
