@@ -7,20 +7,20 @@ Follows `conductor/workflow.md`. Logic-bearing code (Zod schemas, validation, ga
 - [x] Task: Write failing Vitest tests for shared Zod schemas (profile fields, ISO 4217 currency, money/percent formats, rate-rule rows, logo size/type); confirm RED
 - [x] Task: Prisma migration — `BusinessProfile` (1:1 User, cascade) + `RateRule` models; regenerate client *(implementation to make tests GREEN)*
 - [x] Task: Shared Zod schemas in `src/lib/` + currency constant list; GREEN + coverage
-- [ ] Task: Phase Verification & Checkpoint (Refer to workflow.md)
+- [x] Task: Phase Verification & Checkpoint (Refer to workflow.md)
 
 ## Phase 2: Onboarding Gate [checkpoint: b1cdbb1]
 
 - [x] Task: Server-side profile-completion check helper in `src/lib/` (session-scoped) + failing tests; confirm RED
 - [x] Task: Wire gate — `/dashboard` redirects to `/onboarding` when incomplete; `/onboarding` redirects to `/dashboard` (or `next` param) when complete; GREEN
-- [ ] Task: Phase Verification & Checkpoint (Refer to workflow.md)
+- [x] Task: Phase Verification & Checkpoint (Refer to workflow.md)
 
-## Phase 3: Onboarding Wizard UI
+## Phase 3: Onboarding Wizard UI [checkpoint: 1ea21e5]
 
-- [~] Task: `/onboarding` 3-step wizard shell (progress steps, RHF + Zod, mobile 390px)
-- [ ] Task: Step forms — Business identity (logo file → base64 preview, size/type limits), Financial defaults (currency select, tax rate, payment terms), Rate rules (repeatable rows)
-- [ ] Task: Server action — persist profile + rules in one transaction, re-validate via shared schemas, set `onboardingCompleted`
-- [ ] Task: Phase Verification & Checkpoint (manual browser walkthrough) (Refer to workflow.md)
+- [x] Task: `/onboarding` 3-step wizard shell (progress steps, RHF + Zod, mobile 390px)
+- [x] Task: Step forms — Business identity (logo file → base64 preview, size/type limits), Financial defaults (currency select, tax rate, payment terms), Rate rules (repeatable rows)
+- [x] Task: Server action — persist profile + rules in one transaction, re-validate via shared schemas, set `onboardingCompleted`
+- [x] Task: Phase Verification & Checkpoint (manual browser walkthrough) (Refer to workflow.md)
 
 ## Phase 4: Profile Editing
 
