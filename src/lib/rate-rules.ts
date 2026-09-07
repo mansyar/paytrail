@@ -33,6 +33,9 @@ export async function addRateRule(
 	userId: string,
 	rule: RateRuleData,
 ): Promise<{ id: string }> {
+	// Known limitation: two concurrent adds for the same user can compute the
+	// same max+1 sortOrder. Ordering-only impact (no data loss); acceptable
+	// for a single-user profile page.
 	const last = await prisma.rateRule.findFirst({
 		where: { userId },
 		orderBy: { sortOrder: "desc" },

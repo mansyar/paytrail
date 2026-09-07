@@ -90,6 +90,8 @@ export function ProfileEditor({
 		defaultValues: initialProfile,
 	});
 
+	// Zod's input type makes the logo field unknown; at runtime it is a
+	// validated data-URL string (or empty when not set yet).
 	const logo = watch("logo") as string | undefined;
 
 	const onLogoChange = (event: React.ChangeEvent<HTMLInputElement>) => {

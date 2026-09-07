@@ -27,6 +27,13 @@ export async function saveOnboardingAction(
 		};
 	}
 
-	await saveOnboardingData(session.user.id, parsed.data);
+	try {
+		await saveOnboardingData(session.user.id, parsed.data);
+	} catch {
+		return {
+			ok: false,
+			message: "Could not save your profile. Please try again.",
+		};
+	}
 	return { ok: true };
 }

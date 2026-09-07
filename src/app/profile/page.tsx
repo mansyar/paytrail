@@ -46,6 +46,7 @@ export default async function ProfilePage() {
 				contactEmail: profile.contactEmail ?? "",
 				taxId: profile.taxId ?? "",
 				logo: profile.logo ?? "",
+				// Safe: currency values only ever come from the validated CURRENCIES list.
 				currency: profile.currency as BusinessProfileInput["currency"],
 				defaultTaxRate: profile.defaultTaxRate.toFixed(2),
 				paymentTerms: profile.paymentTerms ?? "due_on_receipt",

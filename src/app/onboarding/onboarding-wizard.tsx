@@ -97,6 +97,8 @@ export function OnboardingWizard({ nextPath }: { nextPath: string }) {
 		name: "rateRules",
 	});
 
+	// Zod's input type makes the logo field unknown; at runtime it is a
+	// validated data-URL string (or undefined when not set yet).
 	const logo = watch("profile.logo") as string | undefined;
 
 	const onLogoChange = (event: React.ChangeEvent<HTMLInputElement>) => {
