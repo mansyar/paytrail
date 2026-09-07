@@ -19,8 +19,8 @@ Follows `conductor/workflow.md`. Logic-bearing code (Zod schemas, session-scoped
 
 ## Phase 3: Clients UI
 
-- [~] Task: `/clients` list page — MUI table (name, email, currency, project count), debounced URL-param search, Add/Edit dialogs, empty state; dashboard link
-- [ ] Task: Mobile 390px pass (touch targets ≥44px, no horizontal scroll)
+- [x] Task: `/clients` list page — MUI table (name, email, currency, project count), debounced URL-param search, Add/Edit dialogs, empty state; dashboard link
+- [x] Task: Mobile 390px pass (touch targets ≥44px, no horizontal scroll)
 - [ ] Task: Phase Verification & Checkpoint (Refer to workflow.md)
 
 ## Phase 4: Client Detail & Projects
