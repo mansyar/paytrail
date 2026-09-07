@@ -23,7 +23,7 @@ Follows `conductor/workflow.md`. Logic-bearing code (Zod schemas, session-scoped
 - [x] Task: Mobile 390px pass (touch targets ≥44px, no horizontal scroll)
 - [x] Task: Phase Verification & Checkpoint (Refer to workflow.md)
 
-## Phase 4: Client Detail & Projects
+## Phase 4: Client Detail & Projects [checkpoint: 20b5f0c]
 
 - [x] Task: `/clients/[id]` detail page - client info card, Edit dialog, Delete with inline blocked-reason alert
 - [x] Task: Projects section - add/rename/delete projects under the client
