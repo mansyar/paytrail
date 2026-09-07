@@ -22,11 +22,11 @@ Follows `conductor/workflow.md`. Logic-bearing code (Zod schemas, validation, ga
 - [x] Task: Server action — persist profile + rules in one transaction, re-validate via shared schemas, set `onboardingCompleted`
 - [x] Task: Phase Verification & Checkpoint (manual browser walkthrough) (Refer to workflow.md)
 
-## Phase 4: Profile Editing
+## Phase 4: Profile Editing [checkpoint: bc17ede]
 
 - [x] Task: Failing tests for rate-rule CRUD server actions (user-scoped, Zod-validated); confirm RED *(bfb2cfa)*
 - [x] Task: `/profile` page reusing wizard sections; rate-rule add/edit/remove/reorder; logo replace; GREEN *(b0deec5)*
-- [ ] Task: Phase Verification & Checkpoint (Refer to workflow.md)
+- [x] Task: Phase Verification & Checkpoint (Refer to workflow.md)
 
 ## Phase 5: E2E & Review Gate
 
