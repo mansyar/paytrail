@@ -27,6 +27,9 @@ export default async function DashboardPage() {
 			<h1>Dashboard</h1>
 			<p>{session.user.email}</p>
 			<p>
+				<NextLink href="/clients">Clients</NextLink>
+			</p>
+			<p>
 				<NextLink href="/profile">Profile</NextLink>
 			</p>
 			<SignOutButton />
