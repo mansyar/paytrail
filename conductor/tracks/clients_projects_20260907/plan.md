@@ -7,14 +7,14 @@ Follows `conductor/workflow.md`. Logic-bearing code (Zod schemas, session-scoped
 - [x] Task: Write failing Vitest tests for shared Zod schemas (client fields, ISO 4217 currency, length bounds, project rows); confirm RED — `341a5b9`
 - [x] Task: Prisma migration — `Client` + `Project` models (userId/clientId cascade FKs, per-client project name uniqueness); regenerate client
 - [x] Task: Shared Zod schemas in `src/lib/` + ISO 4217 constant list; GREEN + coverage — `7f566d0`
-- [ ] Task: Phase Verification & Checkpoint (Refer to workflow.md)
+- [x] Task: Phase Verification & Checkpoint (Refer to workflow.md)
 
 ## Phase 2: Server Actions & Queries
 
-- [ ] Task: Write failing Vitest tests for session-scoped client CRUD server actions; confirm RED
-- [ ] Task: Write failing Vitest tests for `?q=` search filtering (Zod-validated param, contains on name+email, alphabetical sort) and invoice-attached delete guard (typed error + counts); confirm RED
-- [ ] Task: Write failing Vitest tests for project CRUD server actions with client-ownership verification; confirm RED
-- [ ] Task: Implement server actions/queries; GREEN + coverage
+- [x] Task: Write failing Vitest tests for session-scoped client CRUD server actions; confirm RED — `705c5a6`
+- [x] Task: Write failing Vitest tests for `?q=` search filtering (Zod-validated param, contains on name+email, alphabetical sort) and invoice-attached delete guard (typed error + counts); confirm RED — `6098d0b`
+- [x] Task: Write failing Vitest tests for project CRUD server actions with client-ownership verification; confirm RED
+- [x] Task: Implement server actions/queries; GREEN + coverage
 - [ ] Task: Phase Verification & Checkpoint (Refer to workflow.md)
 
 ## Phase 3: Clients UI
