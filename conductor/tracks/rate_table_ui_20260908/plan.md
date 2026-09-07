@@ -1,24 +1,26 @@
 # Plan: Rate Table Management UI
 
+> **Amended 2026-09-08:** Discovery showed `/profile` already ships a rate-rules editor with shared server actions. Per user decision, the track pivots to polishing the existing UI (duplicate guard, delete confirm, currency adornment) instead of a standalone `/rate-table` page. See spec deviation note.
+
 ## Phase 1: Duplicate-guard logic + server actions (TDD)
 - [x] Task: Write failing tests for unique-keyword guard (Red Phase) — `917d650`
   - Add cases covering `assertUniqueKeyword(userId, keyword, excludeId?)`: rejects case-insensitive duplicates for the user, allows the rule's own keyword on update, allows unique keywords, errors on conflict.
 - [x] Task: Implement unique-keyword guard in `src/lib/rate-rules.ts` (Green Phase) — `917d650`
   - Case-insensitive duplicate check scoped to `userId`, excluding the rule being edited.
-- [ ] Task: Implement rate-table server actions (`src/app/rate-table/actions.ts`)
-  - Thin wrappers over `addRateRule` / `updateRateRule` / `deleteRateRule` / `reorderRateRules` + the new guard; session retrieved server-side; Zod validation via `rateRuleInputSchema`/`rateRuleSchema`; typed error results (duplicate, invalid input, not found).
+- [ ] Task: Wire the duplicate guard into the shared rate-rule server actions (`src/app/profile/actions.ts`)
+  - `updateRateRuleAction` calls `assertUniqueKeyword(userId, keyword, ruleId)` before updating and returns a distinct "keyword already exists" message; other actions unchanged.
 - [ ] Task: Phase Verification & Checkpoint (Refer to workflow.md)
 
-## Phase 2: /rate-table page UI
-- [ ] Task: Create `/rate-table` route (server component)
-  - Session verification (redirect unauthenticated → `/login`), load rules ordered by `sortOrder`, pass to client component; add nav link from dashboard.
-- [ ] Task: Build inline-editing table client component
-  - MUI table: inline keyword/rate editing (decimal input), "Add rule" append, up/down reorder buttons with edge disabling, two-click delete confirm (Confirm/Cancel with timeout), empty-state inline CTA, inline field errors (duplicate/invalid), saving/loading states.
+## Phase 2: Profile rate-rules UI polish
+- [ ] Task: Add two-click delete confirmation in `profile-editor.tsx`
+  - First click swaps the row's delete button into Confirm/Cancel state; auto-cancel after a few seconds; `deleteRateRuleAction` only fires on Confirm.
+- [ ] Task: Show the home currency on the rate field
+  - MUI `InputAdornment` with the user's currency code (from `initialProfile.currency`) on the rate TextField.
 - [ ] Task: Manual verification pass — desktop + mobile 390px viewport (Refer to workflow.md)
 - [ ] Task: Phase Verification & Checkpoint (Refer to workflow.md)
 
 ## Phase 3: E2E + review gate
-- [ ] Task: Playwright e2e spec (`e2e/rate-table.spec.ts`)
-  - Full lifecycle: add → edit → reorder → delete; duplicate rejection visible; unauthenticated redirect; desktop + mobile viewports.
+- [ ] Task: Playwright e2e spec (`e2e/profile-rate-rules.spec.ts`)
+  - On `/profile`: add → edit → duplicate keyword rejected with visible error → reorder → delete (confirm + cancel paths).
 - [ ] Task: Local review gate — Biome, `tsc --noEmit`, `vitest run`, `pnpm build`, self-review vs product-guidelines + security checklist (Refer to workflow.md)
 - [ ] Task: Phase Verification & Checkpoint (Refer to workflow.md)

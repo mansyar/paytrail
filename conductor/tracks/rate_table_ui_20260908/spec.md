@@ -1,21 +1,23 @@
 # Spec: Rate Table Management UI
 
+> **Deviation note (2026-09-08, during implementation):** Discovery revealed `/profile` already ships a working rate-rules editor (inline edit, reorder, delete) in `profile-editor.tsx`, backed by shared server actions in `profile/actions.ts`. The user approved pivoting the track to *polishing the existing UI* instead of building a duplicate standalone `/rate-table` page. Spec below amended accordingly; original standalone-page requirements struck.
+
 ## Overview
 
-A standalone `/rate-table` page giving the user full CRUD management of their keyword → flat-rate rules through an inline-editable MUI table. This gives the tested `src/lib/rate-rules.ts` layer its missing UI consumer and lets users maintain their pricing rules after onboarding.
+Full management of the user's keyword → flat-rate rules through the existing inline-editing rate-rules UI on the `/profile` page (`profile-editor.tsx`), wired to the tested `src/lib/rate-rules.ts` layer. This track adds the missing safety and clarity features: duplicate-keyword rejection, two-click delete confirmation, and currency-formatted rate display.
 
 ## Functional Requirements
 
-1. **Page & access:** `/rate-table`, server-verified session (same pattern as dashboard/profile); unauthenticated → redirect to `/login`. Linked from the dashboard navigation.
-2. **Table display:** columns — # (order), Keyword, Rate (formatted from `rateMinor` using the user's home currency), and actions. Rows sorted by `sortOrder`.
-3. **Add rule:** "Add rule" appends an empty editable row; keyword + decimal rate required. Saved via `addRateRule`.
-4. **Inline editing:** keyword and rate are editable in place; changes save via `updateRateRule`.
-5. **Rate input:** decimal amount (e.g., `25.50`) converted to integer `rateMinor` server-side via the existing `rateRuleSchema` transform; Zod output schema re-validated in every server action (existing input/output schema split).
-6. **Duplicate keywords:** rejected — server action checks case-insensitive duplicates for the user and returns an inline field error.
-7. **Reorder:** up/down arrow buttons per row call `reorderRateRules`; first/last rows disable the respective button.
-8. **Delete:** two-click inline undo — first click puts the row into a "Confirm delete? [Confirm] [Cancel]" state for a few seconds; `deleteRateRule` fires only on Confirm.
-9. **Empty state:** zero rules → table headers plus a single "Add your first rate rule" inline CTA row.
-10. **Errors:** server-action failures surface as user-friendly inline messages; loading states during saves.
+1. **Page & access:** unchanged — management lives on `/profile` (already session-gated server-side). No new route.
+2. **Table display:** existing list UI stays; **rate field gains a currency-code adornment** (the user's home currency, already available in `initialProfile.currency`).
+3. **Add rule:** unchanged (blank row append via `addRateRuleAction`).
+4. **Inline editing:** unchanged (save-on-blur via `updateRateRuleAction`).
+5. **Rate input:** unchanged — decimal amount validated/converted by the existing `rateRuleSchema` transform in every server action.
+6. **Duplicate keywords:** **new** — `updateRateRuleAction` calls the new `assertUniqueKeyword` guard (case-insensitive, user-scoped, excluding the edited rule) and returns a distinct inline error message when a duplicate exists.
+7. **Reorder:** unchanged (up/down buttons via `reorderRateRulesAction`).
+8. **Delete:** **new** — two-click inline confirm in the profile editor: first click switches the row's delete button into a "Confirm delete? [Confirm] [Cancel]" state (auto-cancels after a few seconds); `deleteRateRuleAction` fires only on Confirm.
+9. **Empty state:** unchanged — "Add rate rule" button already serves as the CTA.
+10. **Errors:** duplicate and validation failures surface as user-friendly inline messages (existing alert pattern).
 
 ## Non-Functional Requirements
 
@@ -26,13 +28,13 @@ A standalone `/rate-table` page giving the user full CRUD management of their ke
 
 ## Acceptance Criteria
 
-- Authenticated user can add, edit, reorder, and delete rules on `/rate-table`; changes persist and reflect in `sortOrder`.
-- Duplicate (case-insensitive) keywords are rejected with a clear inline error.
-- Unauthenticated access to `/rate-table` redirects to `/login`.
-- Vitest covers the new server-action/validation paths (duplicate check, decimal→minor conversion); coverage >80% for touched `src/lib/` modules.
-- Playwright e2e covers the lifecycle: add → edit → reorder → delete, at desktop + mobile viewport.
+- Editing a rule to a keyword that duplicates another of the user's rules (case-insensitive) is rejected with a clear inline error; editing a rule to its own keyword succeeds.
+- Delete requires a second confirming click; Cancel or timeout aborts the deletion.
+- Rate field visibly shows the user's home currency.
+- Vitest covers the duplicate-guard lib path (>80% coverage for touched `src/lib/` modules).
+- Playwright e2e covers the lifecycle on `/profile`: add → edit → duplicate rejected → reorder → delete (with confirm).
 - Biome, `tsc --noEmit`, `vitest run`, and `pnpm build` all pass.
 
 ## Out of Scope
 
-- Bulk import/export, per-rule currency (rules use home currency), drag-and-drop, client/project assignment to rules, any pricing-engine changes.
+- Standalone `/rate-table` route (dropped in the 2026-09-08 pivot), bulk import/export, per-rule currency, drag-and-drop, client/project assignment to rules, pricing-engine changes.
