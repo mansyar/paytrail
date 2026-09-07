@@ -1,4 +1,3 @@
-import { Button, Stack } from "@mui/material";
 import { headers } from "next/headers";
 import NextLink from "next/link";
 import { redirect } from "next/navigation";
@@ -27,15 +26,9 @@ export default async function DashboardPage() {
 		<main>
 			<h1>Dashboard</h1>
 			<p>{session.user.email}</p>
-			<Stack
-				direction="row"
-				spacing={2}
-				sx={{ justifyContent: "center", mb: 2 }}
-			>
-				<Button component={NextLink} href="/profile" variant="outlined">
-					Profile
-				</Button>
-			</Stack>
+			<p>
+				<NextLink href="/profile">Profile</NextLink>
+			</p>
 			<SignOutButton />
 		</main>
 	);
