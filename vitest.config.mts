@@ -12,6 +12,9 @@ export default defineConfig({
 		coverage: {
 			provider: "v8",
 			include: ["src/lib/**"],
+			// "use server" wrappers hold no business logic — the session
+			// resolution is exercised by the Playwright E2E suite instead.
+			exclude: ["src/lib/**/*-actions.ts"],
 		},
 	},
 });
