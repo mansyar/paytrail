@@ -33,7 +33,7 @@ pnpm dev                      # http://localhost:3000
 | `pnpm build` | Production build (type-checks via the native tsc CLI) |
 | `pnpm exec tsc --noEmit` | Standalone typecheck |
 | `pnpm biome check --write .` | Lint + format |
-| `pnpm vitest` / `pnpm vitest run` | Unit tests (watch / single run) |
+| `pnpm vitest` / `pnpm vitest run` | Unit tests (watch / single run; requires the local DB running) |
 | `pnpm exec playwright test` | E2E tests (starts dev server automatically) |
 | `pnpm exec prisma migrate dev` | Create/apply a migration locally |
 

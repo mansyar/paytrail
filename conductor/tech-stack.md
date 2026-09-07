@@ -18,7 +18,7 @@
 |---|---|---|
 | Component library | MUI **v9** + Emotion | Customized light theme, per product guidelines. **Deviation note (2026-09-07):** spec planned v7; `pnpm add @mui/material` resolves to v9 (9.4.0) as current stable — documented per workflow principle #2. Includes `@mui/material-nextjs` for App Router cache provider |
 | Icons | MUI Icons | |
-| Forms | React Hook Form + Zod | Zod for client + server validation |
+| Forms | React Hook Form + Zod | Zod for client + server validation. **Decision note (2026-09-07):** shared schemas are split into a transform-free *input* schema (used by forms via `zodResolver`) and a transforming *output* schema (re-validated server-side in every server action), so RHF field types match what users type while the server still owns validation |
 
 ## Auth
 
@@ -31,7 +31,7 @@
 | Layer | Technology | Version | Notes |
 |---|---|---|---|
 | Database | PostgreSQL | 17 | Self-hosted in Docker (Coolify) |
-| ORM | Prisma | **7.x** | GA and fully supported. (Prisma 8 just GA'd 2026-08-28 — days old — recommend 7.x for a solo project; revisit before v1 ships. Better Auth's Prisma adapter targets Prisma 7 schema output.) |
+| ORM | Prisma | **7.x** | GA and fully supported. (Prisma 8 just GA'd 2026-08-28 — days old — recommend 7.x for a solo project; revisit before v1 ships. Better Auth's Prisma adapter targets Prisma 7 schema output.) Prisma 7 **requires a SQL driver adapter**: install `@prisma/adapter-pg` and construct `new PrismaClient({ adapter: new PrismaPg({ connectionString }) })` (see `src/lib/db.ts`). After schema edits, run `pnpm exec prisma generate` explicitly — `migrate dev` may not regenerate the client. |
 
 ## Invoice / Documents
 

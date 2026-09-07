@@ -13,15 +13,17 @@ datasource db {
 }
 
 model User {
-  id            String    @id
-  name          String
-  email         String
-  emailVerified Boolean   @default(false)
-  image         String?
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
-  sessions      Session[]
-  accounts      Account[]
+  id              String           @id
+  name            String
+  email           String
+  emailVerified   Boolean          @default(false)
+  image           String?
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+  sessions        Session[]
+  accounts        Account[]
+  businessProfile BusinessProfile?
+  rateRules       RateRule[]
 
   @@unique([email])
   @@map("user")
@@ -74,4 +76,40 @@ model Verification {
 
   @@index([identifier])
   @@map("verification")
+}
+
+model BusinessProfile {
+  id                  String   @id @default(cuid())
+  userId              String   @unique
+  user                User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  businessName        String
+  addressLine1        String?
+  addressLine2        String?
+  city                String?
+  postalCode          String?
+  contactEmail        String?
+  taxId               String?
+  logo                String?
+  currency            String
+  defaultTaxRate      Decimal  @db.Decimal(5, 2)
+  paymentTerms        String?
+  onboardingCompleted Boolean  @default(false)
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  @@map("business_profile")
+}
+
+model RateRule {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  keyword   String
+  rateMinor Int
+  sortOrder Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+  @@map("rate_rule")
 }
