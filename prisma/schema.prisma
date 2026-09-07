@@ -22,6 +22,7 @@ model User {
   updatedAt     DateTime  @updatedAt
   sessions      Session[]
   accounts      Account[]
+  clients       Client[]
 
   @@unique([email])
   @@map("user")
@@ -74,4 +75,35 @@ model Verification {
 
   @@index([identifier])
   @@map("verification")
+}
+
+model Client {
+  id           String    @id @default(cuid())
+  userId       String
+  user         User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name         String
+  email        String?
+  address      String?
+  currencyCode String    @default("USD")
+  notes        String?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+  projects     Project[]
+
+  @@index([userId])
+  @@map("client")
+}
+
+model Project {
+  id          String   @id @default(cuid())
+  clientId    String
+  client      Client   @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  name        String
+  description String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@unique([clientId, name])
+  @@index([clientId])
+  @@map("project")
 }
