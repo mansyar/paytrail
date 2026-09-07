@@ -262,6 +262,7 @@ export function ProfileEditor({
 							select
 							required
 							fullWidth
+							defaultValue={initialProfile.currency}
 							error={Boolean(errors.currency)}
 							helperText={errors.currency?.message}
 							{...register("currency")}
@@ -288,6 +289,7 @@ export function ProfileEditor({
 							label="Default payment terms"
 							select
 							fullWidth
+							defaultValue={initialProfile.paymentTerms}
 							{...register("paymentTerms")}
 						>
 							{PAYMENT_TERMS.map((terms) => (
