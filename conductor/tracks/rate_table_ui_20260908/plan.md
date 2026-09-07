@@ -7,14 +7,14 @@
   - Add cases covering `assertUniqueKeyword(userId, keyword, excludeId?)`: rejects case-insensitive duplicates for the user, allows the rule's own keyword on update, allows unique keywords, errors on conflict.
 - [x] Task: Implement unique-keyword guard in `src/lib/rate-rules.ts` (Green Phase) — `917d650`
   - Case-insensitive duplicate check scoped to `userId`, excluding the rule being edited.
-- [ ] Task: Wire the duplicate guard into the shared rate-rule server actions (`src/app/profile/actions.ts`)
+- [x] Task: Wire the duplicate guard into the shared rate-rule server actions (`src/app/profile/actions.ts`) — `7fb1021`
   - `updateRateRuleAction` calls `assertUniqueKeyword(userId, keyword, ruleId)` before updating and returns a distinct "keyword already exists" message; other actions unchanged.
 - [ ] Task: Phase Verification & Checkpoint (Refer to workflow.md)
 
 ## Phase 2: Profile rate-rules UI polish
-- [ ] Task: Add two-click delete confirmation in `profile-editor.tsx`
+- [x] Task: Add two-click delete confirmation in `profile-editor.tsx` — `2ef56df`
   - First click swaps the row's delete button into Confirm/Cancel state; auto-cancel after a few seconds; `deleteRateRuleAction` only fires on Confirm.
-- [ ] Task: Show the home currency on the rate field
+- [x] Task: Show the home currency on the rate field — `2ef56df`
   - MUI `InputAdornment` with the user's currency code (from `initialProfile.currency`) on the rate TextField.
 - [ ] Task: Manual verification pass — desktop + mobile 390px viewport (Refer to workflow.md)
 - [ ] Task: Phase Verification & Checkpoint (Refer to workflow.md)
