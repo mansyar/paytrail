@@ -44,3 +44,6 @@ Follows `conductor/workflow.md`. Logic-bearing-code test-first where applicable;
 - [x] Task: Tag `v0.1.0` → verify GHCR image published + Coolify deploy triggered *(v0.1.0 build failed on missing public/ — fixed via PR #2; released as v0.1.1: image public, migrate deploy ran, webhook 200)*
 - [ ] Task: Track review (conductor-review) before close
 - [ ] Task: Phase Verification & Checkpoint (Refer to workflow.md)
+## Phase: Review Fixes
+- [x] Task: Apply review suggestions (drop unused vite-tsconfig-paths; README notes tests need local DB) *(d2fd294)*
+- [x] Task: Track review (conductor-review) before close
