@@ -121,15 +121,38 @@ export function OnboardingWizard({ nextPath }: { nextPath: string }) {
 	};
 
 	const goNext = async () => {
+		if (navLocked()) return;
 		const valid = await trigger(STEP_FIELDS[step], { shouldFocus: true });
 		if (valid) {
 			setStep((s) => Math.min(s + 1, STEPS.length - 1));
 		}
 	};
 
-	const goBack = () => setStep((s) => Math.max(s - 1, 0));
+	const goBack = () => {
+		if (navLocked()) return;
+		setStep((s) => Math.max(s - 1, 0));
+	};
+
+	// Ghost clicks: advancing a step re-renders a different button (e.g.
+	// "Finish setup") under the pointer, so the second press of a natural
+	// double-click activates it and saves prematurely. Ignore any navigation
+	// or submit within 500ms of the previous one.
+	const navLockRef = useRef(0);
+	const navLocked = () => {
+		const now = Date.now();
+		if (now - navLockRef.current < 500) return true;
+		navLockRef.current = now;
+		return false;
+	};
 
 	const onSubmit = handleSubmit(async (values) => {
+		if (navLocked()) return;
+		// Enter in a mid-wizard field triggers submit; never save before the
+		// user has seen the remaining steps.
+		if (step < STEPS.length - 1) {
+			setStep((s) => s + 1);
+			return;
+		}
 		const result = await saveOnboardingAction(values);
 		if (result.ok) {
 			router.push(nextPath);
@@ -211,6 +234,7 @@ export function OnboardingWizard({ nextPath }: { nextPath: string }) {
 								sx={{ width: 56, height: 56 }}
 							/>
 							<Button
+								type="button"
 								variant="outlined"
 								onClick={() => fileInputRef.current?.click()}
 							>
@@ -327,6 +351,7 @@ export function OnboardingWizard({ nextPath }: { nextPath: string }) {
 							</Stack>
 						))}
 						<Button
+							type="button"
 							variant="outlined"
 							onClick={() => append({ keyword: "", rate: "" })}
 						>
@@ -341,11 +366,11 @@ export function OnboardingWizard({ nextPath }: { nextPath: string }) {
 					spacing={2}
 					sx={{ justifyContent: "space-between" }}
 				>
-					<Button onClick={goBack} disabled={step === 0}>
+					<Button type="button" onClick={goBack} disabled={step === 0}>
 						Back
 					</Button>
 					{step < STEPS.length - 1 ? (
-						<Button variant="contained" onClick={goNext}>
+						<Button type="button" variant="contained" onClick={goNext}>
 							Next
 						</Button>
 					) : (
