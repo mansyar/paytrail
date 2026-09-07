@@ -24,8 +24,8 @@ Follows `conductor/workflow.md`. Logic-bearing code (Zod schemas, validation, ga
 
 ## Phase 4: Profile Editing
 
-- [ ] Task: Failing tests for rate-rule CRUD server actions (user-scoped, Zod-validated); confirm RED
-- [ ] Task: `/profile` page reusing wizard sections; rate-rule add/edit/remove/reorder; logo replace; GREEN
+- [x] Task: Failing tests for rate-rule CRUD server actions (user-scoped, Zod-validated); confirm RED *(bfb2cfa)*
+- [x] Task: `/profile` page reusing wizard sections; rate-rule add/edit/remove/reorder; logo replace; GREEN *(b0deec5)*
 - [ ] Task: Phase Verification & Checkpoint (Refer to workflow.md)
 
 ## Phase 5: E2E & Review Gate
