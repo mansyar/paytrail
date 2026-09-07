@@ -25,9 +25,9 @@ Follows `conductor/workflow.md`. Logic-bearing code (Zod schemas, session-scoped
 
 ## Phase 4: Client Detail & Projects
 
-- [ ] Task: `/clients/[id]` detail page — client info card, Edit dialog, Delete with inline blocked-reason alert
-- [ ] Task: Projects section — add/rename/delete projects under the client
-- [ ] Task: Mobile 390px pass
+- [x] Task: `/clients/[id]` detail page - client info card, Edit dialog, Delete with inline blocked-reason alert
+- [x] Task: Projects section - add/rename/delete projects under the client
+- [x] Task: Mobile 390px pass
 - [ ] Task: Phase Verification & Checkpoint (Refer to workflow.md)
 
 ## Phase 5: E2E & Review Gate
