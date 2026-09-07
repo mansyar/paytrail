@@ -38,4 +38,4 @@ Follows `conductor/workflow.md`. Logic-bearing code (Zod schemas, session-scoped
 
 ## Phase: Review Fixes
 
-- [~] Task: Apply review suggestions
+- [x] Task: Apply review suggestions — d64f137
