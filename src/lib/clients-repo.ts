@@ -43,6 +43,7 @@ export async function listClients(userId: string, q?: string) {
 				: {}),
 		},
 		orderBy: { name: "asc" },
+		include: { _count: { select: { projects: true } } },
 	});
 }
 

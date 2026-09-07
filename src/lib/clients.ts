@@ -11,7 +11,10 @@ const currencyCodeSchema = z
 
 export const clientSchema = z.object({
 	name: z.string().trim().min(1).max(200),
-	email: z.string().email().optional(),
+	email: z
+		.union([z.string().email(), z.literal("")])
+		.optional()
+		.transform((v) => (v === "" ? undefined : v)),
 	address: z.string().max(500).optional(),
 	currencyCode: currencyCodeSchema.optional().default(DEFAULT_CURRENCY),
 	notes: z.string().max(2000).optional(),
