@@ -1,6 +1,6 @@
 "use client";
 
-export default function Error({
+export default function ErrorPage({
 	reset,
 }: {
 	error: Error & { digest?: string };
@@ -18,7 +18,9 @@ export default function Error({
 			<div>
 				<h1>Something went wrong</h1>
 				<p>This page failed to load. Try again.</p>
-				<button onClick={reset}>Try again</button>
+				<button type="button" onClick={reset}>
+					Try again
+				</button>
 			</div>
 		</main>
 	);
