@@ -2,6 +2,7 @@ import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { auth } from "@/lib/auth";
 import { isOnboardingComplete } from "@/lib/onboarding";
+import { OnboardingWizard } from "./onboarding-wizard";
 
 export const metadata = { title: "Set up your business — PayTrail" };
 
@@ -33,10 +34,5 @@ export default async function OnboardingPage({
 		redirect(safeNextPath(next));
 	}
 
-	return (
-		<main>
-			<h1>Set up your business</h1>
-			<p>Tell us about your business so PayTrail can build your invoices.</p>
-		</main>
-	);
+	return <OnboardingWizard nextPath={safeNextPath(next)} />;
 }

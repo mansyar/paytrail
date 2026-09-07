@@ -63,17 +63,17 @@ const logoDataUrl = z
 		/^data:image\/(png|jpe?g);base64,[A-Za-z0-9+/=]+$/,
 		"Logo must be a base64-encoded PNG or JPEG data URL",
 	)
-	.refine(
-		(v) => {
-			const base64 = v.slice(v.indexOf(",") + 1);
-			return Math.floor((base64.length * 3) / 4) <= LOGO_MAX_BYTES;
-		},
-		"Logo must be 500 KB or smaller",
-	);
+	.refine((v) => {
+		const base64 = v.slice(v.indexOf(",") + 1);
+		return Math.floor((base64.length * 3) / 4) <= LOGO_MAX_BYTES;
+	}, "Logo must be 500 KB or smaller");
 
 const percentString = z
 	.string()
-	.regex(/^\d{1,3}(\.\d{1,2})?$/, "Must be a non-negative number with at most 2 decimals")
+	.regex(
+		/^\d{1,3}(\.\d{1,2})?$/,
+		"Must be a non-negative number with at most 2 decimals",
+	)
 	.refine((v) => Number(v) <= 100, "Must be at most 100");
 
 export const businessProfileSchema = z.object({
@@ -96,15 +96,22 @@ export const businessProfileSchema = z.object({
 export type BusinessProfileInput = z.input<typeof businessProfileSchema>;
 export type BusinessProfileData = z.output<typeof businessProfileSchema>;
 
-export const rateRuleSchema = z
-	.object({
-		keyword: z.string().trim().min(1).max(80),
-		rate: z.string().regex(/^\d{1,10}(\.\d{1,2})?$/, "Must be a non-negative number with at most 2 decimals"),
-	})
-	.transform(({ keyword, rate }) => ({
+export const rateRuleInputSchema = z.object({
+	keyword: z.string().trim().min(1).max(80),
+	rate: z
+		.string()
+		.regex(
+			/^\d{1,10}(\.\d{1,2})?$/,
+			"Must be a non-negative number with at most 2 decimals",
+		),
+});
+
+export const rateRuleSchema = rateRuleInputSchema.transform(
+	({ keyword, rate }) => ({
 		keyword,
 		rateMinor: Math.round(Number(rate) * 100),
-	}));
+	}),
+);
 
 export type RateRuleData = z.output<typeof rateRuleSchema>;
 
@@ -113,4 +120,10 @@ export const onboardingPayloadSchema = z.object({
 	rateRules: z.array(rateRuleSchema).max(50).default([]),
 });
 
+export const onboardingInputSchema = z.object({
+	profile: businessProfileSchema,
+	rateRules: z.array(rateRuleInputSchema).max(50).default([]),
+});
+
+export type OnboardingInput = z.input<typeof onboardingInputSchema>;
 export type OnboardingPayload = z.output<typeof onboardingPayloadSchema>;
