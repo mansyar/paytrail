@@ -17,7 +17,7 @@ Follows `conductor/workflow.md`. Logic-bearing code (Zod schemas, session-scoped
 - [x] Task: Implement server actions/queries; GREEN + coverage
 - [x] Task: Phase Verification & Checkpoint (Refer to workflow.md)
 
-## Phase 3: Clients UI
+## Phase 3: Clients UI [checkpoint: 13b6f01]
 
 - [x] Task: `/clients` list page — MUI table (name, email, currency, project count), debounced URL-param search, Add/Edit dialogs, empty state; dashboard link
 - [x] Task: Mobile 390px pass (touch targets ≥44px, no horizontal scroll)
