@@ -142,7 +142,9 @@ describe("priceTasks edge cases", () => {
 		const literal = priceTasks(["Serviced the a.c (deluxe) unit"], rules);
 		expect(literal[0]).toMatchObject({ status: "matched", ruleId: "r" });
 		const regexLike = priceTasks(["Serviced the abc deluxe unit"], rules);
-		expect(regexLike).toEqual([{ status: "unmatched", input: "abc deluxe unit" }]);
+		expect(regexLike).toEqual([
+			{ status: "unmatched", input: "Serviced the abc deluxe unit" },
+		]);
 	});
 
 	it("does not mutate the inputs", () => {
