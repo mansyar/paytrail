@@ -9,7 +9,7 @@ Follows `conductor/workflow.md`. The engine is logic-bearing domain code (rate-t
 - [x] Task: Write failing Vitest tests for unmatched + edge cases — empty task list, empty rule list, whitespace-only task, overlapping keywords ("hot tub" vs "tub"), special characters, no input mutation; confirm RED `[task: 22e01a7]`
 - [ ] Task: Phase Verification & Checkpoint (Refer to workflow.md)
 
-## Phase 2: Green — Implement Engine
+## Phase 2: Green — Implement Engine `[checkpoint: 9f21a62]`
 
 - [x] Task: Implement `src/lib/pricing-engine.ts` — pure module, discriminated-union `PricingResult`, longest-then-sortOrder matcher, single pass; no DB/Next/React imports; GREEN `[task: 9f21a62]`
 - [x] Task: Refactor pass for clarity; rerun tests `[task: 9f21a62]`
