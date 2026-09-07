@@ -3,7 +3,7 @@
 ## Phase 1: Duplicate-guard logic + server actions (TDD)
 - [x] Task: Write failing tests for unique-keyword guard (Red Phase) — `917d650`
   - Add cases covering `assertUniqueKeyword(userId, keyword, excludeId?)`: rejects case-insensitive duplicates for the user, allows the rule's own keyword on update, allows unique keywords, errors on conflict.
-- [ ] Task: Implement unique-keyword guard in `src/lib/rate-rules.ts` (Green Phase)
+- [x] Task: Implement unique-keyword guard in `src/lib/rate-rules.ts` (Green Phase) — `917d650`
   - Case-insensitive duplicate check scoped to `userId`, excluding the rule being edited.
 - [ ] Task: Implement rate-table server actions (`src/app/rate-table/actions.ts`)
   - Thin wrappers over `addRateRule` / `updateRateRule` / `deleteRateRule` / `reorderRateRules` + the new guard; session retrieved server-side; Zod validation via `rateRuleInputSchema`/`rateRuleSchema`; typed error results (duplicate, invalid input, not found).
