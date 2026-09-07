@@ -21,9 +21,10 @@ describe("priceTasks matching semantics", () => {
 	});
 
 	it("matches case-insensitively on both sides", () => {
-		const results = priceTasks(["STANDARD CLEAN of the unit"], [
-			{ id: "r1", keyword: "Standard Clean", rateMinor: 4550, sortOrder: 0 },
-		]);
+		const results = priceTasks(
+			["STANDARD CLEAN of the unit"],
+			[{ id: "r1", keyword: "Standard Clean", rateMinor: 4550, sortOrder: 0 }],
+		);
 		expect(results[0]).toMatchObject({
 			status: "matched",
 			rateMinor: 4550,
@@ -43,7 +44,9 @@ describe("priceTasks matching semantics", () => {
 
 	it("returns unmatched for text with no keyword occurrence", () => {
 		const results = priceTasks(["Wash the windows"], RULES);
-		expect(results).toEqual([{ status: "unmatched", input: "Wash the windows" }]);
+		expect(results).toEqual([
+			{ status: "unmatched", input: "Wash the windows" },
+		]);
 	});
 
 	it("prices multiple tasks independently, preserving input order", () => {
@@ -110,7 +113,12 @@ describe("priceTasks tie-breaking", () => {
 
 describe("priceTasks edge cases", () => {
 	it("returns an empty array for an empty task list", () => {
-		expect(priceTasks([], [{ id: "r", keyword: "clean", rateMinor: 100, sortOrder: 0 }])).toEqual([]);
+		expect(
+			priceTasks(
+				[],
+				[{ id: "r", keyword: "clean", rateMinor: 100, sortOrder: 0 }],
+			),
+		).toEqual([]);
 	});
 
 	it("returns every task unmatched when the rule list is empty", () => {
@@ -122,7 +130,10 @@ describe("priceTasks edge cases", () => {
 	});
 
 	it("returns unmatched for a whitespace-only task", () => {
-		const results = priceTasks(["   "], [{ id: "r", keyword: "clean", rateMinor: 100, sortOrder: 0 }]);
+		const results = priceTasks(
+			["   "],
+			[{ id: "r", keyword: "clean", rateMinor: 100, sortOrder: 0 }],
+		);
 		expect(results).toEqual([{ status: "unmatched", input: "" }]);
 	});
 
@@ -132,7 +143,11 @@ describe("priceTasks edge cases", () => {
 			{ id: "hot-tub", keyword: "hot tub", rateMinor: 2000, sortOrder: 1 },
 		];
 		const results = priceTasks(["Scrub the hot tub"], rules);
-		expect(results[0]).toMatchObject({ status: "matched", ruleId: "hot-tub", rateMinor: 2000 });
+		expect(results[0]).toMatchObject({
+			status: "matched",
+			ruleId: "hot-tub",
+			rateMinor: 2000,
+		});
 	});
 
 	it("treats special characters in keywords literally", () => {
@@ -150,12 +165,21 @@ describe("priceTasks edge cases", () => {
 	it("does not mutate the inputs", () => {
 		const tasks = Object.freeze(["  Hot tub  ", ""]);
 		const rules = Object.freeze([
-			Object.freeze({ id: "r2", keyword: "hot tub", rateMinor: 2000, sortOrder: 1 }),
+			Object.freeze({
+				id: "r2",
+				keyword: "hot tub",
+				rateMinor: 2000,
+				sortOrder: 1,
+			}),
 		]);
 		expect(() => priceTasks(tasks, rules)).not.toThrow();
 		const results = priceTasks(tasks, rules);
 		expect(tasks[0]).toBe("  Hot tub  ");
-		expect(results[0]).toMatchObject({ status: "matched", input: "Hot tub", ruleId: "r2" });
+		expect(results[0]).toMatchObject({
+			status: "matched",
+			input: "Hot tub",
+			ruleId: "r2",
+		});
 		expect(results[1]).toEqual({ status: "unmatched", input: "" });
 	});
 });

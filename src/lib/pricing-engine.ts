@@ -39,7 +39,10 @@ export function priceTasks(
 
 type Candidate = { rule: RateRuleInput; keyword: string };
 
-function priceTask(task: string, rules: readonly RateRuleInput[]): PricingResult {
+function priceTask(
+	task: string,
+	rules: readonly RateRuleInput[],
+): PricingResult {
 	const input = task.trim();
 	const text = input.toLocaleLowerCase("en");
 
