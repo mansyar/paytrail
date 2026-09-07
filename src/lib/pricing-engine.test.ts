@@ -107,3 +107,53 @@ describe("priceTasks tie-breaking", () => {
 		});
 	});
 });
+
+describe("priceTasks edge cases", () => {
+	it("returns an empty array for an empty task list", () => {
+		expect(priceTasks([], [{ id: "r", keyword: "clean", rateMinor: 100, sortOrder: 0 }])).toEqual([]);
+	});
+
+	it("returns every task unmatched when the rule list is empty", () => {
+		const results = priceTasks(["Clean the tub", "Water plants"], []);
+		expect(results).toEqual([
+			{ status: "unmatched", input: "Clean the tub" },
+			{ status: "unmatched", input: "Water plants" },
+		]);
+	});
+
+	it("returns unmatched for a whitespace-only task", () => {
+		const results = priceTasks(["   "], [{ id: "r", keyword: "clean", rateMinor: 100, sortOrder: 0 }]);
+		expect(results).toEqual([{ status: "unmatched", input: "" }]);
+	});
+
+	it("resolves overlapping keywords to the longest match, not the first-listed", () => {
+		const rules: RateRuleInput[] = [
+			{ id: "tub", keyword: "tub", rateMinor: 500, sortOrder: 0 },
+			{ id: "hot-tub", keyword: "hot tub", rateMinor: 2000, sortOrder: 1 },
+		];
+		const results = priceTasks(["Scrub the hot tub"], rules);
+		expect(results[0]).toMatchObject({ status: "matched", ruleId: "hot-tub", rateMinor: 2000 });
+	});
+
+	it("treats special characters in keywords literally", () => {
+		const rules: RateRuleInput[] = [
+			{ id: "r", keyword: "a.c (deluxe)", rateMinor: 900, sortOrder: 0 },
+		];
+		const literal = priceTasks(["Serviced the a.c (deluxe) unit"], rules);
+		expect(literal[0]).toMatchObject({ status: "matched", ruleId: "r" });
+		const regexLike = priceTasks(["Serviced the abc deluxe unit"], rules);
+		expect(regexLike).toEqual([{ status: "unmatched", input: "abc deluxe unit" }]);
+	});
+
+	it("does not mutate the inputs", () => {
+		const tasks = Object.freeze(["  Hot tub  ", ""]);
+		const rules = Object.freeze([
+			Object.freeze({ id: "r2", keyword: "hot tub", rateMinor: 2000, sortOrder: 1 }),
+		]);
+		expect(() => priceTasks(tasks, rules)).not.toThrow();
+		const results = priceTasks(tasks, rules);
+		expect(tasks[0]).toBe("  Hot tub  ");
+		expect(results[0]).toMatchObject({ status: "matched", input: "Hot tub", ruleId: "r2" });
+		expect(results[1]).toEqual({ status: "unmatched", input: "" });
+	});
+});
