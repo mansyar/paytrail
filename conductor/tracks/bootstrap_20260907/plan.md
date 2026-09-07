@@ -38,12 +38,12 @@ Follows `conductor/workflow.md`. Logic-bearing-code test-first where applicable;
 - [x] Task: README - local dev workflow, env vars, release flow *(c0e8508)*
 - [x] Task: Phase Verification & Checkpoint (Refer to workflow.md) *(c0e8508)*
 
-## Phase 6: Repository & Ship
+## Phase 6: Repository & Ship [checkpoint: d2fd294]
 
 - [x] Task: Create public GitHub repo `paytrail`, add remote, push branch, open PR, CI green, merge to main *(PR #1, merged at 2c8cfdc)*
 - [x] Task: Tag `v0.1.0` → verify GHCR image published + Coolify deploy triggered *(v0.1.0 build failed on missing public/ — fixed via PR #2; released as v0.1.1: image public, migrate deploy ran, webhook 200)*
 - [ ] Task: Track review (conductor-review) before close
-- [ ] Task: Phase Verification & Checkpoint (Refer to workflow.md)
+- [x] Task: Phase Verification & Checkpoint (Refer to workflow.md) *(d2fd294)*
 ## Phase: Review Fixes
 - [x] Task: Apply review suggestions (drop unused vite-tsconfig-paths; README notes tests need local DB) *(d2fd294)*
 - [x] Task: Track review (conductor-review) before close
