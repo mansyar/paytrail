@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { CURRENCIES } from "./currencies";
 import { clientSchema, projectSchema } from "./clients";
+import { CURRENCIES } from "./currencies";
 
 const validClient = {
 	name: "Sunset Villa Cleaning",
@@ -45,15 +45,13 @@ describe("clientSchema", () => {
 
 	it("rejects a name over 200 characters", () => {
 		expect(
-			clientSchema.safeParse({ ...validClient, name: "a".repeat(201) })
-				.success,
+			clientSchema.safeParse({ ...validClient, name: "a".repeat(201) }).success,
 		).toBe(false);
 	});
 
 	it("allows a name of exactly 200 characters", () => {
 		expect(
-			clientSchema.safeParse({ ...validClient, name: "a".repeat(200) })
-				.success,
+			clientSchema.safeParse({ ...validClient, name: "a".repeat(200) }).success,
 		).toBe(true);
 	});
 
@@ -67,22 +65,19 @@ describe("clientSchema", () => {
 
 	it("rejects an invalid email", () => {
 		expect(
-			clientSchema.safeParse({ ...validClient, email: "not-an-email" })
-				.success,
+			clientSchema.safeParse({ ...validClient, email: "not-an-email" }).success,
 		).toBe(false);
 	});
 
 	it("rejects an unknown currency code", () => {
 		expect(
-			clientSchema.safeParse({ ...validClient, currencyCode: "XXA" })
-				.success,
+			clientSchema.safeParse({ ...validClient, currencyCode: "XXA" }).success,
 		).toBe(false);
 	});
 
 	it("rejects a lowercase currency code", () => {
 		expect(
-			clientSchema.safeParse({ ...validClient, currencyCode: "usd" })
-				.success,
+			clientSchema.safeParse({ ...validClient, currencyCode: "usd" }).success,
 		).toBe(false);
 	});
 
@@ -102,16 +97,17 @@ describe("clientSchema", () => {
 });
 
 describe("projectSchema", () => {
-	const validProject = { name: "Weekly turnover", description: "Standard clean" };
+	const validProject = {
+		name: "Weekly turnover",
+		description: "Standard clean",
+	};
 
 	it("accepts a valid project", () => {
 		expect(projectSchema.safeParse(validProject).success).toBe(true);
 	});
 
 	it("accepts a project without a description", () => {
-		expect(
-			projectSchema.safeParse({ name: "Deep clean" }).success,
-		).toBe(true);
+		expect(projectSchema.safeParse({ name: "Deep clean" }).success).toBe(true);
 	});
 
 	it("rejects an empty name", () => {

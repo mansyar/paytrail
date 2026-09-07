@@ -1,0 +1,26 @@
+import { z } from "zod";
+import { CURRENCIES, DEFAULT_CURRENCY } from "./currencies";
+
+const currencyCodeSchema = z
+	.string()
+	.length(3)
+	.refine(
+		(code) => (CURRENCIES as readonly string[]).includes(code),
+		"Unknown ISO 4217 currency code",
+	);
+
+export const clientSchema = z.object({
+	name: z.string().trim().min(1).max(200),
+	email: z.string().email().optional(),
+	address: z.string().max(500).optional(),
+	currencyCode: currencyCodeSchema.optional().default(DEFAULT_CURRENCY),
+	notes: z.string().max(2000).optional(),
+});
+
+export const projectSchema = z.object({
+	name: z.string().trim().min(1).max(200),
+	description: z.string().max(2000).optional(),
+});
+
+export type ClientInput = z.infer<typeof clientSchema>;
+export type ProjectInput = z.infer<typeof projectSchema>;
