@@ -13,6 +13,7 @@ import {
 	Container,
 	Divider,
 	IconButton,
+	InputAdornment,
 	MenuItem,
 	Paper,
 	Stack,
@@ -78,6 +79,8 @@ export function ProfileEditor({
 	} | null>(null);
 	const [rules, setRules] = useState<RuleRow[]>(initialRules);
 	const [ruleError, setRuleError] = useState<string | null>(null);
+	const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
+	const deleteTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
 	const {
 		register,
@@ -153,7 +156,14 @@ export function ProfileEditor({
 		else router.refresh();
 	};
 
+	const cancelDeleteRule = () => {
+		if (deleteTimerRef.current) clearTimeout(deleteTimerRef.current);
+		setConfirmDeleteId(null);
+	};
+
 	const handleDeleteRule = async (id: string) => {
+		if (deleteTimerRef.current) clearTimeout(deleteTimerRef.current);
+		setConfirmDeleteId(null);
 		setRuleError(null);
 		const result = await deleteRateRuleAction(id);
 		if (!result.ok) {
@@ -350,6 +360,15 @@ export function ProfileEditor({
 								size="small"
 								fullWidth
 								inputMode="decimal"
+								slotProps={{
+									input: {
+										startAdornment: (
+											<InputAdornment position="start">
+												{initialProfile.currency}
+											</InputAdornment>
+										),
+									},
+								}}
 								value={row.rate}
 								onChange={(e) =>
 									handleRuleChange(row.id, { rate: e.target.value })
@@ -374,13 +393,41 @@ export function ProfileEditor({
 									<ArrowDownwardIcon fontSize="small" />
 								</IconButton>
 							</Stack>
-							<IconButton
-								aria-label={`Delete rule ${index + 1}`}
-								size="small"
-								onClick={() => handleDeleteRule(row.id)}
-							>
-								<DeleteIcon fontSize="small" />
-							</IconButton>
+							{confirmDeleteId === row.id ? (
+								<Stack
+									direction="row"
+									spacing={0.5}
+									sx={{ flexShrink: 0, alignItems: "center" }}
+								>
+									<Button
+										size="small"
+										variant="contained"
+										color="error"
+										onClick={() => handleDeleteRule(row.id)}
+									>
+										Delete
+									</Button>
+									<Button size="small" onClick={cancelDeleteRule}>
+										Cancel
+									</Button>
+								</Stack>
+							) : (
+								<IconButton
+									aria-label={`Delete rule ${index + 1}`}
+									size="small"
+									onClick={() => {
+										setConfirmDeleteId(row.id);
+										if (deleteTimerRef.current)
+											clearTimeout(deleteTimerRef.current);
+										deleteTimerRef.current = setTimeout(
+											() => setConfirmDeleteId(null),
+											4000,
+										);
+									}}
+								>
+									<DeleteIcon fontSize="small" />
+								</IconButton>
+							)}
 						</Stack>
 					))}
 					{ruleError ? <Alert severity="error">{ruleError}</Alert> : null}
