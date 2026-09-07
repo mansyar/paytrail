@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
-	CURRENCIES,
 	businessProfileSchema,
+	CURRENCIES,
 	onboardingPayloadSchema,
 	rateRuleSchema,
 } from "./schemas";
@@ -133,38 +133,54 @@ describe("businessProfileSchema", () => {
 
 describe("rateRuleSchema", () => {
 	it("accepts a keyword + decimal rate and normalizes to integer minor units", () => {
-		expect(rateRuleSchema.parse({ keyword: "standard clean", rate: "45.50" })).toEqual({
+		expect(
+			rateRuleSchema.parse({ keyword: "standard clean", rate: "45.50" }),
+		).toEqual({
 			keyword: "standard clean",
 			rateMinor: 4550,
 		});
-		expect(rateRuleSchema.parse({ keyword: "linen change", rate: "0" })).toEqual({
+		expect(
+			rateRuleSchema.parse({ keyword: "linen change", rate: "0" }),
+		).toEqual({
 			keyword: "linen change",
 			rateMinor: 0,
 		});
 	});
 
 	it("trims the keyword", () => {
-		expect(rateRuleSchema.parse({ keyword: "  hot tub  ", rate: "10" })).toEqual({
+		expect(
+			rateRuleSchema.parse({ keyword: "  hot tub  ", rate: "10" }),
+		).toEqual({
 			keyword: "hot tub",
 			rateMinor: 1000,
 		});
 	});
 
 	it("rejects an empty or whitespace keyword", () => {
-		expect(rateRuleSchema.safeParse({ keyword: "", rate: "10" }).success).toBe(false);
-		expect(rateRuleSchema.safeParse({ keyword: "   ", rate: "10" }).success).toBe(false);
+		expect(rateRuleSchema.safeParse({ keyword: "", rate: "10" }).success).toBe(
+			false,
+		);
+		expect(
+			rateRuleSchema.safeParse({ keyword: "   ", rate: "10" }).success,
+		).toBe(false);
 	});
 
 	it("rejects a negative rate", () => {
-		expect(rateRuleSchema.safeParse({ keyword: "x", rate: "-5" }).success).toBe(false);
+		expect(rateRuleSchema.safeParse({ keyword: "x", rate: "-5" }).success).toBe(
+			false,
+		);
 	});
 
 	it("rejects a rate with more than 2 decimals", () => {
-		expect(rateRuleSchema.safeParse({ keyword: "x", rate: "5.999" }).success).toBe(false);
+		expect(
+			rateRuleSchema.safeParse({ keyword: "x", rate: "5.999" }).success,
+		).toBe(false);
 	});
 
 	it("rejects a non-numeric rate", () => {
-		expect(rateRuleSchema.safeParse({ keyword: "x", rate: "abc" }).success).toBe(false);
+		expect(
+			rateRuleSchema.safeParse({ keyword: "x", rate: "abc" }).success,
+		).toBe(false);
 	});
 });
 
