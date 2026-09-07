@@ -1,5 +1,6 @@
 import { afterAll, afterEach, describe, expect, it } from "vitest";
 import { auth } from "./auth";
+import { clientSearchSchema } from "./clients";
 import {
 	createClient,
 	deleteClient,
@@ -97,5 +98,40 @@ describe("client repo — session-scoped CRUD", () => {
 		const result = await deleteClient(userId, client.id);
 		expect(result).toEqual({ ok: true });
 		expect(await getClient(userId, client.id)).toBeNull();
+	});
+});
+
+describe("client repo — search", () => {
+	it("listClients filters by ?q= contains on name and email, case-insensitive", async () => {
+		const userId = await createTestUser();
+		await createClient(userId, { name: "Sunset Villa Cleaning" });
+		await createClient(userId, { name: "Alpha Homes", email: "ops@alphahomes.com" });
+		await createClient(userId, { name: "Beachside Co" });
+
+		const byName = await listClients(userId, "villa");
+		expect(byName.map((c) => c.name)).toEqual(["Sunset Villa Cleaning"]);
+
+		const byEmail = await listClients(userId, "ALPHAHOMES");
+		expect(byEmail.map((c) => c.name)).toEqual(["Alpha Homes"]);
+
+		const noMatch = await listClients(userId, "zebra");
+		expect(noMatch).toEqual([]);
+	});
+
+	it("clientSearchSchema trims and bounds the ?q= param", () => {
+		expect(clientSearchSchema.parse("  villa  ")).toBe("villa");
+		expect(clientSearchSchema.parse(undefined)).toBeUndefined();
+		expect(() => clientSearchSchema.parse("x".repeat(101))).toThrow();
+	});
+});
+
+describe("client repo — deletion guard", () => {
+	it("deleteClient reports INVOICES_ATTACHED with a count instead of deleting", async () => {
+		const userId = await createTestUser();
+		const client = await createClient(userId, { name: "Has Invoices" });
+
+		const result = await deleteClient(userId, client.id, async () => 3);
+		expect(result).toEqual({ ok: false, reason: "INVOICES_ATTACHED", invoiceCount: 3 });
+		expect(await getClient(userId, client.id)).not.toBeNull();
 	});
 });
