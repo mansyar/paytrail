@@ -4,9 +4,9 @@ Follows `conductor/workflow.md`. Logic-bearing code (Zod schemas, validation, ga
 
 ## Phase 1: Data Model & Validation Schemas
 
-- [ ] Task: Write failing Vitest tests for shared Zod schemas (profile fields, ISO 4217 currency, money/percent formats, rate-rule rows, logo size/type); confirm RED
-- [ ] Task: Prisma migration — `BusinessProfile` (1:1 User, cascade) + `RateRule` models; regenerate client *(implementation to make tests GREEN)*
-- [ ] Task: Shared Zod schemas in `src/lib/` + currency constant list; GREEN + coverage
+- [x] Task: Write failing Vitest tests for shared Zod schemas (profile fields, ISO 4217 currency, money/percent formats, rate-rule rows, logo size/type); confirm RED
+- [x] Task: Prisma migration — `BusinessProfile` (1:1 User, cascade) + `RateRule` models; regenerate client *(implementation to make tests GREEN)*
+- [x] Task: Shared Zod schemas in `src/lib/` + currency constant list; GREEN + coverage
 - [ ] Task: Phase Verification & Checkpoint (Refer to workflow.md)
 
 ## Phase 2: Onboarding Gate
