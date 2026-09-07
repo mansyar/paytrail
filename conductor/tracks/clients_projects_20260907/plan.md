@@ -2,7 +2,7 @@
 
 Follows `conductor/workflow.md`. Logic-bearing code (Zod schemas, session-scoped queries/mutations, search, delete guard, ownership checks) is test-first; UI is verified via E2E + manual walkthrough. Each phase ends with a verification checkpoint per the workflow protocol.
 
-## Phase 1: Data Model & Validation Schemas
+## Phase 1: Data Model & Validation Schemas [checkpoint: 639ecbb]
 
 - [x] Task: Write failing Vitest tests for shared Zod schemas (client fields, ISO 4217 currency, length bounds, project rows); confirm RED — `341a5b9`
 - [x] Task: Prisma migration — `Client` + `Project` models (userId/clientId cascade FKs, per-client project name uniqueness); regenerate client
