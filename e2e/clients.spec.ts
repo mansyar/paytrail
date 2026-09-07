@@ -73,9 +73,7 @@ test("clients full CRUD: create → project rename/delete → edit → delete", 
 	await page.getByRole("option", { name: "EUR" }).click();
 	await createDialog.getByRole("button", { name: "Add client" }).click();
 	await expect(createDialog).toBeHidden();
-	await expect(
-		page.getByRole("link", { name: "Sunset Villa" }),
-	).toBeVisible();
+	await expect(page.getByRole("link", { name: "Sunset Villa" })).toBeVisible();
 	await expect(page.getByText("EUR")).toBeVisible();
 
 	// Client detail
@@ -101,9 +99,7 @@ test("clients full CRUD: create → project rename/delete → edit → delete", 
 	const duplicateDialog = page.getByRole("dialog");
 	await duplicateDialog.getByLabel("Name").fill("Weekly Clean");
 	await duplicateDialog.getByRole("button", { name: "Add project" }).click();
-	await expect(
-		duplicateDialog.getByText(/already exists/i),
-	).toBeVisible();
+	await expect(duplicateDialog.getByText(/already exists/i)).toBeVisible();
 	await duplicateDialog.getByRole("button", { name: "Cancel" }).click();
 
 	// Rename project
@@ -162,12 +158,8 @@ test("clients search filters by name", async ({ page }) => {
 	const search = page.getByLabel("Search clients");
 	await search.fill("sunset");
 	await expect(page).toHaveURL(/\/clients\?q=sunset$/, { timeout: 10_000 });
-	await expect(
-		page.getByRole("link", { name: "Sunset Villa" }),
-	).toBeVisible();
-	await expect(
-		page.getByRole("link", { name: "Zephyr Estates" }),
-	).toBeHidden();
+	await expect(page.getByRole("link", { name: "Sunset Villa" })).toBeVisible();
+	await expect(page.getByRole("link", { name: "Zephyr Estates" })).toBeHidden();
 
 	await search.fill("");
 	await expect(page).toHaveURL(/\/clients$/, { timeout: 10_000 });

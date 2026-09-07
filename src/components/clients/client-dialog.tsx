@@ -55,10 +55,12 @@ export function ClientDialog({ open, onClose, client }: ClientDialogProps) {
 	const onSubmit = async (values: ClientFormValues) => {
 		setFormError(null);
 		try {
-			if (client) {
-				await updateClientAction(client.id, values);
-			} else {
-				await createClientAction(values);
+			const result = client
+				? await updateClientAction(client.id, values)
+				: await createClientAction(values);
+			if (!result.ok) {
+				setFormError("This client no longer exists.");
+				return;
 			}
 			onClose();
 			router.refresh();

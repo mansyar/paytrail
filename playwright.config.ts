@@ -22,7 +22,10 @@ export default defineConfig({
 		},
 	],
 	webServer: {
-		command: "pnpm dev",
+		// Pin the port explicitly so next dev binds the port Playwright
+		// waits on (next would otherwise auto-fallback to a free port,
+		// e.g. grabbing 3000 while PLAYWRIGHT_PORT=3001 was expected).
+		command: `pnpm exec next dev -p ${port}`,
 		url: `http://localhost:${port}`,
 		reuseExistingServer: true,
 	},

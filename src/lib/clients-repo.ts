@@ -1,3 +1,4 @@
+import type { Client, Prisma } from "../generated/prisma/client";
 import type { ClientInput } from "./clients";
 import { prisma } from "./db";
 
@@ -15,6 +16,10 @@ export type DeleteClientResult =
 			invoiceCount?: number;
 	  };
 
+export type ClientWithProjectCount = Prisma.ClientGetPayload<{
+	include: { _count: { select: { projects: true } } };
+}>;
+
 /**
  * Counts invoices attached to a client. The Invoices track will replace
  * this stub with a real `prisma.invoice.count` query once the model exists.
@@ -23,13 +28,19 @@ async function countInvoicesByClient(_clientId: string): Promise<number> {
 	return 0;
 }
 
-export async function createClient(userId: string, input: ClientInput) {
+export async function createClient(
+	userId: string,
+	input: ClientInput,
+): Promise<Client> {
 	return prisma.client.create({
 		data: { ...input, userId },
 	});
 }
 
-export async function listClients(userId: string, q?: string) {
+export async function listClients(
+	userId: string,
+	q?: string,
+): Promise<ClientWithProjectCount[]> {
 	return prisma.client.findMany({
 		where: {
 			userId,
@@ -47,7 +58,10 @@ export async function listClients(userId: string, q?: string) {
 	});
 }
 
-export async function getClient(userId: string, id: string) {
+export async function getClient(
+	userId: string,
+	id: string,
+): Promise<Client | null> {
 	return prisma.client.findFirst({
 		where: { id, userId },
 	});
@@ -57,7 +71,7 @@ export async function updateClient(
 	userId: string,
 	id: string,
 	input: ClientInput,
-) {
+): Promise<Client | null> {
 	const existing = await prisma.client.findFirst({
 		where: { id, userId },
 		select: { id: true },

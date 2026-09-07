@@ -28,10 +28,14 @@ Follows `conductor/workflow.md`. Logic-bearing code (Zod schemas, session-scoped
 - [x] Task: `/clients/[id]` detail page - client info card, Edit dialog, Delete with inline blocked-reason alert
 - [x] Task: Projects section - add/rename/delete projects under the client
 - [x] Task: Mobile 390px pass
-- [ ] Task: Phase Verification & Checkpoint (Refer to workflow.md)
+- [x] Task: Phase Verification & Checkpoint (Refer to workflow.md)
 
 ## Phase 5: E2E & Review Gate [checkpoint: d77ec8a]
 
 - [x] Task: Playwright E2E — full CRUD: create client → add project → edit → deletion-guard visible → delete project → delete client; mobile viewport spot-check
 - [x] Task: Full local review gate (Biome, `tsc --noEmit`, `vitest run --coverage`, `pnpm build`) + self-review against product-guidelines
 - [x] Task: Phase Verification & Checkpoint (Refer to workflow.md)
+
+## Phase: Review Fixes
+
+- [~] Task: Apply review suggestions

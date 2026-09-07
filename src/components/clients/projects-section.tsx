@@ -41,7 +41,11 @@ export function ProjectsSection({ clientId, projects }: ProjectsSectionProps) {
 		setIsDeleting(true);
 		setDeleteError(null);
 		try {
-			await deleteProjectAction(clientId, deleting.id);
+			const result = await deleteProjectAction(clientId, deleting.id);
+			if (!result.ok) {
+				setDeleteError("This project no longer exists.");
+				return;
+			}
 			setDeleting(null);
 			router.refresh();
 		} catch {

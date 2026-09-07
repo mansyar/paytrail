@@ -57,7 +57,9 @@ export function ProjectDialog({
 				: await createProjectAction(clientId, values);
 			if (!result.ok) {
 				setFormError(
-					"A project with this name already exists for this client.",
+					result.reason === "DUPLICATE_PROJECT_NAME"
+						? "A project with this name already exists for this client."
+						: "This project no longer exists.",
 				);
 				return;
 			}
