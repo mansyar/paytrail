@@ -2,7 +2,7 @@
 
 Follows `conductor/workflow.md`. The engine is logic-bearing domain code (rate-table matching is explicitly listed in workflow §Testing Requirements), so every phase is test-first. No UI → no E2E; verification is unit tests + coverage + the local review gate.
 
-## Phase 1: Red — Failing Tests
+## Phase 1: Red — Failing Tests `[checkpoint: 22e01a7]`
 
 - [x] Task: Write failing Vitest tests for `priceTasks` matching semantics — case-insensitive substring (trimmed input, case-folded keyword + text); confirm RED `[task: ae4360b]`
 - [x] Task: Write failing Vitest tests for tie-breaking — longest keyword wins; equal length → ascending `sortOrder`; stable fallback to rule order; confirm RED `[task: 17b73e5]`
