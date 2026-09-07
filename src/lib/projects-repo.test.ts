@@ -1,13 +1,13 @@
 import { afterAll, afterEach, describe, expect, it } from "vitest";
 import { auth } from "./auth";
+import { createClient } from "./clients-repo";
+import { prisma } from "./db";
 import {
 	createProject,
 	deleteProject,
 	listProjects,
 	updateProject,
 } from "./projects-repo";
-import { prisma } from "./db";
-import { createClient } from "./clients-repo";
 
 const createdUserIds: string[] = [];
 
@@ -100,6 +100,31 @@ describe("project repo — session-scoped CRUD", () => {
 		await expect(
 			updateProject(userId, otherClient.id, project.id, { name: "Misfiled" }),
 		).rejects.toThrow();
+	});
+
+	it("updateProject rejects renaming to an existing sibling name", async () => {
+		const userId = await createTestUser();
+		const client = await createClient(userId, { name: "Dup2" });
+		await createProject(userId, client.id, { name: "Taken" });
+		const project = await createProject(userId, client.id, {
+			name: "Original",
+		});
+
+		await expect(
+			updateProject(userId, client.id, project.id, { name: "Taken" }),
+		).rejects.toMatchObject({ code: "DUPLICATE_PROJECT_NAME" });
+	});
+
+	it("updateProject and deleteProject refuse unknown project ids", async () => {
+		const userId = await createTestUser();
+		const client = await createClient(userId, { name: "Owner2" });
+
+		await expect(
+			updateProject(userId, client.id, "missing-id", { name: "X" }),
+		).rejects.toThrow("Project not found for this client");
+		await expect(
+			deleteProject(userId, client.id, "missing-id"),
+		).rejects.toThrow("Project not found for this client");
 	});
 
 	it("deleteProject removes for the owner and refuses cross-user access", async () => {

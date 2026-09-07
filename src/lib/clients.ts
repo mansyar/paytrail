@@ -22,5 +22,12 @@ export const projectSchema = z.object({
 	description: z.string().max(2000).optional(),
 });
 
-export type ClientInput = z.infer<typeof clientSchema>;
-export type ProjectInput = z.infer<typeof projectSchema>;
+export const clientSearchSchema = z
+	.string()
+	.trim()
+	.max(100)
+	.optional()
+	.transform((q) => (q === "" ? undefined : q));
+
+export type ClientInput = z.input<typeof clientSchema>;
+export type ProjectInput = z.input<typeof projectSchema>;

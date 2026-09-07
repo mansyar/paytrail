@@ -58,7 +58,10 @@ describe("client repo — session-scoped CRUD", () => {
 		await createClient(otherUserId, { name: "Not Mine Ltd" });
 
 		const clients = await listClients(userId);
-		expect(clients.map((c) => c.name)).toEqual(["Alpha Homes", "Zephyr Estates"]);
+		expect(clients.map((c) => c.name)).toEqual([
+			"Alpha Homes",
+			"Zephyr Estates",
+		]);
 	});
 
 	it("getClient only resolves clients owned by the session user", async () => {
@@ -84,7 +87,9 @@ describe("client repo — session-scoped CRUD", () => {
 		expect(updated?.name).toBe("After");
 		expect(updated?.currencyCode).toBe("GBP");
 
-		expect(await updateClient(otherUserId, client.id, { name: "Hacked" })).toBeNull();
+		expect(
+			await updateClient(otherUserId, client.id, { name: "Hacked" }),
+		).toBeNull();
 	});
 
 	it("deleteClient removes the client for the owner and not for other users", async () => {
@@ -92,7 +97,9 @@ describe("client repo — session-scoped CRUD", () => {
 		const otherUserId = await createTestUser();
 		const client = await createClient(userId, { name: "Doomed" });
 
-		expect(await deleteClient(otherUserId, client.id).then((r) => r.ok)).toBe(false);
+		expect(await deleteClient(otherUserId, client.id).then((r) => r.ok)).toBe(
+			false,
+		);
 		expect(await getClient(userId, client.id)).not.toBeNull();
 
 		const result = await deleteClient(userId, client.id);
@@ -105,7 +112,10 @@ describe("client repo — search", () => {
 	it("listClients filters by ?q= contains on name and email, case-insensitive", async () => {
 		const userId = await createTestUser();
 		await createClient(userId, { name: "Sunset Villa Cleaning" });
-		await createClient(userId, { name: "Alpha Homes", email: "ops@alphahomes.com" });
+		await createClient(userId, {
+			name: "Alpha Homes",
+			email: "ops@alphahomes.com",
+		});
 		await createClient(userId, { name: "Beachside Co" });
 
 		const byName = await listClients(userId, "villa");
@@ -131,7 +141,11 @@ describe("client repo — deletion guard", () => {
 		const client = await createClient(userId, { name: "Has Invoices" });
 
 		const result = await deleteClient(userId, client.id, async () => 3);
-		expect(result).toEqual({ ok: false, reason: "INVOICES_ATTACHED", invoiceCount: 3 });
+		expect(result).toEqual({
+			ok: false,
+			reason: "INVOICES_ATTACHED",
+			invoiceCount: 3,
+		});
 		expect(await getClient(userId, client.id)).not.toBeNull();
 	});
 });
