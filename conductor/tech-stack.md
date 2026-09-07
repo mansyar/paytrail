@@ -18,7 +18,7 @@
 |---|---|---|
 | Component library | MUI **v9** + Emotion | Customized light theme, per product guidelines. **Deviation note (2026-09-07):** spec planned v7; `pnpm add @mui/material` resolves to v9 (9.4.0) as current stable — documented per workflow principle #2. Includes `@mui/material-nextjs` for App Router cache provider |
 | Icons | MUI Icons | |
-| Forms | React Hook Form + Zod | Zod for client + server validation |
+| Forms | React Hook Form + Zod | Zod for client + server validation. **Decision note (2026-09-07):** shared schemas are split into a transform-free *input* schema (used by forms via `zodResolver`) and a transforming *output* schema (re-validated server-side in every server action), so RHF field types match what users type while the server still owns validation |
 
 ## Auth
 
