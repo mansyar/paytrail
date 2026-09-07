@@ -4,7 +4,7 @@ Follows `conductor/workflow.md`. Logic-bearing code (Zod schemas, session-scoped
 
 ## Phase 1: Data Model & Validation Schemas
 
-- [ ] Task: Write failing Vitest tests for shared Zod schemas (client fields, ISO 4217 currency, length bounds, project rows); confirm RED
+- [~] Task: Write failing Vitest tests for shared Zod schemas (client fields, ISO 4217 currency, length bounds, project rows); confirm RED
 - [ ] Task: Prisma migration — `Client` + `Project` models (userId/clientId cascade FKs, per-client project name uniqueness); regenerate client
 - [ ] Task: Shared Zod schemas in `src/lib/` + ISO 4217 constant list; GREEN + coverage
 - [ ] Task: Phase Verification & Checkpoint (Refer to workflow.md)
