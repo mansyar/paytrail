@@ -1,1 +1,9 @@
-{"id": "clients_projects_20260907", "title": "Clients & Projects CRUD", "type": "Feature", "status": "complete", "created": "2026-09-07T00:00:00Z", "updated": "2026-09-07T00:00:00Z", "branch": "feat/clients-projects"}
+{
+	"id": "clients_projects_20260907",
+	"title": "Clients & Projects CRUD",
+	"type": "Feature",
+	"status": "complete",
+	"created": "2026-09-07T00:00:00Z",
+	"updated": "2026-09-07T00:00:00Z",
+	"branch": "feat/clients-projects"
+}

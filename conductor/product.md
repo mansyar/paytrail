@@ -18,7 +18,7 @@ PayTrail lets a solo freelancer send a professional invoice in **under 2 minutes
 ## v1 Scope (Core Loop)
 
 - **Auth:** email/password only, real bcrypt verification, JWT sessions. Password reset deferred to Phase 2 (no server email in v1).
-- **Onboarding:** full business profile — name, address, email, tax ID, logo, home currency, default tax rate, payment terms, initial rate-table keyword rules.
+- **Onboarding:** full business profile - name, address, email, tax ID, logo (≤500 KB PNG/JPEG, stored in Postgres), home currency (fixed ISO 4217 list), default tax rate, payment terms, initial rate-table keyword rules. Onboarding is a **mandatory gate**: the dashboard is unreachable until the profile is complete; everything is editable later via a `/profile` page.
 - **Clients & Projects:** full CRUD, scoped to the owning user.
 - **Invoices:** line items typed manually or imported; per-invoice tax rate + flat discount; per-user yearly numbering (INV-YYYY-0001) with manual override (auto-counter skips collisions); **locked once sent** — corrections cancel + reissue.
 - **Invoice status:** DRAFT → SENT → PAID / OVERDUE. Overdue computed on read (dueDate < today && unpaid) — no scheduler in v1.
