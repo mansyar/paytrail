@@ -1,0 +1,41 @@
+# Plan — Clients & Projects CRUD (clients_projects_20260907)
+
+Follows `conductor/workflow.md`. Logic-bearing code (Zod schemas, session-scoped queries/mutations, search, delete guard, ownership checks) is test-first; UI is verified via E2E + manual walkthrough. Each phase ends with a verification checkpoint per the workflow protocol.
+
+## Phase 1: Data Model & Validation Schemas [checkpoint: 639ecbb]
+
+- [x] Task: Write failing Vitest tests for shared Zod schemas (client fields, ISO 4217 currency, length bounds, project rows); confirm RED — `341a5b9`
+- [x] Task: Prisma migration — `Client` + `Project` models (userId/clientId cascade FKs, per-client project name uniqueness); regenerate client
+- [x] Task: Shared Zod schemas in `src/lib/` + ISO 4217 constant list; GREEN + coverage — `7f566d0`
+- [x] Task: Phase Verification & Checkpoint (Refer to workflow.md)
+
+## Phase 2: Server Actions & Queries [checkpoint: 8925f54]
+
+- [x] Task: Write failing Vitest tests for session-scoped client CRUD server actions; confirm RED — `705c5a6`
+- [x] Task: Write failing Vitest tests for `?q=` search filtering (Zod-validated param, contains on name+email, alphabetical sort) and invoice-attached delete guard (typed error + counts); confirm RED — `6098d0b`
+- [x] Task: Write failing Vitest tests for project CRUD server actions with client-ownership verification; confirm RED
+- [x] Task: Implement server actions/queries; GREEN + coverage
+- [x] Task: Phase Verification & Checkpoint (Refer to workflow.md)
+
+## Phase 3: Clients UI [checkpoint: 13b6f01]
+
+- [x] Task: `/clients` list page — MUI table (name, email, currency, project count), debounced URL-param search, Add/Edit dialogs, empty state; dashboard link
+- [x] Task: Mobile 390px pass (touch targets ≥44px, no horizontal scroll)
+- [x] Task: Phase Verification & Checkpoint (Refer to workflow.md)
+
+## Phase 4: Client Detail & Projects [checkpoint: 20b5f0c]
+
+- [x] Task: `/clients/[id]` detail page - client info card, Edit dialog, Delete with inline blocked-reason alert
+- [x] Task: Projects section - add/rename/delete projects under the client
+- [x] Task: Mobile 390px pass
+- [x] Task: Phase Verification & Checkpoint (Refer to workflow.md)
+
+## Phase 5: E2E & Review Gate [checkpoint: d77ec8a]
+
+- [x] Task: Playwright E2E — full CRUD: create client → add project → edit → deletion-guard visible → delete project → delete client; mobile viewport spot-check
+- [x] Task: Full local review gate (Biome, `tsc --noEmit`, `vitest run --coverage`, `pnpm build`) + self-review against product-guidelines
+- [x] Task: Phase Verification & Checkpoint (Refer to workflow.md)
+
+## Phase: Review Fixes
+
+- [x] Task: Apply review suggestions — d64f137
