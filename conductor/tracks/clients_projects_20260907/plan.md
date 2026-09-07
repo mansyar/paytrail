@@ -30,8 +30,8 @@ Follows `conductor/workflow.md`. Logic-bearing code (Zod schemas, session-scoped
 - [x] Task: Mobile 390px pass
 - [ ] Task: Phase Verification & Checkpoint (Refer to workflow.md)
 
-## Phase 5: E2E & Review Gate
+## Phase 5: E2E & Review Gate [checkpoint: d77ec8a]
 
-- [ ] Task: Playwright E2E — full CRUD: create client → add project → edit → deletion-guard visible → delete project → delete client; mobile viewport spot-check
-- [ ] Task: Full local review gate (Biome, `tsc --noEmit`, `vitest run --coverage`, `pnpm build`) + self-review against product-guidelines
-- [ ] Task: Phase Verification & Checkpoint (Refer to workflow.md)
+- [x] Task: Playwright E2E — full CRUD: create client → add project → edit → deletion-guard visible → delete project → delete client; mobile viewport spot-check
+- [x] Task: Full local review gate (Biome, `tsc --noEmit`, `vitest run --coverage`, `pnpm build`) + self-review against product-guidelines
+- [x] Task: Phase Verification & Checkpoint (Refer to workflow.md)
