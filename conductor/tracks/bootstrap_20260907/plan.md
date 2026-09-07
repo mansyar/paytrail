@@ -40,7 +40,7 @@ Follows `conductor/workflow.md`. Logic-bearing-code test-first where applicable;
 
 ## Phase 6: Repository & Ship
 
-- [ ] Task: Create public GitHub repo `paytrail`, add remote, push branch, open PR, CI green, merge to main
-- [ ] Task: Tag `v0.1.0` → verify GHCR image published + Coolify deploy triggered
+- [x] Task: Create public GitHub repo `paytrail`, add remote, push branch, open PR, CI green, merge to main *(PR #1, merged at 2c8cfdc)*
+- [x] Task: Tag `v0.1.0` → verify GHCR image published + Coolify deploy triggered *(v0.1.0 build failed on missing public/ — fixed via PR #2; released as v0.1.1: image public, migrate deploy ran, webhook 200)*
 - [ ] Task: Track review (conductor-review) before close
-- [x] Task: Phase Verification & Checkpoint (Refer to workflow.md) *(c0e8508)*
+- [ ] Task: Phase Verification & Checkpoint (Refer to workflow.md)
