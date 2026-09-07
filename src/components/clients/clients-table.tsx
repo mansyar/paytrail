@@ -100,6 +100,7 @@ export function ClientsTable({ clients }: ClientsTableProps) {
 				</Table>
 			</TableContainer>
 			<ClientDialog
+				key={editing?.id ?? "create"}
 				client={
 					editing
 						? {
