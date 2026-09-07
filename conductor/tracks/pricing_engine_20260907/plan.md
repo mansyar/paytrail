@@ -16,7 +16,8 @@ Follows `conductor/workflow.md`. The engine is logic-bearing domain code (rate-t
 - [x] Task: Coverage check — `pnpm vitest run --coverage` >80% on the new module `[task: 9f21a62]`
 - [ ] Task: Phase Verification & Checkpoint (Refer to workflow.md)
 
-## Phase 3: Review Gate
+## Phase 3: Review Gate `[checkpoint: 1f80a51]`
 
 - [x] Task: Full local review gate (`pnpm biome check --write .`, `pnpm exec tsc --noEmit`, `pnpm vitest run --coverage`, `pnpm build`) + self-review against `product-guidelines.md` `[task: 1f80a51]`
-- [ ] Task: Phase Verification & Checkpoint (Refer to workflow.md)
+- [x] Task: Phase Verification & Checkpoint (Refer to workflow.md)
+
