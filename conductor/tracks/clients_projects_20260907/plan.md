@@ -9,17 +9,17 @@ Follows `conductor/workflow.md`. Logic-bearing code (Zod schemas, session-scoped
 - [x] Task: Shared Zod schemas in `src/lib/` + ISO 4217 constant list; GREEN + coverage — `7f566d0`
 - [x] Task: Phase Verification & Checkpoint (Refer to workflow.md)
 
-## Phase 2: Server Actions & Queries
+## Phase 2: Server Actions & Queries [checkpoint: 8925f54]
 
 - [x] Task: Write failing Vitest tests for session-scoped client CRUD server actions; confirm RED — `705c5a6`
 - [x] Task: Write failing Vitest tests for `?q=` search filtering (Zod-validated param, contains on name+email, alphabetical sort) and invoice-attached delete guard (typed error + counts); confirm RED — `6098d0b`
 - [x] Task: Write failing Vitest tests for project CRUD server actions with client-ownership verification; confirm RED
 - [x] Task: Implement server actions/queries; GREEN + coverage
-- [ ] Task: Phase Verification & Checkpoint (Refer to workflow.md)
+- [x] Task: Phase Verification & Checkpoint (Refer to workflow.md)
 
 ## Phase 3: Clients UI
 
-- [ ] Task: `/clients` list page — MUI table (name, email, currency, project count), debounced URL-param search, Add/Edit dialogs, empty state; dashboard link
+- [~] Task: `/clients` list page — MUI table (name, email, currency, project count), debounced URL-param search, Add/Edit dialogs, empty state; dashboard link
 - [ ] Task: Mobile 390px pass (touch targets ≥44px, no horizontal scroll)
 - [ ] Task: Phase Verification & Checkpoint (Refer to workflow.md)
 
