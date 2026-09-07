@@ -2,6 +2,7 @@ import { afterAll, beforeEach, describe, expect, it } from "vitest";
 import { prisma } from "./db";
 import {
 	addRateRule,
+	assertUniqueKeyword,
 	deleteRateRule,
 	reorderRateRules,
 	updateProfileSettings,
@@ -169,6 +170,39 @@ describe("rate-rules mutations", () => {
 				where: { userId: OTHER_ID },
 			});
 			await expect(deleteRateRule(OWNER_ID, rule.id)).rejects.toThrow();
+		});
+	});
+
+	describe("assertUniqueKeyword", () => {
+		it("resolves when the keyword is unique for the user", async () => {
+			await seedRules(OWNER_ID, [{ keyword: "standard clean", rateMinor: 4550 }]);
+			await expect(
+				assertUniqueKeyword(OWNER_ID, "hot tub"),
+			).resolves.toBeUndefined();
+		});
+
+		it("rejects on a case-insensitive duplicate", async () => {
+			await seedRules(OWNER_ID, [{ keyword: "Standard Clean", rateMinor: 4550 }]);
+			await expect(
+				assertUniqueKeyword(OWNER_ID, "standard clean"),
+			).rejects.toThrow();
+		});
+
+		it("allows the rule's own keyword when excluded", async () => {
+			await seedRules(OWNER_ID, [{ keyword: "linen change", rateMinor: 750 }]);
+			const rule = await prisma.rateRule.findFirstOrThrow({
+				where: { userId: OWNER_ID },
+			});
+			await expect(
+				assertUniqueKeyword(OWNER_ID, "LINEN CHANGE", rule.id),
+			).resolves.toBeUndefined();
+		});
+
+		it("ignores rules owned by other users", async () => {
+			await seedRules(OTHER_ID, [{ keyword: "shared name", rateMinor: 100 }]);
+			await expect(
+				assertUniqueKeyword(OWNER_ID, "shared name"),
+			).resolves.toBeUndefined();
 		});
 	});
 
