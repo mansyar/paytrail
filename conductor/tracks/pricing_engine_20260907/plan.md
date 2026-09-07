@@ -11,7 +11,7 @@ Follows `conductor/workflow.md`. The engine is logic-bearing domain code (rate-t
 
 ## Phase 2: Green — Implement Engine
 
-- [ ] Task: Implement `src/lib/pricing-engine.ts` — pure module, discriminated-union `PricingResult`, longest-then-sortOrder matcher, single pass; no DB/Next/React imports; GREEN
+- [x] Task: Implement `src/lib/pricing-engine.ts` — pure module, discriminated-union `PricingResult`, longest-then-sortOrder matcher, single pass; no DB/Next/React imports; GREEN `[task: 9f21a62]`
 - [ ] Task: Refactor pass for clarity; rerun tests
 - [ ] Task: Coverage check — `pnpm vitest run --coverage` >80% on the new module
 - [ ] Task: Phase Verification & Checkpoint (Refer to workflow.md)
