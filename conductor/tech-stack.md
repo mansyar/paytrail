@@ -67,3 +67,7 @@
 |---|---|---|
 | Unit/integration | Vitest | Server logic (pricing, numbering, FX snapshot) |
 | E2E | Playwright | Critical path: dashboard → invoice sent <2 min |
+
+Testing notes (dated):
+- **2026-09-07 (clients_projects_20260907):** `use server` action wrappers (`src/lib/*-actions.ts`) are excluded from the Vitest coverage gate — they contain no business logic (session resolution + delegation); their behavior is verified by the Playwright E2E suite. Coverage threshold (>80% on `src/lib/`) applies to the remaining logic-bearing modules.
+- **2026-09-07 (clients_projects_20260907):** Playwright `baseURL`/`webServer.url` are overridable via `PLAYWRIGHT_PORT` so parallel worktrees can run E2E without colliding with another checkout's dev server; default port 3000 unchanged (CI unaffected).
