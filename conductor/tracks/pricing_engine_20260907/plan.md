@@ -5,8 +5,8 @@ Follows `conductor/workflow.md`. The engine is logic-bearing domain code (rate-t
 ## Phase 1: Red — Failing Tests
 
 - [x] Task: Write failing Vitest tests for `priceTasks` matching semantics — case-insensitive substring (trimmed input, case-folded keyword + text); confirm RED `[task: ae4360b]`
-- [ ] Task: Write failing Vitest tests for tie-breaking — longest keyword wins; equal length → ascending `sortOrder`; stable fallback to rule order; confirm RED
-- [ ] Task: Write failing Vitest tests for unmatched + edge cases — empty task list, empty rule list, whitespace-only task, overlapping keywords ("hot tub" vs "tub"), special characters, no input mutation; confirm RED
+- [x] Task: Write failing Vitest tests for tie-breaking — longest keyword wins; equal length → ascending `sortOrder`; stable fallback to rule order; confirm RED `[task: 17b73e5]`
+- [~] Task: Write failing Vitest tests for unmatched + edge cases — empty task list, empty rule list, whitespace-only task, overlapping keywords ("hot tub" vs "tub"), special characters, no input mutation; confirm RED
 - [ ] Task: Phase Verification & Checkpoint (Refer to workflow.md)
 
 ## Phase 2: Green — Implement Engine
