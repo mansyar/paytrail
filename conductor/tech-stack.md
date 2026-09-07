@@ -31,7 +31,7 @@
 | Layer | Technology | Version | Notes |
 |---|---|---|---|
 | Database | PostgreSQL | 17 | Self-hosted in Docker (Coolify) |
-| ORM | Prisma | **7.x** | GA and fully supported. (Prisma 8 just GA'd 2026-08-28 — days old — recommend 7.x for a solo project; revisit before v1 ships. Better Auth's Prisma adapter targets Prisma 7 schema output.) |
+| ORM | Prisma | **7.x** | GA and fully supported. (Prisma 8 just GA'd 2026-08-28 — days old — recommend 7.x for a solo project; revisit before v1 ships. Better Auth's Prisma adapter targets Prisma 7 schema output.) Prisma 7 **requires a SQL driver adapter**: install `@prisma/adapter-pg` and construct `new PrismaClient({ adapter: new PrismaPg({ connectionString }) })` (see `src/lib/db.ts`). After schema edits, run `pnpm exec prisma generate` explicitly — `migrate dev` may not regenerate the client. |
 
 ## Invoice / Documents
 
