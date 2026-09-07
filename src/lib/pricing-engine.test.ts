@@ -65,3 +65,45 @@ describe("priceTasks matching semantics", () => {
 		expect(results[0]).toMatchObject({ status: "matched", ruleId: "r2" });
 	});
 });
+
+describe("priceTasks tie-breaking", () => {
+	it("prefers the longest matching keyword over a shorter one", () => {
+		const rules: RateRuleInput[] = [
+			{ id: "short", keyword: "tub", rateMinor: 1000, sortOrder: 0 },
+			{ id: "long", keyword: "hot tub", rateMinor: 2000, sortOrder: 1 },
+		];
+		const results = priceTasks(["Clean the hot tub"], rules);
+		expect(results[0]).toMatchObject({
+			status: "matched",
+			ruleId: "long",
+			rateMinor: 2000,
+			matchedKeyword: "hot tub",
+		});
+	});
+
+	it("breaks equal-length ties by ascending sortOrder", () => {
+		const rules: RateRuleInput[] = [
+			{ id: "later", keyword: "clean", rateMinor: 300, sortOrder: 5 },
+			{ id: "earlier", keyword: "clean", rateMinor: 150, sortOrder: 2 },
+		];
+		const results = priceTasks(["Standard clean"], rules);
+		expect(results[0]).toMatchObject({
+			status: "matched",
+			ruleId: "earlier",
+			rateMinor: 150,
+		});
+	});
+
+	it("falls back to stable rule order when keyword and sortOrder tie", () => {
+		const rules: RateRuleInput[] = [
+			{ id: "first", keyword: "clean", rateMinor: 100, sortOrder: 1 },
+			{ id: "second", keyword: "clean", rateMinor: 200, sortOrder: 1 },
+		];
+		const results = priceTasks(["Deep clean"], rules);
+		expect(results[0]).toMatchObject({
+			status: "matched",
+			ruleId: "first",
+			rateMinor: 100,
+		});
+	});
+});
