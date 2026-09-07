@@ -1,7 +1,7 @@
 # Plan: Rate Table Management UI
 
 ## Phase 1: Duplicate-guard logic + server actions (TDD)
-- [~] Task: Write failing tests for unique-keyword guard (Red Phase)
+- [x] Task: Write failing tests for unique-keyword guard (Red Phase) — `917d650`
   - Add cases covering `assertUniqueKeyword(userId, keyword, excludeId?)`: rejects case-insensitive duplicates for the user, allows the rule's own keyword on update, allows unique keywords, errors on conflict.
 - [ ] Task: Implement unique-keyword guard in `src/lib/rate-rules.ts` (Green Phase)
   - Case-insensitive duplicate check scoped to `userId`, excluding the rule being edited.
