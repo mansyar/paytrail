@@ -30,6 +30,10 @@ Follows `conductor/workflow.md`. Logic-bearing code (Zod schemas, validation, ga
 
 ## Phase 5: E2E & Review Gate [checkpoint: 84d3fa3]
 
-- [x] Task: Playwright E2E — signup → onboarding (all 3 steps) → dashboard → profile edit → logout; mobile viewport spot-check *(84d3fa3)*
+- [x] Task: Playwright E2E - signup / onboarding (all 3 steps) / dashboard / profile edit / logout; mobile viewport spot-check *(84d3fa3)*
 - [x] Task: Full local review gate (Biome, `tsc --noEmit`, `vitest run --coverage`, `pnpm build`) + self-review against product-guidelines
 - [x] Task: Phase Verification & Checkpoint (Refer to workflow.md)
+
+## Phase: Review Fixes
+
+- [x] Task: Apply review suggestions *(d54638e)*
