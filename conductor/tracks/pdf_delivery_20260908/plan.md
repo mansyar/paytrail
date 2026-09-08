@@ -16,13 +16,14 @@ Branch: `feat/pdf-generation-delivery`
 
 ## Phase 2: PDF route handler (logic-bearing — TDD)
 
-- [ ] Task: Write failing tests for the route's logic (Red)
-	- [ ] `src/lib/invoice-pdf-query.test.ts` (or extend invoices-repo tests): user-scoped fetch of the full aggregate (invoice + items + client + project + business profile); 404 on other user's invoice / missing; 400 on malformed id; filename derived from `invoiceNumber`
-	- [ ] Run tests — confirm failures
-- [ ] Task: Implement (Green)
-	- [ ] Aggregate query in invoices-repo (session user id filter)
-	- [ ] `src/app/api/invoices/[id]/pdf/route.ts`: session guard → 401; Zod param validation → 400; scope check → 404; stream PDF with `Content-Type`, `Content-Disposition: attachment; filename="<number>.pdf"`, `Cache-Control: no-store`
-- [ ] Task: Refactor + verify Zod on external input, ownership guard per quality gates
+- [x] Task: Write failing tests for the route's logic (Red) — sha cb14628
+	- [x] `src/lib/invoice-pdf-mapper.test.ts`: user-scoped fetch of the full aggregate (invoice + items + client + project + business profile); 404 on other user's invoice / missing; 400 on malformed id; filename derived from `invoiceNumber` — mapper logic unit-tested (5 tests); route auth/scope exercised by E2E in Phase 4
+	- [x] Run tests — confirm failures
+- [x] Task: Implement (Green) — sha cb14628
+	- [x] Aggregate mapping in `invoice-pdf-mapper.ts` (pure; session-scoped fetch via `getInvoice` + profile/project in route)
+	- [x] `src/app/api/invoices/[id]/pdf/route.ts`: session guard → 401; `invoiceIdSchema` Zod validation → 400; scope check → 404; response with `Content-Type: application/pdf`, `Content-Disposition: attachment; filename="<number>.pdf"`, `Cache-Control: no-store`
+	- [x] `next.config.ts`: `serverExternalPackages: ["pdfkit"]` (runtime AFM font files)
+- [x] Task: Refactor + verify Zod on external input, ownership guard per quality gates — sha cb14628
 - [ ] Task: Commit `feat(invoices): authenticated pdf download route` + git note + plan update
 - [ ] Task: Phase Verification & Checkpoint (Refer to workflow.md)
 
