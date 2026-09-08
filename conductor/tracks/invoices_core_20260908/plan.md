@@ -73,7 +73,7 @@ Testing discipline: red→green for every logic-bearing task; coverage >80% on n
   - [ ] Implement `"use server"` wrappers: session resolution + delegation to repo,
         Zod re-validation on every action (no business logic — excluded from coverage)
   - [ ] `pnpm vitest run` full suite green
-- [ ] Task: Local review gate & docs
+- [x] Task: Local review gate & docs [0c75ada]
   - [ ] `pnpm biome check --write .`, `pnpm exec tsc --noEmit`, `pnpm vitest run`,
         `pnpm build` — all pass
   - [ ] Self-review diff vs. spec: user-scoped queries, Zod on all inputs, minor-unit
