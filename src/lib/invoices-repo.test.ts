@@ -161,6 +161,7 @@ describe("updateInvoice — DRAFT only", () => {
 			discountMinor: 500,
 			items: [{ description: "Revised work", amountMinor: 20000 }],
 		});
+		if (!updated) throw new Error("expected update to succeed");
 
 		expect(updated.currencyCode).toBe("EUR");
 		expect(updated.discountMinor).toBe(500);
