@@ -18,7 +18,8 @@ export interface InvoicePdfProfile {
 }
 
 export interface InvoicePdfAggregate {
-	invoice: Invoice;
+	/** getInvoice returns the invoice with its client relation included. */
+	invoice: Invoice & { client: { name: string } };
 	items: InvoiceItem[];
 	projectName: string | null;
 }
@@ -31,7 +32,8 @@ export function buildInvoicePdfInput(
 	return {
 		invoiceNumber: invoice.invoiceNumber,
 		// Stored status, not the derived one: OVERDUE invoices render clean;
-		// only DRAFT gets the watermark.
+		// only DRAFT gets the watermark. Safe cast: Prisma's InvoiceStatus
+		// enum matches InvoicePdfStatus 1:1.
 		status: invoice.status as InvoicePdfStatus,
 		issueDate: invoice.issueDate,
 		dueDate: invoice.dueDate,
@@ -49,7 +51,7 @@ export function buildInvoicePdfInput(
 		businessTaxId: profile?.taxId ?? null,
 		businessContactEmail: profile?.contactEmail ?? null,
 		logoBase64: profile?.logo ?? null,
-		clientName: "",
+		clientName: invoice.client.name,
 		projectName,
 		paymentTerms: profile?.paymentTerms ?? null,
 	};

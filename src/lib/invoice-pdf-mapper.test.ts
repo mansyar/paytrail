@@ -27,11 +27,14 @@ function makeItem(overrides: Partial<InvoiceItem> = {}): InvoiceItem {
 	};
 }
 
-function makeInvoice(overrides: Partial<Invoice> = {}): Invoice {
+function makeInvoice(
+	overrides: Partial<Invoice & { client: { name: string } }> = {},
+): Invoice & { client: { name: string } } {
 	return {
 		id: "inv-1",
 		userId: "user-1",
 		clientId: "client-1",
+		client: { name: "Breezeway Properties" },
 		projectId: null,
 		invoiceNumber: "INV-2026-0001",
 		status: "DRAFT",
@@ -81,7 +84,7 @@ describe("buildInvoicePdfInput", () => {
 			businessTaxId: "TAX-123456",
 			businessContactEmail: "billing@acme.example",
 			logoBase64: "data:image/png;base64,aGVsbG8=",
-			clientName: "",
+			clientName: "Breezeway Properties",
 			projectName: "September turnover",
 			paymentTerms: "net_14",
 			items: [{ description: "Clean - Beach House", amountMinor: 12000 }],
