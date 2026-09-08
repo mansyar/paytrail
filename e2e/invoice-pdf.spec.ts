@@ -117,7 +117,6 @@ async function createDraftInvoice(page: Page): Promise<string> {
 
 test("invoice detail shows PDF actions; download route serves a PDF with correct headers", async ({
 	page,
-	playwright,
 }) => {
 	test.setTimeout(120_000);
 	const email = uniqueEmail();
@@ -126,12 +125,8 @@ test("invoice detail shows PDF actions; download route serves a PDF with correct
 	const invoiceId = await createDraftInvoice(page);
 
 	// Both actions are visible for a DRAFT invoice (and stay visible once SENT)
-	await expect(
-		page.getByRole("link", { name: "Download PDF" }),
-	).toBeVisible();
-	await expect(
-		page.getByRole("link", { name: "Email client" }),
-	).toBeVisible();
+	await expect(page.getByRole("link", { name: "Download PDF" })).toBeVisible();
+	await expect(page.getByRole("link", { name: "Email client" })).toBeVisible();
 	// The email action is a prefilled mailto: draft
 	const mailHref = await page
 		.getByRole("link", { name: "Email client" })
