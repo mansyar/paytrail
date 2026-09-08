@@ -67,7 +67,7 @@ Testing discipline: red→green for every logic-bearing task; coverage >80% on n
   - [ ] Tests pass (green)
 - [x] Task: Phase Verification & Checkpoint (refer to workflow.md) [663b72f]
 
-## Phase 4 - Server Actions & Local Review Gate
+## Phase 4 - Server Actions & Local Review Gate [checkpoint: 0c75ada]
 
 - [x] Task: Server action wrappers `src/lib/invoices-actions.ts` [1fc8930]
   - [ ] Implement `"use server"` wrappers: session resolution + delegation to repo,
@@ -80,4 +80,4 @@ Testing discipline: red→green for every logic-bearing task; coverage >80% on n
         math, lock semantics
   - [ ] Manual verification plan drafted (data-layer track — verified via tests +
         future E2E; note dev-server smoke via a temporary script if useful)
-- [ ] Task: Phase Verification & Checkpoint (refer to workflow.md)
+- [x] Task: Phase Verification & Checkpoint (refer to workflow.md) [0c75ada]
