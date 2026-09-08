@@ -41,7 +41,7 @@ Branch: `feat/fx-snapshot-multi-currency` · Spec: [spec.md](./spec.md)
 
 ## Phase 4: E2E + closeout
 
-- [ ] Task: Playwright E2E for non-home-currency invoice
+- [~] Task: Playwright E2E for non-home-currency invoice
   - [ ] Test: create + send invoice for non-home-currency client; assert home-currency equivalent visible on list/detail; run `pnpm test:e2e`
 - [ ] Task: Final review gate + docs
   - [ ] Self-review diff vs product-guidelines.md + code_styleguides (session scoping, Zod, mobile 390px)
