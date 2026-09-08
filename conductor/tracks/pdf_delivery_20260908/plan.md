@@ -11,7 +11,7 @@ Branch: `feat/pdf-generation-delivery`
 	- [x] `src/lib/invoice-pdf.ts`: pdfkit A4 template — header (logo decode/skip, business name/address/tax ID), meta block (number, issue/due date, status), client block, items table with page-flow + repeated column header, totals block on final page (subtotal, tax, discount, total), payment terms
 	- [x] ISO-code-prefix currency formatting via `formatMoneyIso` helper; integer minor units throughout; totals math reused from `computeInvoiceTotals`
 - [x] Task: Refactor + coverage check — 97% stmts / 100% funcs / 97% lines on `invoice-pdf.ts`; 115 unit tests pass — sha 5a296ef
-- [ ] Task: Commit `feat(invoices): pdf renderer module with watermark and ISO currency totals` + git note + plan update
+- [x] Task: Commit `feat(invoices): pdf renderer module with watermark and ISO currency totals` + git note + plan update — sha 5a296ef / 351f501
 - [ ] Task: Phase Verification & Checkpoint (Refer to workflow.md)
 
 ## Phase 2: PDF route handler (logic-bearing — TDD)
@@ -24,18 +24,18 @@ Branch: `feat/pdf-generation-delivery`
 	- [x] `src/app/api/invoices/[id]/pdf/route.ts`: session guard → 401; `invoiceIdSchema` Zod validation → 400; scope check → 404; response with `Content-Type: application/pdf`, `Content-Disposition: attachment; filename="<number>.pdf"`, `Cache-Control: no-store`
 	- [x] `next.config.ts`: `serverExternalPackages: ["pdfkit"]` (runtime AFM font files)
 - [x] Task: Refactor + verify Zod on external input, ownership guard per quality gates — sha cb14628
-- [ ] Task: Commit `feat(invoices): authenticated pdf download route` + git note + plan update
+- [x] Task: Commit `feat(invoices): authenticated pdf download route` + git note + plan update — sha cb14628 / befa45d
 - [ ] Task: Phase Verification & Checkpoint (Refer to workflow.md)
 
 ## Phase 3: Detail page actions (UI + small logic)
 
-- [ ] Task: mailto builder — logic-bearing (Red → Green)
-	- [ ] Failing tests: `src/lib/invoice-email-draft.test.ts` — subject `Invoice <number> from <businessName>`, concise body (greeting, number, total, due date, payment terms), URL-encoded mailto href
-	- [ ] Implement `src/lib/invoice-email-draft.ts`
-- [ ] Task: Detail page UI (manual + E2E verified)
-	- [ ] "Download PDF" button (anchor to route, all statuses, both draft & read-only views)
-	- [ ] "Email client" button (mailto: href); terse labels, ≥44px targets, 390px-safe
-- [ ] Task: Commit `feat(invoices): download and email actions on invoice detail` + git note + plan update
+- [x] Task: mailto builder — logic-bearing (Red → Green) — sha d15b204
+	- [x] Failing tests: `src/lib/invoice-email-draft.test.ts` — subject `Invoice <number> from <businessName>`, concise body (greeting, number, total, due date, payment terms), URL-encoded mailto href
+	- [x] Implement `src/lib/invoice-email-draft.ts`
+- [x] Task: Detail page UI (manual + E2E verified) — sha d15b204
+	- [x] "Download PDF" button (anchor to route, all statuses, both draft & read-only views)
+	- [x] "Email client" button (mailto: href); terse labels, ≥44px targets, 390px-safe
+- [x] Task: Commit `feat(invoices): download and email actions on invoice detail` + git note + plan update — sha d15b204
 - [ ] Task: Phase Verification & Checkpoint (Refer to workflow.md)
 
 ## Phase 4: E2E, docs, and pre-push gate

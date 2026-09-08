@@ -1,6 +1,6 @@
-import { describe, expect, it } from "vitest";
 import { extractText, getDocumentProxy } from "unpdf";
-import { renderInvoicePdf, type InvoicePdfInput } from "./invoice-pdf";
+import { describe, expect, it } from "vitest";
+import { type InvoicePdfInput, renderInvoicePdf } from "./invoice-pdf";
 
 // 1x1 transparent PNG, valid base64 — enough for pdfkit to embed.
 const TINY_PNG_BASE64 =

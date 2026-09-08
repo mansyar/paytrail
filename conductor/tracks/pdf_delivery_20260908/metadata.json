@@ -1,1 +1,10 @@
-{"trackId": "pdf_delivery_20260908", "type": "feature", "status": "new", "branch": "feat/pdf-generation-delivery", "title": "PDF Generation & Delivery - pdfkit renderer (A4, DRAFT watermark, ISO-code totals), authenticated download route, mailto email draft", "createdAt": "2026-09-08", "spec": "./spec.md", "plan": "./plan.md"}
+{
+	"trackId": "pdf_delivery_20260908",
+	"type": "feature",
+	"status": "new",
+	"branch": "feat/pdf-generation-delivery",
+	"title": "PDF Generation & Delivery - pdfkit renderer (A4, DRAFT watermark, ISO-code totals), authenticated download route, mailto email draft",
+	"createdAt": "2026-09-08",
+	"spec": "./spec.md",
+	"plan": "./plan.md"
+}

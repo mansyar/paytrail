@@ -129,7 +129,10 @@ export async function renderInvoicePdf(
 	headerBottom = doc.y;
 
 	doc.fontSize(20).fillColor(DARK).font("Helvetica-Bold");
-	doc.text("INVOICE", 340, PAGE_MARGIN, { width: contentRight - 340, align: "right" });
+	doc.text("INVOICE", 340, PAGE_MARGIN, {
+		width: contentRight - 340,
+		align: "right",
+	});
 	doc.fontSize(11);
 	doc.text(input.invoiceNumber, 340, doc.y + 4, {
 		width: contentRight - 340,
@@ -184,12 +187,19 @@ export async function renderInvoicePdf(
 			drawTableHeader();
 		}
 		doc.font("Helvetica").fontSize(10).fillColor(DARK);
-		doc.text(item.description, PAGE_MARGIN, y, { width: 330, lineBreak: false });
+		doc.text(item.description, PAGE_MARGIN, y, {
+			width: 330,
+			lineBreak: false,
+		});
 		doc.text(
 			formatMoneyIso(item.amountMinor, input.currencyCode),
 			amountColumnLeft,
 			y,
-			{ width: contentRight - amountColumnLeft, align: "right", lineBreak: false },
+			{
+				width: contentRight - amountColumnLeft,
+				align: "right",
+				lineBreak: false,
+			},
 		);
 		y += rowHeight;
 	}
@@ -206,10 +216,16 @@ export async function renderInvoicePdf(
 		y = PAGE_MARGIN;
 	}
 	y += 12;
-	doc.moveTo(totalsLabelX, y).lineTo(contentRight, y).strokeColor(GRAY).lineWidth(0.5).stroke();
+	doc
+		.moveTo(totalsLabelX, y)
+		.lineTo(contentRight, y)
+		.strokeColor(GRAY)
+		.lineWidth(0.5)
+		.stroke();
 	y += 8;
 	const totalsRow = (label: string, value: string, bold = false) => {
-		doc.font(bold ? "Helvetica-Bold" : "Helvetica")
+		doc
+			.font(bold ? "Helvetica-Bold" : "Helvetica")
 			.fontSize(bold ? 12 : 10)
 			.fillColor(bold ? DARK : GRAY);
 		doc.text(label, totalsLabelX, y);
@@ -219,7 +235,10 @@ export async function renderInvoicePdf(
 		});
 		y += bold ? 20 : 16;
 	};
-	totalsRow("Subtotal", formatMoneyIso(totals.subtotalMinor, input.currencyCode));
+	totalsRow(
+		"Subtotal",
+		formatMoneyIso(totals.subtotalMinor, input.currencyCode),
+	);
 	totalsRow(
 		`Tax (${input.taxRate}%)`,
 		formatMoneyIso(totals.taxMinor, input.currencyCode),

@@ -1,5 +1,9 @@
 import { describe, expect, it } from "vitest";
-import { Prisma, type Invoice, type InvoiceItem } from "../generated/prisma/client";
+import {
+	type Invoice,
+	type InvoiceItem,
+	Prisma,
+} from "../generated/prisma/client";
 import { buildInvoicePdfInput } from "./invoice-pdf-mapper";
 
 type TestProfile = {
@@ -53,7 +57,7 @@ const profile: TestProfile = {
 	contactEmail: "billing@acme.example",
 	taxId: "TAX-123456",
 	logo: "data:image/png;base64,aGVsbG8=",
-	paymentTerms: "NET_14",
+	paymentTerms: "net_14",
 };
 
 describe("buildInvoicePdfInput", () => {
@@ -79,7 +83,7 @@ describe("buildInvoicePdfInput", () => {
 			logoBase64: "data:image/png;base64,aGVsbG8=",
 			clientName: "",
 			projectName: "September turnover",
-			paymentTerms: "NET_14",
+			paymentTerms: "net_14",
 			items: [{ description: "Clean - Beach House", amountMinor: 12000 }],
 		});
 	});
@@ -108,7 +112,11 @@ describe("buildInvoicePdfInput", () => {
 		// A SENT invoice past its due date derives to OVERDUE, but the PDF
 		// watermark only applies to DRAFT.
 		const input = buildInvoicePdfInput(
-			{ invoice: makeInvoice({ status: "SENT" }), items: [], projectName: null },
+			{
+				invoice: makeInvoice({ status: "SENT" }),
+				items: [],
+				projectName: null,
+			},
 			profile,
 		);
 		expect(input.status).toBe("SENT");
