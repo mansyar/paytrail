@@ -56,8 +56,8 @@
 
 | Layer | Technology | Notes |
 |---|---|---|
-| CI | GitHub Actions | Biome lint + `tsc --noEmit` + build + tests on every PR |
-| Release | GitHub Actions (tag-triggered) | Docker build → GHCR (**public image**) → Prisma migrate → Coolify deploy API (bearer token) |
+| CI | GitHub Actions | Biome lint + `tsc --noEmit` + unit/integration tests + build + Playwright E2E on every PR; concurrency-canceled |
+| Release | GitHub Actions (tag-triggered) | Gated on `verify` job (lint + typecheck + unit) → Docker build (GHA layer cache) → GHCR (**public image**) → Prisma migrate → Coolify deploy API (bearer token) |
 | Hosting | VPS + Coolify + Docker Compose | Custom domain, Postgres in Docker |
 | Registry | GHCR | Public images |
 
@@ -71,3 +71,6 @@
 Testing notes (dated):
 - **2026-09-07 (clients_projects_20260907):** `use server` action wrappers (`src/lib/*-actions.ts`) are excluded from the Vitest coverage gate — they contain no business logic (session resolution + delegation); their behavior is verified by the Playwright E2E suite. Coverage threshold (>80% on `src/lib/`) applies to the remaining logic-bearing modules.
 - **2026-09-07 (clients_projects_20260907):** Playwright `baseURL`/`webServer.url` are overridable via `PLAYWRIGHT_PORT` so parallel worktrees can run E2E without colliding with another checkout's dev server; default port 3000 unchanged (CI unaffected).
+- **2026-09-08 (test_stabilization_20260908):** Vitest split into `unit` and `integration` projects (`pnpm test` = unit only — passes with Postgres stopped; `pnpm test:integration`; `pnpm test:all`). Integration suites skip with a marker when `DATABASE_URL` is absent and run with `fileParallelism: false` (shared instance, fixed fixtures). `pnpm db:setup` starts the Docker DB and applies migrations.
+- **2026-09-08 (test_stabilization_20260908):** Playwright webServer defaults to the production build (`next build && next start`) locally and in CI — `next dev`'s on-demand compilation caused hydration-race flakes. `PLAYWRIGHT_DEV=1` opts back into the dev server. Failures retain traces + screenshots. Playwright sets `E2E=1` on the app server process so better-auth's production rate limiter is disabled for the suite only (real deployments keep it on).
+- **2026-09-08 (test_stabilization_20260908):** Removed unused component-testing deps (`@testing-library/react`, `@testing-library/dom`, `jsdom`, `@vitejs/plugin-react`) until component tests are actually written; reintroduce with a Vitest setup file when needed.
