@@ -16,10 +16,10 @@ Branch: `feat/invoice-builder-ui`
 - [ ] Task: Phase Verification & Checkpoint (Refer to workflow.md)
 
 ### Phase 3 — Builder Form & Live Preview
-- [ ] Task: Builder routes + RHF form with Zod input schemas; prefills (client→currency read-only, project scope, profile tax rate, dates, auto number via counter preview)
-- [ ] Task: Inline line-items editor (add/remove/reorder, description + amount via minor-units helper, rate-rule auto-suggest cue)
-- [ ] Task: Adjustments block (tax %, flat discount) + live totals bar via `invoice-totals`
-- [ ] Task: Live preview panel (desktop side panel / mobile collapsible) rendering profile, logo, client, items, totals
+- [x] Task: Builder routes `dcc0926` + RHF form with Zod input schemas; prefills (client→currency read-only, project scope, profile tax rate, dates, auto number via counter preview)
+- [x] Task: Inline line-items editor `dcc0926` (add/remove/reorder, description + amount via minor-units helper, rate-rule auto-suggest cue)
+- [x] Task: Adjustments block `dcc0926` (tax %, flat discount) + live totals bar via `invoice-totals`
+- [x] Task: Live preview panel `dcc0926` (desktop side panel / mobile collapsible) rendering profile, logo, client, items, totals
 - [ ] Task: Phase Verification & Checkpoint (Refer to workflow.md)
 
 ### Phase 4 — Lifecycle Actions & Read-Only Mode
