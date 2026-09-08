@@ -37,7 +37,7 @@
 
 | Layer | Technology | Notes |
 |---|---|---|
-| PDF generation | pdfkit | Server-side, fixed template, logo embed |
+| PDF generation | pdfkit | Server-side, fixed template, logo embed. **Implementation notes (2026-09-08, pdf_delivery_20260908):** pdfkit loads its AFM font metric files from disk at runtime — it MUST stay in `serverExternalPackages` in `next.config.ts` or text rendering breaks in bundled server output. Dev deps: `unpdf` (extracts text from generated PDFs in unit tests) and `@types/pdfkit`. Currency in PDFs uses ISO-code prefix (`USD 1,234.50`) via the renderer's own `formatMoneyIso`, distinct from UI symbol formatting in `money-format.ts` |
 
 ## AI Ingestion (Screenshot → Line Items)
 
