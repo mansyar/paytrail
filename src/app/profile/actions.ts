@@ -5,6 +5,7 @@ import { z } from "zod";
 import { auth } from "@/lib/auth";
 import {
 	addRateRule,
+	assertUniqueKeyword,
 	deleteRateRule,
 	reorderRateRules,
 	updateProfileSettings,
@@ -57,6 +58,14 @@ export async function updateRateRuleAction(
 	const parsed = rateRuleSchema.safeParse(rule);
 	if (!parsed.success) {
 		return { ok: false, message: "Invalid rate rule." };
+	}
+	try {
+		await assertUniqueKeyword(userId, parsed.data.keyword, ruleId);
+	} catch {
+		return {
+			ok: false,
+			message: "A rate rule with this keyword already exists.",
+		};
 	}
 	try {
 		await updateRateRule(userId, ruleId, parsed.data);
