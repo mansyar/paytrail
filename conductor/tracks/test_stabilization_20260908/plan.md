@@ -19,17 +19,17 @@
 
 ## Phase 2: Vitest Hygiene
 
-- [ ] Task: Split unit/integration Vitest projects
-	- [ ] Convert `vitest.config.mts` to `test.projects`: `unit` (node env, no DB), `integration` (node env, DB suites, `fileParallelism: false`)
-	- [ ] Add `describe.skipIf(!process.env.DATABASE_URL)` to DB suites
-	- [ ] Replace hardcoded `TEST_USER_ID` in `onboarding.test.ts` with unique-id helper
-	- [ ] Scripts: `test` → unit, `test:integration` → integration, `test:all` → both
-	- [ ] Verify: `pnpm test` passes with Postgres stopped
-- [ ] Task: Config + dependency cleanup
-	- [ ] Remove no-op `resolve.tsconfigPaths` from `vitest.config.mts`
-	- [ ] Remove `@testing-library/react`, `@testing-library/dom`, `jsdom` deps + jsdom config
-	- [ ] Add `"db:setup"` script
-	- [ ] Verify: `pnpm install`, lint, typecheck, full suites green
+- [x] Task: Split unit/integration Vitest projects (aad6cee)
+	- [x] Convert `vitest.config.mts` to `test.projects`: `unit` (node env, no DB), `integration` (node env, DB suites, `fileParallelism: false`)
+	- [x] Add `describe.skipIf(!process.env.DATABASE_URL)` to DB suites
+	- [x] Replace hardcoded `TEST_USER_ID` in `onboarding.test.ts` with unique-id helper
+	- [x] Scripts: `test` → unit, `test:integration` → integration, `test:all` → both
+	- [x] Verify: `pnpm test` passes with Postgres stopped
+- [x] Task: Config + dependency cleanup (24895d3)
+	- [x] Remove no-op `resolve.tsconfigPaths` from `vitest.config.mts`
+	- [x] Remove `@testing-library/react`, `@testing-library/dom`, `jsdom` deps + jsdom config
+	- [x] Add `"db:setup"` script
+	- [x] Verify: `pnpm install`, lint, typecheck, full suites green
 - [ ] Task: Phase Verification & Checkpoint (Refer to workflow.md)
 
 ## Phase 3: CI / Release Hardening
