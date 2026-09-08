@@ -1,36 +1,12 @@
-import { expect, type Page, test } from "@playwright/test";
+import { expect, test } from "@playwright/test";
+import { signUpToProfile, uniqueEmail } from "./utils";
 
-const uniqueEmail = () =>
-	`rate-${Date.now()}-${Math.floor(Math.random() * 1000)}@example.com`;
-const password = "correct-horse-battery";
 const CURRENCY = "USD"; // onboarding step 2 default
-
-async function signUpToProfile(page: Page, email: string) {
-	await page.goto("/signup");
-	await page.getByLabel("Name").fill("Rate E2E");
-	await page.getByLabel("Email").fill(email);
-	await page.getByLabel("Password").fill(password);
-	await page.getByRole("button", { name: "Create account" }).click();
-	await expect(page).toHaveURL(/\/onboarding$/);
-
-	// Step 1: business identity
-	await page.getByLabel("Business name").fill("Rate E2E Co");
-	await page.getByRole("button", { name: "Next", exact: true }).click();
-	await page.waitForTimeout(600);
-	// Step 2: financial defaults (currency USD, zero rules is valid)
-	await page.getByRole("button", { name: "Next", exact: true }).click();
-	await page.waitForTimeout(600);
-	await page.getByRole("button", { name: "Finish setup" }).click();
-	await expect(page).toHaveURL(/\/dashboard$/);
-
-	await page.getByRole("link", { name: "Profile" }).click();
-	await expect(page).toHaveURL(/\/profile$/);
-}
 
 test("rate rules lifecycle: add, duplicate rejected, edit, reorder, delete", async ({
 	page,
 }) => {
-	const email = uniqueEmail();
+	const email = uniqueEmail("rate");
 	await signUpToProfile(page, email);
 
 	const keywords = () => page.getByLabel("Keyword");
@@ -51,7 +27,6 @@ test("rate rules lifecycle: add, duplicate rejected, edit, reorder, delete", asy
 	// before the later field's state has flushed. Pacing lets the async
 	// server action settle before the next interaction.
 	await rates().nth(0).blur();
-	await page.waitForTimeout(500);
 
 	// Add rule 2; a case-insensitive duplicate keyword is rejected inline.
 	await page.getByRole("button", { name: "Add rate rule" }).click();
@@ -59,7 +34,6 @@ test("rate rules lifecycle: add, duplicate rejected, edit, reorder, delete", asy
 	await keywords().nth(1).fill("STANDARD CLEAN");
 	await rates().nth(1).fill("20");
 	await rates().nth(1).blur();
-	await page.waitForTimeout(500);
 	await expect(
 		page.getByText("A rate rule with this keyword already exists."),
 	).toBeVisible();
@@ -68,7 +42,6 @@ test("rate rules lifecycle: add, duplicate rejected, edit, reorder, delete", asy
 	await keywords().nth(1).fill("linen change");
 	await rates().nth(1).fill("7.50");
 	await rates().nth(1).blur();
-	await page.waitForTimeout(500);
 	await expect(
 		page.getByText("A rate rule with this keyword already exists."),
 	).toBeHidden();
@@ -96,7 +69,7 @@ test("rate rules lifecycle: add, duplicate rejected, edit, reorder, delete", asy
 });
 
 test("delete confirmation auto-cancels after the timeout", async ({ page }) => {
-	const email = uniqueEmail();
+	const email = uniqueEmail("rate");
 	await signUpToProfile(page, email);
 
 	await page.getByRole("button", { name: "Add rate rule" }).click();

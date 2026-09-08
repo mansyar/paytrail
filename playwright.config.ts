@@ -1,8 +1,16 @@
 import { defineConfig, devices } from "@playwright/test";
 
 // Port is overridable so parallel worktrees can run E2E without
-// colliding with another checkout's dev server (defaults unchanged).
+// colliding with another checkout's server (defaults unchanged).
 const port = process.env.PLAYWRIGHT_PORT ?? "3000";
+
+// Production build by default: `next dev` compiles routes on demand, which
+// (a) introduces hydration races and (b) blows through test timeouts on
+// first navigation. Opt back into dev with PLAYWRIGHT_DEV=1 for debugging.
+const useDevServer = process.env.PLAYWRIGHT_DEV === "1";
+const command = useDevServer
+	? `pnpm exec next dev -p ${port}`
+	: `pnpm exec next build && pnpm exec next start -p ${port}`;
 
 export default defineConfig({
 	testDir: "./e2e",
@@ -10,6 +18,9 @@ export default defineConfig({
 	reporter: "html",
 	use: {
 		baseURL: `http://localhost:${port}`,
+		// Post-mortem context for failures, at near-zero cost for passes.
+		trace: "retain-on-failure",
+		screenshot: "only-on-failure",
 	},
 	projects: [
 		{
@@ -22,11 +33,21 @@ export default defineConfig({
 		},
 	],
 	webServer: {
-		// Pin the port explicitly so next dev binds the port Playwright
-		// waits on (next would otherwise auto-fallback to a free port,
-		// e.g. grabbing 3000 while PLAYWRIGHT_PORT=3001 was expected).
-		command: `pnpm exec next dev -p ${port}`,
+		command,
 		url: `http://localhost:${port}`,
+		// First prod build can take a while.
+		timeout: 300_000,
+		// Flag the server as E2E-driven (skips better-auth rate limiting).
+		env: {
+			...process.env,
+			E2E: "1",
+			// CI has no .env: give the test server throwaway auth config
+			// unless real values are already present in the environment.
+			BETTER_AUTH_SECRET:
+				process.env.BETTER_AUTH_SECRET ?? "e2e-only-not-a-production-secret",
+			BETTER_AUTH_URL:
+				process.env.BETTER_AUTH_URL ?? `http://localhost:${port}`,
+		},
 		reuseExistingServer: true,
 	},
 });

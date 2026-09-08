@@ -196,8 +196,11 @@ pnpm exec prisma generate                      # regenerate client (src/generate
 
 ```bash
 pnpm dev                                       # dev server (Turbopack) at localhost:3000
-pnpm vitest                                    # unit/integration tests in watch mode
-pnpm exec playwright test                      # E2E suite
+pnpm db:setup                                  # start Docker Postgres + apply migrations (needed for integration/E2E)
+pnpm test                                      # unit tests (no DB required)
+pnpm test:watch                                # unit tests in watch mode
+pnpm test:integration                          # DB integration suites (sequential, shared instance)
+pnpm test:e2e                                  # E2E suite (production build; PLAYWRIGHT_DEV=1 for dev server)
 pnpm exec playwright test --project=chromium --viewport "390,844"   # mobile viewport pass
 ```
 
@@ -206,7 +209,7 @@ pnpm exec playwright test --project=chromium --viewport "390,844"   # mobile vie
 ```bash
 pnpm biome check --write .                     # lint + format (auto-fix)
 pnpm exec tsc --noEmit                         # typecheck (native CLI; next build also type-checks via project-local tsc)
-pnpm vitest run                                # full test suite, single run
+pnpm test:all                                  # unit + integration suites, single run
 pnpm build                                     # production build check
 ```
 

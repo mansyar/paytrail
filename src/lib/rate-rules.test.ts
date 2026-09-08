@@ -33,7 +33,7 @@ async function seedRules(
 	}
 }
 
-describe("rate-rules mutations", () => {
+describe.skipIf(!process.env.DATABASE_URL)("rate-rules mutations", () => {
 	afterAll(async () => {
 		await prisma.user.delete({ where: { id: OWNER_ID } }).catch(() => {});
 		await prisma.user.delete({ where: { id: OTHER_ID } }).catch(() => {});

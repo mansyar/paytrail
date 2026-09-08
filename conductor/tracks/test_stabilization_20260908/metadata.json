@@ -1,0 +1,9 @@
+{
+	"trackId": "test_stabilization_20260908",
+	"type": "chore",
+	"title": "Test Suite Stabilization & CI Hardening",
+	"status": "new",
+	"branch": "test/stabilize-suites",
+	"createdAt": "2026-09-08",
+	"updatedAt": "2026-09-08"
+}
