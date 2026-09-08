@@ -29,7 +29,7 @@ Branch: `feat/invoice-builder-ui`
 - [ ] Task: Phase Verification & Checkpoint (Refer to workflow.md)
 
 ### Phase 5 — Dashboard Link, E2E & Review Gate
-- [ ] Task: Dashboard Invoices link with outstanding count badge
-- [ ] Task: Playwright critical-path E2E (dashboard → new invoice → suggestion → send) within <2 min / <10 clicks; desktop + mobile viewport checks
+- [x] Task: Dashboard Invoices link with outstanding count badge ``7351382``
+- [x] Task: Playwright critical-path E2E (dashboard → new invoice → suggestion → send) within <2 min / <10 clicks; desktop + mobile viewport checks ``7351382``
 - [ ] Task: Local review gate & docs (Biome, `tsc --noEmit`, coverage >80% on new lib modules, self-review vs guidelines)
 - [ ] Task: Phase Verification & Checkpoint (Refer to workflow.md)
