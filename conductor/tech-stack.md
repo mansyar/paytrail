@@ -44,7 +44,7 @@
 | Layer | Technology | Notes |
 |---|---|---|
 | Vision AI | Hosted vision API (provider decided at planning: Claude / GPT / Gemini) | Parse Breezeway screenshots → structured task data; **review gate before apply** |
-| FX rates | Live FX API (free tier; provider at planning) | Server-side cached; manual fallback rate |
+| FX rates | open.er-api.com (`GET /v6/latest/{home}`, free, no API key, 160+ currencies) | Server-side cached in Postgres (`FxRate`, lazy 24h TTL, full payload per base). **Deviation note (2026-09-08, fx_multi_currency_20260908):** provider was "at planning"; chosen over key-based alternatives for zero-config solo-freelancer use. Snapshot per invoice frozen at send; per-invoice manual override when provider unavailable; no scheduled refresh (lazy on read) |
 
 ## Code Quality
 

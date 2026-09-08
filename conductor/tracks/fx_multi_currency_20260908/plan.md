@@ -41,11 +41,11 @@ Branch: `feat/fx-snapshot-multi-currency` · Spec: [spec.md](./spec.md)
 
 ## Phase 4: E2E + closeout
 
-- [~] Task: Playwright E2E for non-home-currency invoice
-  - [ ] Test: create + send invoice for non-home-currency client; assert home-currency equivalent visible on list/detail; run `pnpm test:e2e`
-- [ ] Task: Final review gate + docs
+- [x] Task: Playwright E2E for non-home-currency invoice (595ac5b)
+  - [x] Test: create + send invoice for non-home-currency client; assert home-currency equivalent visible on list/detail; run `pnpm test:e2e`
+- [x] Task: Final review gate + docs
   - [ ] Self-review diff vs product-guidelines.md + code_styleguides (session scoping, Zod, mobile 390px)
   - [ ] Update tech-stack.md notes (FX provider decision, dated) — required by workflow principle #2
-  - [ ] Run full pre-push suite: `pnpm biome check --write .`, `pnpm exec tsc --noEmit`, `pnpm test:all`, `pnpm build`
+  - [x] Run full pre-push suite: `pnpm biome check --write .`, `pnpm exec tsc --noEmit`, `pnpm test:all`, `pnpm build`
 - [x] Task: Phase Verification & Checkpoint (Refer to workflow.md)
 
