@@ -28,6 +28,25 @@ export async function updateProfileSettings(
 	});
 }
 
+/** Reject when the user already has a rule with the same keyword (case-insensitive). */
+export async function assertUniqueKeyword(
+	userId: string,
+	keyword: string,
+	excludeId?: string,
+): Promise<void> {
+	const duplicate = await prisma.rateRule.findFirst({
+		where: {
+			userId,
+			keyword: { equals: keyword.trim(), mode: "insensitive" },
+			...(excludeId ? { id: { not: excludeId } } : {}),
+		},
+		select: { id: true },
+	});
+	if (duplicate) {
+		throw new Error("A rate rule with this keyword already exists");
+	}
+}
+
 /** Append a rate rule after the user's existing ones. */
 export async function addRateRule(
 	userId: string,
