@@ -48,6 +48,24 @@ const optionalInvoiceNumber = z.preprocess(
 
 export const invoiceIdSchema = z.string().trim().min(1);
 
+/**
+ * Manual FX override (fx_multi_currency_20260908). A rate is a positive
+ * decimal; 8 decimals covers the 1/16250-class rates the Decimal(18,8)
+ * column stores, and the upper bound keeps typos ("1.5" -> "15000") sane.
+ */
+const fxRateString = z
+	.string()
+	.regex(
+		/^\d{1,7}(\.\d{1,8})?$/,
+		"Must be a positive number with at most 8 decimals",
+	)
+	.refine((v) => Number(v) > 0, "Must be greater than 0")
+	.refine((v) => Number(v) <= 1_000_000, "Must be at most 1,000,000");
+
+export const fxRateInputSchema = fxRateString;
+
+export const fxRateDataSchema = fxRateString.transform((v) => Number(v));
+
 const invoiceItemInputSchema = z.object({
 	description: z.string().trim().min(1).max(500),
 	amount: moneyString,

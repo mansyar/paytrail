@@ -23,7 +23,7 @@ import Stack from "@mui/material/Stack";
 import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
 import { useRouter } from "next/navigation";
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useFieldArray, useForm, useWatch } from "react-hook-form";
 import type { CreateInvoiceInput } from "@/lib/invoice-schemas";
 import { createInvoiceInputSchema } from "@/lib/invoice-schemas";
@@ -32,9 +32,10 @@ import {
 	createInvoiceAction,
 	markPaidInvoiceAction,
 	sendInvoiceAction,
+	setInvoiceFxRateAction,
 	updateInvoiceAction,
 } from "@/lib/invoices-actions";
-import { formatMoney } from "@/lib/money-format";
+import { formatFxRate, formatMoney } from "@/lib/money-format";
 import { minorToAmountString, parseAmountToMinor } from "@/lib/money-input";
 import type { RateSuggestion } from "@/lib/rate-suggestions";
 import { suggestRateForDescription } from "@/lib/rate-suggestions";
@@ -85,6 +86,8 @@ export interface BuilderInvoice {
 	taxRate: string;
 	discountMinor: number;
 	items: { description: string; amountMinor: number }[];
+	/** FX snapshot (fx_multi_currency_20260908): multiplier to the home currency. */
+	fxRate?: string | null;
 }
 
 export interface InvoiceBuilderProps {
@@ -95,6 +98,11 @@ export interface InvoiceBuilderProps {
 	nextInvoiceNumber: string;
 	/** Present in edit mode (existing invoice); absent on /invoices/new. */
 	invoice?: BuilderInvoice;
+	/**
+	 * Effective FX rate per client currency (fx_multi_currency_20260908),
+	 * resolved server-side at page render; null = no rate available.
+	 */
+	fxRates?: Record<string, string | null>;
 }
 
 const emptyItem = { description: "", amount: "" };
@@ -132,6 +140,7 @@ export function InvoiceBuilder({
 	profile,
 	nextInvoiceNumber,
 	invoice,
+	fxRates,
 }: InvoiceBuilderProps) {
 	const router = useRouter();
 	const mode = invoice ? "edit" : "create";
@@ -205,6 +214,54 @@ export function InvoiceBuilder({
 		(project) => project.clientId === (watched.clientId ?? ""),
 	);
 
+	// FX rate field (fx_multi_currency_20260908): prefilled with the effective
+	// rate, editable on drafts as a manual override. initialFxRate tracks the
+	// prefill so "touched" is a value comparison, not a focus flag.
+	const isForeignCurrency = currencyCode !== profile.currencyCode;
+	const effectiveRateFor = (currency: string): string =>
+		fxRates?.[currency] ?? "";
+	const [fxRateValue, setFxRateValue] = useState(() =>
+		invoice?.fxRate
+			? invoice.fxRate
+			: effectiveRateFor(invoice?.currencyCode ?? currencyCode),
+	);
+	const initialFxRate = useRef(fxRateValue);
+	// biome-ignore lint/correctness/useExhaustiveDependencies: prefill only when the selected currency changes
+	useEffect(() => {
+		if (isForeignCurrency) {
+			const prefill =
+				invoice && invoice.currencyCode === currencyCode && invoice.fxRate
+					? invoice.fxRate
+					: effectiveRateFor(currencyCode);
+			setFxRateValue(prefill);
+			initialFxRate.current = prefill;
+		}
+	}, [currencyCode]);
+	const fxRateTouched =
+		isForeignCurrency && fxRateValue !== initialFxRate.current;
+	const parsedFxRate = Number(fxRateValue);
+	const fxRateValid =
+		Boolean(fxRateValue) && Number.isFinite(parsedFxRate) && parsedFxRate > 0;
+
+	/**
+	 * Applies a manual FX override after a successful save (draft-only
+	 * server-side). Returns false when the save should stop before sending
+	 * or navigating so the user sees the error.
+	 */
+	const applyFxOverride = async (invoiceId: string): Promise<boolean> => {
+		if (!fxRateTouched || fxRateValue.trim() === "") return true;
+		const result = await setInvoiceFxRateAction(invoiceId, fxRateValue.trim());
+		if (!result.ok) {
+			setFormError(
+				result.issues?.[0]?.message ??
+					result.message ??
+					"Could not save the exchange rate.",
+			);
+			return false;
+		}
+		return true;
+	};
+
 	const totals = useMemo(() => {
 		const items = (watched.items ?? []).map((item) => ({
 			amountMinor: parseAmountToMinor(item?.amount ?? "") ?? 0,
@@ -257,6 +314,7 @@ export function InvoiceBuilder({
 		sendAfterSave.current = false;
 
 		if (mode === "edit" && invoice) {
+			const currencyChanged = invoice.currencyCode !== currencyCode;
 			const result = await updateInvoiceAction(invoice.id, {
 				issueDate: values.issueDate,
 				dueDate: values.dueDate,
@@ -270,6 +328,11 @@ export function InvoiceBuilder({
 					result.message ??
 						"Could not save the invoice. Please check the form.",
 				);
+				return;
+			}
+			// A currency change re-derives the snapshot server-side; a manual
+			// override only applies when the currency stayed put (spec FR4).
+			if (!currencyChanged && !(await applyFxOverride(invoice.id))) {
 				return;
 			}
 			if (shouldSend) {
@@ -301,6 +364,9 @@ export function InvoiceBuilder({
 			setFormError(
 				result.message ?? "Could not save the invoice. Please check the form.",
 			);
+			return;
+		}
+		if (!(await applyFxOverride(result.invoice.id))) {
 			return;
 		}
 		if (shouldSend) {
@@ -464,6 +530,27 @@ export function InvoiceBuilder({
 							slotProps={{ input: { readOnly: true } }}
 							value={currencyCode}
 						/>
+						{isForeignCurrency && (
+							<TextField
+								disabled={readonly}
+								error={Boolean(fxRateValue) && !fxRateValid}
+								fullWidth
+								helperText={
+									fxRateValue.trim() === ""
+										? "No rate available — enter one manually"
+										: `Used for the ≈ ${profile.currencyCode} equivalent`
+								}
+								label={`Exchange rate (1 ${currencyCode} ≈ ? ${profile.currencyCode})`}
+								onChange={(event) => setFxRateValue(event.target.value)}
+								slotProps={{
+									htmlInput: {
+										inputMode: "decimal",
+										placeholder: fxRates?.[currencyCode] ?? "0.00",
+									},
+								}}
+								value={fxRateValue}
+							/>
+						)}
 					</Stack>
 				</Paper>
 
@@ -662,6 +749,16 @@ export function InvoiceBuilder({
 									{formatMoney(totals.totalMinor, currencyCode)}
 								</Typography>
 							</Stack>
+							{isForeignCurrency && fxRateValid && (
+								<Stack direction="row" sx={{ justifyContent: "flex-end" }}>
+									{/* Display-only approximation (marked with a tilde): float math
+								is exact at these magnitudes and deterministic after round(); money
+								persistence stays integer minor units. */}
+									<Typography color="text.secondary" variant="caption">
+										{`≈ ${formatMoney(Math.round(totals.totalMinor * parsedFxRate), profile.currencyCode)} @ ${formatFxRate(fxRateValue)} ${profile.currencyCode}`}
+									</Typography>
+								</Stack>
+							)}
 						</Stack>
 						{readonly ? (
 							invoice?.status === "SENT" || invoice?.status === "OVERDUE" ? (
