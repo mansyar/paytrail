@@ -31,12 +31,12 @@ Branch: `feat/fx-snapshot-multi-currency` · Spec: [spec.md](./spec.md)
 
 ## Phase 3: UI wiring (no unit tests; manual + E2E verified)
 
-- [ ] Task: Invoice builder rate field + manual override
-  - [ ] Show effective rate (source-aware) when client currency ≠ home; editable field prefilled with effective rate on DRAFT invoices
-  - [ ] Wire save to `setInvoiceFxRate` action; inline error states for invalid input / missing rate prompt
-- [ ] Task: Home-currency equivalent display
-  - [ ] Invoice list + detail: `≈ {home total} @ {rate} {home}` when invoice currency ≠ home AND snapshot exists; nothing otherwise
-  - [ ] Reuse `money-format` helpers for home-currency formatting
+- [x] Task: Invoice builder rate field + manual override (e95404c)
+  - [x] Show effective rate (source-aware) when client currency ≠ home; editable field prefilled with effective rate on DRAFT invoices
+  - [x] Wire save to `setInvoiceFxRate` action; inline error states for invalid input / missing rate prompt
+- [x] Task: Home-currency equivalent display (e95404c)
+  - [x] Invoice list + detail: `≈ {home total} @ {rate} {home}` when invoice currency ≠ home AND snapshot exists; nothing otherwise
+  - [x] Reuse `money-format` helpers for home-currency formatting
 - [x] Task: Phase Verification & Checkpoint (Refer to workflow.md)
 
 ## Phase 4: E2E + closeout
