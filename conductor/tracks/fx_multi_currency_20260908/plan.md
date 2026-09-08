@@ -49,3 +49,11 @@ Branch: `feat/fx-snapshot-multi-currency` · Spec: [spec.md](./spec.md)
   - [x] Run full pre-push suite: `pnpm biome check --write .`, `pnpm exec tsc --noEmit`, `pnpm test:all`, `pnpm build`
 - [x] Task: Phase Verification & Checkpoint (Refer to workflow.md)
 
+
+## Phase: Review Fixes
+
+- [x] Task: Apply review suggestions (e5718cc)
+  - [x] Concurrent fxRates resolution on new/[id] pages (Promise.all instead of serial awaits)
+  - [x] Rethrow non-provider errors in getRate (FxProviderError-wrapped payload gaps still fall back) + regression test
+  - [x] INVALID_STATE reason for InvoiceValidationError in toErrorResult
+  - [x] Documented display-only float math on home-equivalent previews
