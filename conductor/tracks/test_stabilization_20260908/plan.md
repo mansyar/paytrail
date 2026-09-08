@@ -51,3 +51,6 @@
 - [x] Task: Final local review gate (`biome ci`, `tsc --noEmit`, `test:all`, `pnpm build`) + PR (074d929)
 	- [x] Push `test/stabilize-suites`, open PR, confirm all CI jobs (incl. E2E) green, merge
 - [x] Task: Phase Verification & Checkpoint (Refer to workflow.md)
+
+## Phase: Review Fixes
+- [x] Task: Apply review suggestions (9d8020a)
