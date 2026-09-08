@@ -1,0 +1,1 @@
+{"trackId": "invoices_ui_20260908", "type": "feature", "status": "new", "branch": "feat/invoice-builder-ui", "createdAt": "2026-09-08", "updatedAt": "2026-09-08", "title": "Invoice Builder UI", "summary": "/invoices status hub + mobile-first invoice builder with live preview, rate-rule price suggestions, send/lock flow, dashboard link, and critical-path E2E."}
