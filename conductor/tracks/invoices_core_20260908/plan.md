@@ -81,3 +81,7 @@ Testing discipline: red→green for every logic-bearing task; coverage >80% on n
   - [ ] Manual verification plan drafted (data-layer track — verified via tests +
         future E2E; note dev-server smoke via a temporary script if useful)
 - [x] Task: Phase Verification & Checkpoint (refer to workflow.md) [0c75ada]
+
+## Phase: Review Fixes
+
+- [x] Task: Apply review suggestions [d3c45bd]
