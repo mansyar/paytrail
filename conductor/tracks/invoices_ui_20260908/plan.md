@@ -22,7 +22,7 @@ Branch: `feat/invoice-builder-ui`
 - [x] Task: Live preview panel `dcc0926` (desktop side panel / mobile collapsible) rendering profile, logo, client, items, totals
 - [ ] Task: Phase Verification & Checkpoint (Refer to workflow.md)
 
-### Phase 4 — Lifecycle Actions & Read-Only Mode
+### Phase 4 - Lifecycle Actions & Read-Only Mode [checkpoint: 80fe2da]
 - [x] Task: Save draft (create/update) `c7eadac` with server re-validation; collision error surfaced inline
 - [x] Task: Send action with lock `c7eadac`-explaining confirmation; transition to read-only view
 - [x] Task: Read-only mode for SENT/PAID `c7eadac` (disabled inputs, status badge, Mark Paid for SENT); delete DRAFT
