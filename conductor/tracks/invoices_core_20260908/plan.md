@@ -36,7 +36,7 @@ Testing discipline: red→green for every logic-bearing task; coverage >80% on n
   - [ ] Confirm tests fail (red)
   - [ ] Implement `src/lib/invoice-totals.ts`
   - [ ] Tests pass (green)
-- [~] Task: Zod input/output schemas for invoice CRUD
+- [x] Task: Zod input/output schemas for invoice CRUD [c22fa84]
   - [ ] Write failing tests `src/lib/invoice-schemas.test.ts`: input schemas
         transform-free (form-compatible), output schemas coerce/transform, invalid
         payloads rejected (missing items, bad dates, negative amounts, bad enum)
