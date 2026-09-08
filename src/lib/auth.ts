@@ -10,5 +10,11 @@ export const auth = betterAuth({
 	emailAndPassword: {
 		enabled: true,
 	},
+	// The E2E suite fires rapid signups from one IP (localhost). Playwright's
+	// webServer sets E2E=1 so the prod-build server skips rate limiting;
+	// real deployments keep it on.
+	rateLimit: {
+		enabled: process.env.E2E !== "1",
+	},
 	plugins: [nextCookies()],
 });
