@@ -177,4 +177,17 @@ describe("resolveInvoiceNumber — manual override", () => {
 			}),
 		).rejects.toThrow(/format/i);
 	});
+
+	it("rejects a manual number whose year mismatches the issue year", async () => {
+		const userId = await createTestUser();
+		const year = new Date().getFullYear();
+
+		await expect(
+			resolveInvoiceNumber({
+				userId,
+				year,
+				manualNumber: `INV-${year + 4}-0005`,
+			}),
+		).rejects.toThrow(/does not match/i);
+	});
 });

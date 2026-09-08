@@ -3,8 +3,13 @@ import type {
 	InvoiceItem,
 	InvoiceStatus,
 } from "../generated/prisma/client";
+import { Prisma } from "../generated/prisma/client";
 import { prisma } from "./db";
-import { resolveInvoiceNumber } from "./invoice-numbering";
+import {
+	InvoiceNumberTakenError,
+	resolveInvoiceNumber,
+} from "./invoice-numbering";
+import { computeInvoiceTotals, type InvoiceTotals } from "./invoice-totals";
 
 /**
  * Data layer for invoices. Every function takes the session user's id
@@ -24,12 +29,21 @@ export class InvoiceTransitionError extends Error {
 	}
 }
 
+/** Thrown when an invoice references a client/project the user doesn't own. */
+export class InvoiceValidationError extends Error {
+	constructor(message: string) {
+		super(message);
+		this.name = "InvoiceValidationError";
+	}
+}
+
 export type DerivedInvoiceStatus = InvoiceStatus | "OVERDUE";
 
 export interface InvoiceWithItems extends Invoice {
 	items: InvoiceItem[];
 	client: { id: string; name: string };
 	derivedStatus: DerivedInvoiceStatus;
+	totals: InvoiceTotals;
 }
 
 export interface CreateInvoiceData {
@@ -68,11 +82,24 @@ function deriveStatus(invoice: {
 	return invoice.status;
 }
 
-const withDerived = <T extends { status: InvoiceStatus; dueDate: Date }>(
+interface DerivedFields {
+	status: InvoiceStatus;
+	dueDate: Date;
+	taxRate: Prisma.Decimal | number;
+	discountMinor: number;
+	items: { amountMinor: number }[];
+}
+
+const withDerived = <T extends DerivedFields>(
 	invoice: T,
-): T & { derivedStatus: DerivedInvoiceStatus } => ({
+): T & { derivedStatus: DerivedInvoiceStatus; totals: InvoiceTotals } => ({
 	...invoice,
 	derivedStatus: deriveStatus(invoice),
+	totals: computeInvoiceTotals({
+		items: invoice.items,
+		taxRate: Number(invoice.taxRate),
+		discountMinor: invoice.discountMinor,
+	}),
 });
 
 export async function createInvoice(
@@ -84,7 +111,7 @@ export async function createInvoice(
 		select: { id: true },
 	});
 	if (!client) {
-		throw new Error(
+		throw new InvoiceValidationError(
 			"Client not found for this user — invoice must reference an owned client",
 		);
 	}
@@ -95,7 +122,7 @@ export async function createInvoice(
 			select: { id: true },
 		});
 		if (!project) {
-			throw new Error(
+			throw new InvoiceValidationError(
 				"Project not found for this client — invoice must reference a project of the same client",
 			);
 		}
@@ -137,12 +164,10 @@ export async function createInvoice(
 	} catch (error) {
 		// UNIQUE(userId, invoiceNumber) — race with a concurrent create.
 		if (
-			typeof error === "object" &&
-			error !== null &&
-			"code" in error &&
-			(error as { code?: string }).code === "P2002"
+			error instanceof Prisma.PrismaClientKnownRequestError &&
+			error.code === "P2002"
 		) {
-			throw new Error(`Invoice number ${number} is already in use`);
+			throw new InvoiceNumberTakenError(number);
 		}
 		throw error;
 	}

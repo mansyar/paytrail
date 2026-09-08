@@ -321,6 +321,38 @@ describe("status derivation — OVERDUE is computed, never stored", () => {
 	});
 });
 
+describe("totals are derived on read", () => {
+	it("attaches computed totals to every invoice read", async () => {
+		const userId = await createTestUser();
+		const clientId = await createTestClient(userId);
+		const invoice = await createInvoice(userId, {
+			clientId,
+			issueDate: "2026-01-01",
+			dueDate: "2026-01-15",
+			currencyCode: "USD",
+			taxRate: 10,
+			discountMinor: 500,
+			items: [
+				{ description: "Work", amountMinor: 10000 },
+				{ description: "More work", amountMinor: 20000 },
+			],
+		});
+
+		// Spec example: 1000 + 2000 − 500 discount, 10% tax → 2750.
+		expect(invoice.totals).toEqual({
+			subtotalMinor: 30000,
+			discountAppliedMinor: 500,
+			taxableMinor: 29500,
+			taxMinor: 2950,
+			totalMinor: 32450,
+		});
+		expect((await getInvoice(userId, invoice.id))?.totals).toEqual(
+			invoice.totals,
+		);
+		expect((await listInvoices(userId))[0]?.totals.totalMinor).toBe(32450);
+	});
+});
+
 describe("number uniqueness per user", () => {
 	it("rejects creating two invoices with the same manual number", async () => {
 		const userId = await createTestUser();

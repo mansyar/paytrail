@@ -60,6 +60,21 @@ describe("createInvoiceInputSchema — transform-free input", () => {
 		).toThrow();
 	});
 
+	it("rejects amounts exceeding the integer minor-unit range", () => {
+		expect(() =>
+			createInvoiceInputSchema.parse({
+				...validCreateInput,
+				items: [{ description: "x", amount: "10000000.00" }],
+			}),
+		).toThrow();
+		expect(() =>
+			createInvoiceInputSchema.parse({
+				...validCreateInput,
+				discount: "9999999.99",
+			}),
+		).not.toThrow();
+	});
+
 	it("rejects malformed or unparseable dates", () => {
 		expect(() =>
 			createInvoiceInputSchema.parse({

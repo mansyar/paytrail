@@ -3,6 +3,7 @@
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { auth } from "./auth";
+import { InvoiceNumberTakenError } from "./invoice-numbering";
 import {
 	type CreateInvoiceInput,
 	createInvoiceDataSchema,
@@ -15,6 +16,7 @@ import {
 	deleteInvoice as deleteInvoiceRepo,
 	getInvoice as getInvoiceRepo,
 	InvoiceTransitionError,
+	InvoiceValidationError,
 	type InvoiceWithItems,
 	listInvoices as listInvoicesRepo,
 	markPaidInvoice as markPaidInvoiceRepo,
@@ -75,16 +77,22 @@ function toValidationIssues(error: {
 	}));
 }
 
-/** Maps repo error messages to typed action results. */
+/** Maps known repo errors to typed action results; unknown errors rethrow. */
 function toErrorResult(error: unknown): InvoiceActionResult<never> {
-	const message = error instanceof Error ? error.message : String(error);
 	if (error instanceof InvoiceTransitionError) {
-		return { ok: false, reason: "INVALID_TRANSITION", message };
+		return {
+			ok: false,
+			reason: "INVALID_TRANSITION",
+			message: error.message,
+		};
 	}
-	if (/already in use/i.test(message)) {
-		return { ok: false, reason: "NUMBER_TAKEN", message };
+	if (error instanceof InvoiceNumberTakenError) {
+		return { ok: false, reason: "NUMBER_TAKEN", message: error.message };
 	}
-	return { ok: false, reason: "NOT_FOUND", message };
+	if (error instanceof InvoiceValidationError) {
+		return { ok: false, reason: "NOT_FOUND", message: error.message };
+	}
+	throw error;
 }
 
 export async function createInvoiceAction(

@@ -13,6 +13,22 @@ import { prisma } from "./db";
 
 const INVOICE_NUMBER_PATTERN = /^INV-\d{4}-\d{4,}$/;
 
+/** Thrown when a manual number collides with an existing invoice. */
+export class InvoiceNumberTakenError extends Error {
+	constructor(invoiceNumber: string) {
+		super(`Invoice number ${invoiceNumber} is already in use`);
+		this.name = "InvoiceNumberTakenError";
+	}
+}
+
+/** Thrown when a manual number is malformed or mismatches the issue year. */
+export class InvoiceNumberInvalidError extends Error {
+	constructor(message: string) {
+		super(message);
+		this.name = "InvoiceNumberInvalidError";
+	}
+}
+
 export function formatInvoiceNumber(year: number, sequence: number): string {
 	return `INV-${year}-${String(sequence).padStart(4, "0")}`;
 }
@@ -70,8 +86,15 @@ export async function resolveInvoiceNumber({
 	}
 
 	if (!INVOICE_NUMBER_PATTERN.test(manualNumber)) {
-		throw new Error(
+		throw new InvoiceNumberInvalidError(
 			`Invalid invoice number format: expected INV-<year>-<sequence> (e.g. INV-2026-0001), got "${manualNumber}"`,
+		);
+	}
+
+	const manualYear = Number(manualNumber.split("-")[1]);
+	if (manualYear !== year) {
+		throw new InvoiceNumberInvalidError(
+			`Invoice number year ${manualYear} does not match the issue year ${year}`,
 		);
 	}
 
@@ -80,7 +103,7 @@ export async function resolveInvoiceNumber({
 		select: { id: true },
 	});
 	if (taken) {
-		throw new Error(`Invoice number ${manualNumber} is already in use`);
+		throw new InvoiceNumberTakenError(manualNumber);
 	}
 
 	const sequence = Number(manualNumber.split("-")[2]);

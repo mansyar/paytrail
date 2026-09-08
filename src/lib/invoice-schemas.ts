@@ -8,10 +8,15 @@ import { CURRENCIES } from "./schemas";
  * - Data schemas perform the transform (string money → integer minor units).
  */
 
+/**
+ * Money as a plain string of integer dollars + optional 2-decimal cents.
+ * Capped at 7 integer digits (max 9999999.99 → 999999999 minor units) so the
+ * transformed integer stays safely inside the database Int range.
+ */
 const moneyString = z
 	.string()
 	.regex(
-		/^\d{1,10}(\.\d{1,2})?$/,
+		/^\d{1,7}(\.\d{1,2})?$/,
 		"Must be a non-negative number with at most 2 decimals",
 	);
 
@@ -106,45 +111,53 @@ export const createInvoiceDataSchema = z
 		items: items.map((item) => invoiceItemDataSchema.parse(item)),
 	}));
 
+const updateBaseFields = {
+	issueDate: dateString,
+	dueDate: dateString,
+	currencyCode: z.enum(CURRENCIES),
+	taxRate: taxRateString.default("0"),
+	discount: moneyString.default("0"),
+	items: z
+		.array(invoiceItemInputSchema)
+		.min(1, "At least one line item is required")
+		.max(100),
+};
+
+type UpdateBaseOutput = {
+	issueDate: string;
+	dueDate: string;
+	currencyCode: (typeof CURRENCIES)[number];
+	taxRate: string;
+	discount: string;
+	items: { description: string; amount: string }[];
+};
+
+const toUpdateData = ({
+	items,
+	taxRate,
+	discount,
+	...rest
+}: UpdateBaseOutput) => ({
+	...rest,
+	taxRate: Number(taxRate),
+	discountMinor: Math.round(Number(discount) * 100),
+	items: items.map((item) => invoiceItemDataSchema.parse(item)),
+});
+
 export const updateInvoiceInputSchema = z
-	.object({
-		issueDate: dateString,
-		dueDate: dateString,
-		currencyCode: z.enum(CURRENCIES),
-		taxRate: taxRateString.default("0"),
-		discount: moneyString.default("0"),
-		items: z
-			.array(invoiceItemInputSchema)
-			.min(1, "At least one line item is required")
-			.max(100),
-	})
+	.object(updateBaseFields)
 	.refine(dateOrderRefine, {
 		message: "Due date must be on or after the issue date",
 		path: ["dueDate"],
 	});
 
 export const updateInvoiceDataSchema = z
-	.object({
-		issueDate: dateString,
-		dueDate: dateString,
-		currencyCode: z.enum(CURRENCIES),
-		taxRate: taxRateString.default("0"),
-		discount: moneyString.default("0"),
-		items: z
-			.array(invoiceItemInputSchema)
-			.min(1, "At least one line item is required")
-			.max(100),
-	})
+	.object(updateBaseFields)
 	.refine(dateOrderRefine, {
 		message: "Due date must be on or after the issue date",
 		path: ["dueDate"],
 	})
-	.transform(({ items, taxRate, discount, ...rest }) => ({
-		...rest,
-		taxRate: Number(taxRate),
-		discountMinor: Math.round(Number(discount) * 100),
-		items: items.map((item) => invoiceItemDataSchema.parse(item)),
-	}));
+	.transform(toUpdateData);
 
 export type CreateInvoiceInput = z.input<typeof createInvoiceInputSchema>;
 export type CreateInvoiceData = z.output<typeof createInvoiceDataSchema>;
