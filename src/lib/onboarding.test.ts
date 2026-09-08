@@ -2,7 +2,10 @@ import { afterAll, describe, expect, it } from "vitest";
 import { prisma } from "./db";
 import { isOnboardingComplete, saveOnboardingData } from "./onboarding";
 
-const TEST_USER_ID = "test-onboarding-gate-user";
+// Unique per run: a fixed id collides with leftover rows if a previous
+// run failed mid-cleanup, and across concurrent runners.
+const TEST_USER_ID = crypto.randomUUID();
+const TEST_USER_EMAIL = `gate-test-${crypto.randomUUID()}@example.com`;
 
 async function seedUser() {
 	await prisma.user.upsert({
@@ -11,12 +14,12 @@ async function seedUser() {
 		create: {
 			id: TEST_USER_ID,
 			name: "Gate Test",
-			email: "gate-test@example.com",
+			email: TEST_USER_EMAIL,
 		},
 	});
 }
 
-describe("isOnboardingComplete", () => {
+describe.skipIf(!process.env.DATABASE_URL)("isOnboardingComplete", () => {
 	afterAll(async () => {
 		await prisma.user.delete({ where: { id: TEST_USER_ID } }).catch(() => {});
 	});
@@ -63,7 +66,7 @@ describe("isOnboardingComplete", () => {
 	});
 });
 
-describe("saveOnboardingData", () => {
+describe.skipIf(!process.env.DATABASE_URL)("saveOnboardingData", () => {
 	const minimalPayload = {
 		profile: {
 			businessName: "Sparkle Clean Co",
