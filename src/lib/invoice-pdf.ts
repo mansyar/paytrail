@@ -74,7 +74,7 @@ function decodeLogo(logoBase64: string): Buffer | null {
 
 export async function renderInvoicePdf(
 	input: InvoicePdfInput,
-): Promise<Uint8Array> {
+): Promise<Uint8Array<ArrayBuffer>> {
 	const doc = new PDFDocument({
 		size: "A4",
 		margin: PAGE_MARGIN,
@@ -82,9 +82,23 @@ export async function renderInvoicePdf(
 		info: { Title: input.invoiceNumber },
 	});
 	const chunks: Buffer[] = [];
-	const done = new Promise<Uint8Array>((resolve, reject) => {
-		doc.on("data", (chunk: Buffer) => chunks.push(chunk));
-		doc.on("end", () => resolve(new Uint8Array(Buffer.concat(chunks))));
+	let totalLength = 0;
+	const done = new Promise<Uint8Array<ArrayBuffer>>((resolve, reject) => {
+		doc.on("data", (chunk: Buffer) => {
+			chunks.push(chunk);
+			totalLength += chunk.length;
+		});
+		doc.on("end", () => {
+			// Copy into a plain ArrayBuffer-backed view so the result is a
+			// standard Uint8Array (Blob/Response BufferSource compatible).
+			const bytes = new Uint8Array(totalLength);
+			let offset = 0;
+			for (const chunk of chunks) {
+				bytes.set(chunk, offset);
+				offset += chunk.length;
+			}
+			resolve(bytes);
+		});
 		doc.on("error", reject);
 	});
 
