@@ -4,10 +4,10 @@ Branch: `feat/fx-snapshot-multi-currency` · Spec: [spec.md](./spec.md)
 
 ## Phase 1: Data model + FX rate service
 
-- [ ] Task: Add FxRate Prisma model + migration
+- [x] Task: Add FxRate Prisma model + migration (69025ef)
   - [ ] Add `FxRate` model to `prisma/schema.prisma` (unique `(baseCurrency, quoteCurrency)`, `rate Decimal(18,8)`, `fetchedAt`, `source`)
   - [ ] Run `pnpm exec prisma migrate dev` and commit migration; verify existing invoice rows untouched (`fxRate` still null)
-- [ ] Task: FX provider client — TDD red → green
+- [~] Task: FX provider client — TDD red → green
   - [ ] Write failing unit tests: Zod-validated parsing of a mocked open.er-api.com payload (success shape, `result !== "success"`, malformed/absent rates, non-positive rates rejected)
   - [ ] Run tests, confirm red
   - [ ] Implement `src/lib/fx/provider.ts` (injectable fetch, ≤5s timeout, validated rates map); run tests, confirm green
