@@ -9,10 +9,10 @@ Branch: `feat/invoice-builder-ui`
 - [ ] Task: Phase Verification & Checkpoint (Refer to workflow.md)
 
 ### Phase 2 — `/invoices` List Page (Status Hub)
-- [ ] Task: List server page + user-scoped data load via `listInvoices`, newest-first
-- [ ] Task: Status chips incl. derived OVERDUE; status filter chips + text search (client name / invoice number)
-- [ ] Task: Row actions — Edit/Send/Mark Paid/Delete with confirmation dialogs; server-action errors surfaced as snackbars
-- [ ] Task: Responsive table→cards layout (390px), guided empty state, `error.tsx`/`loading.tsx`
+- [x] Task: List server page + user-scoped data load via `listInvoices`, newest-first — `6251357`
+- [x] Task: Status chips incl. derived OVERDUE; status filter chips + text search (client name / invoice number) — `6251357`
+- [x] Task: Row actions — Edit/Send/Mark Paid/Delete with confirmation dialogs; server-action errors surfaced as snackbars — `6251357`
+- [x] Task: Responsive table→cards layout (390px), guided empty state, `error.tsx`/`loading.tsx` — `6251357`
 - [ ] Task: Phase Verification & Checkpoint (Refer to workflow.md)
 
 ### Phase 3 — Builder Form & Live Preview
