@@ -5,6 +5,8 @@ const DB_SUITES = [
 	"src/lib/auth-smoke.test.ts",
 	"src/lib/clients-repo.test.ts",
 	"src/lib/db-smoke.test.ts",
+	"src/lib/invoice-numbering.test.ts",
+	"src/lib/invoices-repo.test.ts",
 	"src/lib/onboarding.test.ts",
 	"src/lib/projects-repo.test.ts",
 	"src/lib/rate-rules.test.ts",
