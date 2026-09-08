@@ -10,6 +10,11 @@ import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import Chip from "@mui/material/Chip";
 import Collapse from "@mui/material/Collapse";
+import Dialog from "@mui/material/Dialog";
+import DialogActions from "@mui/material/DialogActions";
+import DialogContent from "@mui/material/DialogContent";
+import DialogContentText from "@mui/material/DialogContentText";
+import DialogTitle from "@mui/material/DialogTitle";
 import Divider from "@mui/material/Divider";
 import IconButton from "@mui/material/IconButton";
 import MenuItem from "@mui/material/MenuItem";
@@ -18,18 +23,24 @@ import Stack from "@mui/material/Stack";
 import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
 import { useRouter } from "next/navigation";
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import { useFieldArray, useForm, useWatch } from "react-hook-form";
 import type { CreateInvoiceInput } from "@/lib/invoice-schemas";
 import { createInvoiceInputSchema } from "@/lib/invoice-schemas";
 import { computeInvoiceTotals } from "@/lib/invoice-totals";
-import { createInvoiceAction } from "@/lib/invoices-actions";
+import {
+	createInvoiceAction,
+	markPaidInvoiceAction,
+	sendInvoiceAction,
+	updateInvoiceAction,
+} from "@/lib/invoices-actions";
 import { formatMoney } from "@/lib/money-format";
 import { minorToAmountString, parseAmountToMinor } from "@/lib/money-input";
 import type { RateSuggestion } from "@/lib/rate-suggestions";
 import { suggestRateForDescription } from "@/lib/rate-suggestions";
 import type { PaymentTerms } from "@/lib/schemas";
 import { InvoicePreview } from "./invoice-preview";
+import { InvoiceStatusChip } from "./invoice-status-chip";
 
 export interface BuilderClient {
 	id: string;
@@ -61,12 +72,27 @@ export interface BuilderProfile {
 	paymentTerms: PaymentTerms | null;
 }
 
+export interface BuilderInvoice {
+	id: string;
+	status: "DRAFT" | "SENT" | "PAID" | "OVERDUE";
+	clientId: string;
+	projectId: string | null;
+	invoiceNumber: string;
+	issueDate: string;
+	dueDate: string;
+	taxRate: string;
+	discountMinor: number;
+	items: { description: string; amountMinor: number }[];
+}
+
 export interface InvoiceBuilderProps {
 	clients: BuilderClient[];
 	projects: BuilderProject[];
 	rules: BuilderRule[];
 	profile: BuilderProfile;
 	nextInvoiceNumber: string;
+	/** Present in edit mode (existing invoice); absent on /invoices/new. */
+	invoice?: BuilderInvoice;
 }
 
 const emptyItem = { description: "", amount: "" };
@@ -103,28 +129,53 @@ export function InvoiceBuilder({
 	rules,
 	profile,
 	nextInvoiceNumber,
+	invoice,
 }: InvoiceBuilderProps) {
 	const router = useRouter();
+	const mode = invoice ? "edit" : "create";
+	// SENT/PAID (and derived OVERDUE) invoices open the same builder read-only.
+	const readonly = Boolean(invoice && invoice.status !== "DRAFT");
 	const [formError, setFormError] = useState<string | null>(null);
 	const [previewOpen, setPreviewOpen] = useState(false);
+	const [sendConfirmOpen, setSendConfirmOpen] = useState(false);
+	/** Whether the current submit should also send the invoice after saving. */
+	const sendAfterSave = useRef(false);
 	/** Last rate the engine auto-applied per row (keyed by stable field id). */
 	const [autoRates, setAutoRates] = useState<
 		Record<string, RateSuggestion | undefined>
 	>({});
 
+	const defaults: CreateInvoiceInput = invoice
+		? {
+				clientId: invoice.clientId,
+				projectId: invoice.projectId ?? "",
+				invoiceNumber: invoice.invoiceNumber,
+				issueDate: invoice.issueDate,
+				dueDate: invoice.dueDate,
+				currencyCode: "" as CreateInvoiceInput["currencyCode"],
+				taxRate: invoice.taxRate,
+				discount: minorToAmountString(invoice.discountMinor),
+				items: invoice.items.map((item) => ({
+					description: item.description,
+					amount: minorToAmountString(item.amountMinor),
+				})),
+			}
+		: {
+				clientId: "",
+				projectId: "",
+				invoiceNumber: nextInvoiceNumber,
+				issueDate: todayUTC(),
+				dueDate: dueDateUTC(profile.paymentTerms),
+				currencyCode:
+					profile.currencyCode as CreateInvoiceInput["currencyCode"],
+				taxRate: profile.defaultTaxRate,
+				discount: "0",
+				items: [{ ...emptyItem }],
+			};
+
 	const form = useForm<CreateInvoiceInput>({
 		resolver: zodResolver(createInvoiceInputSchema),
-		defaultValues: {
-			clientId: "",
-			projectId: "",
-			invoiceNumber: nextInvoiceNumber,
-			issueDate: todayUTC(),
-			dueDate: dueDateUTC(profile.paymentTerms),
-			currencyCode: profile.currencyCode as CreateInvoiceInput["currencyCode"],
-			taxRate: profile.defaultTaxRate,
-			discount: "0",
-			items: [{ ...emptyItem }],
-		},
+		defaultValues: defaults,
 	});
 	const {
 		register,
@@ -198,6 +249,40 @@ export function InvoiceBuilder({
 
 	const onSubmit = async (values: CreateInvoiceInput) => {
 		setFormError(null);
+		const shouldSend = sendAfterSave.current;
+		sendAfterSave.current = false;
+
+		if (mode === "edit" && invoice) {
+			const result = await updateInvoiceAction(invoice.id, {
+				issueDate: values.issueDate,
+				dueDate: values.dueDate,
+				currencyCode: currencyCode as CreateInvoiceInput["currencyCode"],
+				taxRate: values.taxRate,
+				discount: values.discount,
+				items: values.items,
+			});
+			if (!result.ok) {
+				setFormError(
+					result.message ??
+						"Could not save the invoice. Please check the form.",
+				);
+				return;
+			}
+			if (shouldSend) {
+				const sent = await sendInvoiceAction(invoice.id);
+				if (!sent.ok) {
+					setFormError(
+						sent.message ?? "Could not send the invoice. Please try again.",
+					);
+					router.refresh();
+					return;
+				}
+			}
+			router.push(`/invoices/${invoice.id}`);
+			router.refresh();
+			return;
+		}
+
 		const result = await createInvoiceAction({
 			...values,
 			currencyCode: currencyCode as CreateInvoiceInput["currencyCode"],
@@ -214,7 +299,40 @@ export function InvoiceBuilder({
 			);
 			return;
 		}
+		if (shouldSend) {
+			const sent = await sendInvoiceAction(result.invoice.id);
+			if (!sent.ok) {
+				setFormError(
+					sent.message ??
+						"Invoice saved, but sending failed. Try again from the list.",
+				);
+			}
+			router.push(`/invoices/${result.invoice.id}`);
+			router.refresh();
+			return;
+		}
 		router.push(`/invoices/${result.invoice.id}`);
+	};
+
+	const openSendConfirm = () => {
+		setSendConfirmOpen(true);
+	};
+
+	const confirmSend = () => {
+		setSendConfirmOpen(false);
+		sendAfterSave.current = true;
+		// Run validation + submit with the send flag set.
+		void handleSubmit(onSubmit)();
+	};
+
+	const markPaid = async () => {
+		if (!invoice) return;
+		const result = await markPaidInvoiceAction(invoice.id);
+		if (!result.ok) {
+			setFormError(result.message ?? "Could not mark the invoice as paid.");
+			return;
+		}
+		router.refresh();
 	};
 
 	return (
@@ -238,11 +356,23 @@ export function InvoiceBuilder({
 				)}
 
 				<Paper variant="outlined" sx={{ p: { xs: 2, sm: 3 } }}>
-					<Typography component="h2" gutterBottom variant="h6">
-						Invoice details
-					</Typography>
+					<Stack
+						direction="row"
+						spacing={1}
+						sx={{
+							mb: 2,
+							alignItems: "center",
+							justifyContent: "space-between",
+						}}
+					>
+						<Typography component="h2" variant="h6">
+							Invoice details
+						</Typography>
+						{invoice && <InvoiceStatusChip status={invoice.status} />}
+					</Stack>
 					<Stack spacing={2}>
 						<TextField
+							disabled={readonly}
 							error={Boolean(errors.clientId)}
 							fullWidth
 							helperText={
@@ -263,6 +393,7 @@ export function InvoiceBuilder({
 						</TextField>
 						{clientProjects.length > 0 && (
 							<TextField
+								disabled={readonly}
 								fullWidth
 								label="Project (optional)"
 								select
@@ -277,6 +408,7 @@ export function InvoiceBuilder({
 							</TextField>
 						)}
 						<TextField
+							disabled={readonly}
 							fullWidth
 							label="Issue date"
 							slotProps={{ inputLabel: { shrink: true } }}
@@ -286,6 +418,7 @@ export function InvoiceBuilder({
 							helperText={errors.issueDate?.message}
 						/>
 						<TextField
+							disabled={readonly}
 							fullWidth
 							label="Due date"
 							slotProps={{ inputLabel: { shrink: true } }}
@@ -295,11 +428,14 @@ export function InvoiceBuilder({
 							helperText={errors.dueDate?.message}
 						/>
 						<TextField
+							disabled={readonly || mode === "edit"}
 							fullWidth
 							label={`Invoice number (next: ${nextInvoiceNumber})`}
 							helperText={
 								errors.invoiceNumber?.message ??
-								"Leave blank to use the next automatic number"
+								(mode === "edit"
+									? "Fixed when the invoice was created"
+									: "Leave blank to use the next automatic number")
 							}
 							error={Boolean(errors.invoiceNumber)}
 							{...register("invoiceNumber")}
@@ -327,14 +463,16 @@ export function InvoiceBuilder({
 						<Typography component="h2" variant="h6">
 							Line items
 						</Typography>
-						<Button
-							onClick={() => append({ ...emptyItem })}
-							size="small"
-							startIcon={<AddIcon />}
-							sx={{ minHeight: 44 }}
-						>
-							Add item
-						</Button>
+						{!readonly && (
+							<Button
+								onClick={() => append({ ...emptyItem })}
+								size="small"
+								startIcon={<AddIcon />}
+								sx={{ minHeight: 44 }}
+							>
+								Add item
+							</Button>
+						)}
 					</Stack>
 					<Stack spacing={2}>
 						{fields.map((field, index) => {
@@ -348,6 +486,7 @@ export function InvoiceBuilder({
 										useFlexGap
 									>
 										<TextField
+											disabled={readonly}
 											fullWidth
 											label={`Item ${index + 1} description`}
 											size="small"
@@ -357,6 +496,7 @@ export function InvoiceBuilder({
 											onBlur={() => handleDescriptionBlur(index)}
 										/>
 										<TextField
+											disabled={readonly}
 											label="Amount"
 											size="small"
 											slotProps={{
@@ -370,33 +510,37 @@ export function InvoiceBuilder({
 											error={Boolean(errors.items?.[index]?.amount)}
 											helperText={errors.items?.[index]?.amount?.message}
 										/>
-										<IconButton
-											aria-label={`Move item ${index + 1} up`}
-											disabled={index === 0}
-											onClick={() => move(index, index - 1)}
-											size="small"
-											sx={{ minWidth: 44, minHeight: 44 }}
-										>
-											<ArrowUpwardIcon fontSize="small" />
-										</IconButton>
-										<IconButton
-											aria-label={`Move item ${index + 1} down`}
-											disabled={index === fields.length - 1}
-											onClick={() => move(index, index + 1)}
-											size="small"
-											sx={{ minWidth: 44, minHeight: 44 }}
-										>
-											<ArrowDownwardIcon fontSize="small" />
-										</IconButton>
-										<IconButton
-											aria-label={`Remove item ${index + 1}`}
-											disabled={fields.length === 1}
-											onClick={() => remove(index)}
-											size="small"
-											sx={{ minWidth: 44, minHeight: 44 }}
-										>
-											<DeleteIcon fontSize="small" />
-										</IconButton>
+										{!readonly && (
+											<>
+												<IconButton
+													aria-label={`Move item ${index + 1} up`}
+													disabled={index === 0}
+													onClick={() => move(index, index - 1)}
+													size="small"
+													sx={{ minWidth: 44, minHeight: 44 }}
+												>
+													<ArrowUpwardIcon fontSize="small" />
+												</IconButton>
+												<IconButton
+													aria-label={`Move item ${index + 1} down`}
+													disabled={index === fields.length - 1}
+													onClick={() => move(index, index + 1)}
+													size="small"
+													sx={{ minWidth: 44, minHeight: 44 }}
+												>
+													<ArrowDownwardIcon fontSize="small" />
+												</IconButton>
+												<IconButton
+													aria-label={`Remove item ${index + 1}`}
+													disabled={fields.length === 1}
+													onClick={() => remove(index)}
+													size="small"
+													sx={{ minWidth: 44, minHeight: 44 }}
+												>
+													<DeleteIcon fontSize="small" />
+												</IconButton>
+											</>
+										)}
 									</Stack>
 									{cue && (
 										<Chip
@@ -419,6 +563,7 @@ export function InvoiceBuilder({
 					</Typography>
 					<Stack direction={{ xs: "column", sm: "row" }} spacing={2}>
 						<TextField
+							disabled={readonly}
 							fullWidth
 							label="Tax rate (%)"
 							slotProps={{
@@ -431,6 +576,7 @@ export function InvoiceBuilder({
 							}
 						/>
 						<TextField
+							disabled={readonly}
 							fullWidth
 							label="Discount"
 							slotProps={{
@@ -500,15 +646,42 @@ export function InvoiceBuilder({
 								</Typography>
 							</Stack>
 						</Stack>
-						<Button
-							disabled={isSubmitting}
-							size="large"
-							sx={{ minHeight: 48 }}
-							type="submit"
-							variant="contained"
-						>
-							Save draft
-						</Button>
+						{readonly ? (
+							invoice?.status === "SENT" || invoice?.status === "OVERDUE" ? (
+								<Button
+									color="success"
+									disabled={isSubmitting}
+									onClick={markPaid}
+									size="large"
+									sx={{ minHeight: 48 }}
+									variant="contained"
+								>
+									Mark as paid
+								</Button>
+							) : null
+						) : (
+							<Stack direction="row" spacing={1} useFlexGap>
+								<Button
+									disabled={isSubmitting}
+									size="large"
+									sx={{ minHeight: 48 }}
+									type="submit"
+									variant="outlined"
+								>
+									Save draft
+								</Button>
+								<Button
+									color="success"
+									disabled={isSubmitting}
+									onClick={openSendConfirm}
+									size="large"
+									sx={{ minHeight: 48 }}
+									variant="contained"
+								>
+									Send
+								</Button>
+							</Stack>
+						)}
 					</Stack>
 				</Paper>
 			</Stack>
@@ -554,6 +727,31 @@ export function InvoiceBuilder({
 					/>
 				</Box>
 			</Stack>
+
+			<Dialog
+				aria-labelledby="send-confirm-title"
+				onClose={() => setSendConfirmOpen(false)}
+				open={sendConfirmOpen}
+			>
+				<DialogTitle id="send-confirm-title">Send this invoice?</DialogTitle>
+				<DialogContent>
+					<DialogContentText>
+						The invoice will be marked as sent and locked — it can no longer be
+						edited or deleted. This is the number your client will see.
+					</DialogContentText>
+				</DialogContent>
+				<DialogActions>
+					<Button onClick={() => setSendConfirmOpen(false)}>Cancel</Button>
+					<Button
+						color="success"
+						disabled={isSubmitting}
+						onClick={confirmSend}
+						variant="contained"
+					>
+						Send invoice
+					</Button>
+				</DialogActions>
+			</Dialog>
 		</Stack>
 	);
 }
