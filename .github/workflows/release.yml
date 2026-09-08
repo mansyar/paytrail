@@ -5,7 +5,43 @@ on:
     tags: ["v*"]
 
 jobs:
+  # Gate the release on lint + typecheck + unit tests before any image
+  # is built, pushed, or migrated against production.
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Generate Prisma client
+        run: pnpm exec prisma generate
+
+      # Generate route types (.next/types) that tsconfig includes
+      - name: Generate Next.js route types
+        run: pnpm exec next typegen
+
+      - name: Lint (Biome)
+        run: pnpm exec biome ci .
+
+      - name: Typecheck
+        run: pnpm exec tsc --noEmit
+
+      # Unit project only — no Postgres service needed here; the
+      # integration suites run in CI on every PR.
+      - name: Unit tests
+        run: pnpm exec vitest run --project unit
+
   release:
+    needs: verify
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -54,6 +90,8 @@ jobs:
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
 
       # Run before Coolify pulls the new image; the old release keeps serving.
       # Migrations must stay backward-compatible with the previous image.

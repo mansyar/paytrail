@@ -1,58 +1,15 @@
 import { expect, type Page, test } from "@playwright/test";
-
-const uniqueEmail = () =>
-	`user-${Date.now()}-${Math.floor(Math.random() * 1000)}@example.com`;
-const password = "correct-horse-battery";
-
-async function signUp(page: Page, email: string) {
-	await page.goto("/signup");
-	await expect(
-		page.getByRole("heading", { name: "Create your account" }),
-	).toBeVisible();
-	await page.getByLabel("Name").fill("Test User");
-	await page.getByLabel("Email").fill(email);
-	await page.getByLabel("Password").fill(password);
-	await page.getByRole("button", { name: "Create account" }).click();
-	await expect(page).toHaveURL(/\/dashboard$/);
-}
+import {
+	openAddClientDialog,
+	openClientDetail,
+	signUp,
+	uniqueEmail,
+} from "./utils";
 
 async function openClientsPage(page: Page) {
-	await page.getByRole("link", { name: "Clients" }).click();
+	// Signup lands on the onboarding gate; /clients is not gated, so go direct.
+	await page.goto("/clients");
 	await expect(page).toHaveURL(/\/clients$/);
-}
-
-/**
- * Clicks the trigger and waits for the dialog. The page may not be
- * hydrated yet in dev mode — a click before hydration is a no-op, so
- * retry until the dialog actually appears.
- */
-async function openAddClientDialog(page: Page) {
-	const dialog = page.getByRole("dialog");
-	for (let attempt = 0; attempt < 5; attempt++) {
-		await page.getByRole("button", { name: "Add client" }).first().click();
-		try {
-			await dialog.waitFor({ state: "visible", timeout: 2000 });
-			return dialog;
-		} catch {
-			// not hydrated yet — click again
-		}
-	}
-	throw new Error("Add client dialog did not open");
-}
-
-/** Clicks the client link and waits for navigation, retrying on hydration races. */
-async function openClientDetail(page: Page, name: string) {
-	const link = page.getByRole("link", { name });
-	for (let attempt = 0; attempt < 3; attempt++) {
-		await link.click();
-		try {
-			await page.waitForURL(/\/clients\/[a-z0-9]+$/, { timeout: 3000 });
-			return;
-		} catch {
-			// navigation didn't happen — click again
-		}
-	}
-	throw new Error(`Client detail page for "${name}" did not open`);
 }
 
 test("clients full CRUD: create → project rename/delete → edit → delete", async ({

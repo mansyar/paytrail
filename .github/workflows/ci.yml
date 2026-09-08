@@ -5,6 +5,10 @@ on:
   push:
     branches: [main]
 
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   verify:
     runs-on: ubuntu-latest
@@ -54,8 +58,63 @@ jobs:
       - name: Typecheck
         run: pnpm exec tsc --noEmit
 
-      - name: Unit tests
+      - name: Tests (unit + integration)
         run: pnpm exec vitest run
 
       - name: Build
         run: pnpm build
+
+  e2e:
+    runs-on: ubuntu-latest
+    env:
+      DATABASE_URL: postgresql://paytrail:paytrail@localhost:5432/paytrail?schema=public
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_USER: paytrail
+          POSTGRES_PASSWORD: paytrail
+          POSTGRES_DB: paytrail
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U paytrail"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Generate Prisma client
+        run: pnpm exec prisma generate
+
+      - name: Apply migrations
+        run: pnpm exec prisma migrate deploy
+
+      - name: Install Playwright browsers
+        run: pnpm exec playwright install --with-deps chromium
+
+      # Playwright's webServer builds and starts the production server
+      # (next build && next start) and sets E2E=1 for the app process.
+      - name: Run E2E tests
+        run: pnpm exec playwright test
+
+      - name: Upload failure artifacts
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: |
+            playwright-report/
+            test-results/
+          retention-days: 7

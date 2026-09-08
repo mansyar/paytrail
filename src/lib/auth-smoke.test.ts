@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import { auth } from "./auth";
 import { prisma } from "./db";
 
-describe("better auth signup", () => {
+describe.skipIf(!process.env.DATABASE_URL)("better auth signup", () => {
 	it("creates a user and credential account through the prisma adapter", async () => {
 		const email = `smoke-${Date.now()}@example.com`;
 		const { user } = await auth.api.signUpEmail({
