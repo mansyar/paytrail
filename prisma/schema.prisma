@@ -171,7 +171,9 @@ model Invoice {
   currencyCode   String
   taxRate        Decimal       @default(0) @db.Decimal(5, 2)
   discountMinor  Int           @default(0)
-  // FX snapshot, reserved for the FX track (null until populated there).
+  // FX snapshot (fx_multi_currency_20260908): fxRate converts invoice-currency
+  // amounts to the home currency in fxRateCurrency (multiply). Null = no
+  // snapshot (legacy invoices or missing-rate case).
   fxRate         Decimal?      @db.Decimal(18, 8)
   fxRateCurrency String?
   sentAt         DateTime?
@@ -207,4 +209,20 @@ model InvoiceNumberCounter {
 
   @@unique([userId, year])
   @@map("invoice_number_counter")
+}
+
+// Server-side FX rate cache (fx_multi_currency_20260908).
+// One row per currency pair; rates fetched with the account home currency as
+// base. `source` records provenance ("live" from the provider, "manual" reserved).
+model FxRate {
+  id            String   @id @default(cuid())
+  baseCurrency  String
+  quoteCurrency String
+  rate          Decimal  @db.Decimal(18, 8)
+  fetchedAt     DateTime @default(now())
+  source        String   @default("live")
+
+  @@unique([baseCurrency, quoteCurrency])
+  @@index([baseCurrency, fetchedAt])
+  @@map("fx_rate")
 }
