@@ -122,33 +122,37 @@ export function OnboardingWizard({ nextPath }: { nextPath: string }) {
 		reader.readAsDataURL(file);
 	};
 
-	const goNext = async () => {
-		if (navLocked()) return;
-		const valid = await trigger(STEP_FIELDS[step], { shouldFocus: true });
-		if (valid) {
-			setStep((s) => Math.min(s + 1, STEPS.length - 1));
+	const goNext = async (event: React.MouseEvent) => {
+		// React reuses the same DOM node when the footer swaps Next↔Finish.
+		// If the swap commits while this click is being dispatched, the node
+		// can flip to type="submit" before the browser applies the click's
+		// default action — submitting the form mid-transition (ghost save).
+		// Cancel the default action up front; a type="button" click has none.
+		event.preventDefault();
+		if (navigating) return;
+		setNavigating(true);
+		try {
+			const valid = await trigger(STEP_FIELDS[step], { shouldFocus: true });
+			if (valid) {
+				setStep((s) => Math.min(s + 1, STEPS.length - 1));
+			}
+		} finally {
+			setNavigating(false);
 		}
 	};
 
-	const goBack = () => {
-		if (navLocked()) return;
+	const goBack = (event: React.MouseEvent) => {
+		event.preventDefault();
 		setStep((s) => Math.max(s - 1, 0));
 	};
 
-	// Ghost clicks: advancing a step re-renders a different button (e.g.
-	// "Finish setup") under the pointer, so the second press of a natural
-	// double-click activates it and saves prematurely. Ignore any navigation
-	// or submit within 500ms of the previous one.
-	const navLockRef = useRef(0);
-	const navLocked = () => {
-		const now = Date.now();
-		if (now - navLockRef.current < 500) return true;
-		navLockRef.current = now;
-		return false;
-	};
+	// Ghost-click prevention: goNext/goBack cancel the click's default
+	// action (a Next↔Finish node swap mid-dispatch can turn a navigation
+	// click into a form submission), the footer disables during transitions
+	// and submit, and Finish ignores multi-clicks (detail > 1).
+	const [navigating, setNavigating] = useState(false);
 
 	const onSubmit = handleSubmit(async (values) => {
-		if (navLocked()) return;
 		// Enter in a mid-wizard field triggers submit; never save before the
 		// user has seen the remaining steps.
 		if (step < STEPS.length - 1) {
@@ -368,15 +372,32 @@ export function OnboardingWizard({ nextPath }: { nextPath: string }) {
 					spacing={2}
 					sx={{ justifyContent: "space-between" }}
 				>
-					<Button type="button" onClick={goBack} disabled={step === 0}>
+					<Button
+						type="button"
+						onClick={goBack}
+						disabled={step === 0 || navigating}
+					>
 						Back
 					</Button>
 					{step < STEPS.length - 1 ? (
-						<Button type="button" variant="contained" onClick={goNext}>
+						<Button
+							type="button"
+							variant="contained"
+							onClick={goNext}
+							disabled={navigating}
+						>
 							Next
 						</Button>
 					) : (
-						<Button type="submit" variant="contained" disabled={isSubmitting}>
+						<Button
+							type="submit"
+							variant="contained"
+							disabled={isSubmitting || navigating}
+							onClick={(event) => {
+								// A double-click's trailing press must not submit.
+								if (event.detail > 1) event.preventDefault();
+							}}
+						>
 							{isSubmitting ? "Saving…" : "Finish setup"}
 						</Button>
 					)}
