@@ -7,7 +7,7 @@ Testing discipline: red→green for every logic-bearing task; coverage >80% on n
 (workflow note 2026-09-07). After schema edits run `pnpm exec prisma generate` explicitly
 (Prisma 7). All money math in integer minor units.
 
-## Phase 1 — Schema & Migration
+## Phase 1 — Schema & Migration [checkpoint: fa60f69]
 
 - [x] Task: Prisma schema — add `InvoiceStatus` enum, `Invoice`, `InvoiceItem`,
       `InvoiceNumberCounter` models with relations to `User`/`Client`/`Project`,
@@ -17,11 +17,11 @@ Testing discipline: red→green for every logic-bearing task; coverage >80% on n
   - [ ] Run `pnpm exec prisma migrate dev --name invoice_core` (commit migration)
   - [ ] Run `pnpm exec prisma generate` and confirm client regenerated in `src/generated/prisma`
   - [ ] `pnpm exec tsc --noEmit` clean
-- [ ] Task: Phase Verification & Checkpoint (refer to workflow.md)
+- [x] Task: Phase Verification & Checkpoint (refer to workflow.md) [fa60f69]
 
 ## Phase 2 — Domain Logic: Numbering, Totals, Schemas (TDD)
 
-- [ ] Task: Invoice numbering (per-user yearly sequence, manual override, collision skip)
+- [x] Task: Invoice numbering (per-user yearly sequence, manual override, collision skip) [ba44c1b]
   - [ ] Write failing tests `src/lib/invoice-numbering.test.ts`: first invoice of a year
         is `INV-<year>-0001`; sequence increments; per-user isolation; per-year isolation;
         manual override rejects collisions; auto-counter advances past manually taken
