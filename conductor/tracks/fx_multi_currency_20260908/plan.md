@@ -2,7 +2,7 @@
 
 Branch: `feat/fx-snapshot-multi-currency` · Spec: [spec.md](./spec.md)
 
-## Phase 1: Data model + FX rate service
+## Phase 1: Data model + FX rate service [checkpoint: c45da0f]
 
 - [x] Task: Add FxRate Prisma model + migration (69025ef)
   - [x] Add `FxRate` model to `prisma/schema.prisma` (unique `(baseCurrency, quoteCurrency)`, `rate Decimal(18,8)`, `fetchedAt`, `source`)
@@ -15,11 +15,11 @@ Branch: `feat/fx-snapshot-multi-currency` · Spec: [spec.md](./spec.md)
   - [x] Write failing unit tests for `getRate`: same-currency → 1 (no fetch); fresh cache → no fetch; stale (>24h) → refetch + upsert full payload; fetch failure → last cached rate (any age); empty cache + failure → null
   - [x] Run tests, confirm red
   - [x] Implement `src/lib/fx/rate-service.ts` (lazy 24h TTL, batch upsert, invoice→home derivation `1 / rates[quote]`); run tests, confirm green
-- [ ] Task: Phase Verification & Checkpoint (Refer to workflow.md)
+- [x] Task: Phase Verification & Checkpoint (Refer to workflow.md)
 
 ## Phase 2: Invoice snapshot integration
 
-- [ ] Task: Snapshot semantics in invoices-repo — TDD red → green
+- [~] Task: Snapshot semantics in invoices-repo — TDD red → green
   - [ ] Write failing tests: draft created with non-home-currency client stamps `fxRate` + `fxRateCurrency`; draft currency change re-derives snapshot; `sendInvoice` freezes (no refetch/mutation); manual override stamps flagged value; missing-rate case leaves `null`
   - [ ] Run tests, confirm red
   - [ ] Implement snapshotting in `src/lib/invoices-repo.ts` via rate service; run tests, confirm green
