@@ -4,13 +4,13 @@ Branch: `feat/pdf-generation-delivery`
 
 ## Phase 1: PDF renderer module (logic-bearing — TDD)
 
-- [ ] Task: Write failing renderer tests (Red)
-	- [ ] New `src/lib/invoice-pdf.test.ts`: valid PDF magic bytes; contains invoice number, client name, ISO-prefixed total (e.g. `USD 1,234.50`); DRAFT watermark present for DRAFT and absent for SENT; missing logo renders without error; many items (25+) flow across pages without throw
-	- [ ] Run `pnpm vitest run` — confirm failures
-- [ ] Task: Implement renderer to pass (Green)
-	- [ ] `src/lib/invoice-pdf.ts`: pdfkit A4 template — header (logo decode/skip, business name/address/tax ID), meta block (number, issue/due date, status), client block, items table with page-flow + repeated column header, totals block on final page (subtotal, tax, discount, total), payment terms
-	- [ ] ISO-code-prefix currency formatting via existing money-format helpers; integer minor units throughout
-- [ ] Task: Refactor + coverage check — >80% on the new module
+- [x] Task: Write failing renderer tests (Red) — sha 5a296ef
+	- [x] New `src/lib/invoice-pdf.test.ts`: valid PDF magic bytes; contains invoice number, client name, ISO-prefixed total (e.g. `USD 1,234.50`); DRAFT watermark present for DRAFT and absent for SENT; missing logo renders without error; many items (25+) flow across pages without throw
+	- [x] Run `pnpm vitest run` — confirm failures
+- [x] Task: Implement renderer to pass (Green) — sha 5a296ef
+	- [x] `src/lib/invoice-pdf.ts`: pdfkit A4 template — header (logo decode/skip, business name/address/tax ID), meta block (number, issue/due date, status), client block, items table with page-flow + repeated column header, totals block on final page (subtotal, tax, discount, total), payment terms
+	- [x] ISO-code-prefix currency formatting via `formatMoneyIso` helper; integer minor units throughout; totals math reused from `computeInvoiceTotals`
+- [x] Task: Refactor + coverage check — 97% stmts / 100% funcs / 97% lines on `invoice-pdf.ts`; 115 unit tests pass — sha 5a296ef
 - [ ] Task: Commit `feat(invoices): pdf renderer module with watermark and ISO currency totals` + git note + plan update
 - [ ] Task: Phase Verification & Checkpoint (Refer to workflow.md)
 
