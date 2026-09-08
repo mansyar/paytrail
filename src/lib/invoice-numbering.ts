@@ -68,6 +68,30 @@ export async function nextInvoiceNumber(
 }
 
 /**
+ * Prefill preview for the builder: the number the next auto issuance
+ * would use, WITHOUT consuming or advancing the counter. Read-only.
+ */
+export async function previewNextInvoiceNumber(
+	userId: string,
+	year: number,
+): Promise<string> {
+	const counter = await prisma.invoiceNumberCounter.findUnique({
+		where: { userId_year: { userId, year } },
+		select: { lastNumber: true },
+	});
+	let sequence = (counter?.lastNumber ?? 0) + 1;
+	while (
+		await prisma.invoice.findFirst({
+			where: { userId, invoiceNumber: formatInvoiceNumber(year, sequence) },
+			select: { id: true },
+		})
+	) {
+		sequence += 1;
+	}
+	return formatInvoiceNumber(year, sequence);
+}
+
+/**
  * Resolve the number for a new invoice: the manual override when provided,
  * otherwise the next auto number. A manual number must be free; the counter
  * is advanced past it so later auto numbers never collide with it.

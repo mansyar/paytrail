@@ -3,6 +3,7 @@ import { prisma } from "./db";
 import {
 	formatInvoiceNumber,
 	nextInvoiceNumber,
+	previewNextInvoiceNumber,
 	resolveInvoiceNumber,
 } from "./invoice-numbering";
 
@@ -189,5 +190,46 @@ describe("resolveInvoiceNumber — manual override", () => {
 				manualNumber: `INV-${year + 4}-0005`,
 			}),
 		).rejects.toThrow(/does not match/i);
+	});
+});
+
+describe("previewNextInvoiceNumber — non-consuming prefill", () => {
+	it("returns the next free number without advancing the counter", async () => {
+		const userId = await createTestUser();
+		const year = new Date().getFullYear();
+
+		expect(await previewNextInvoiceNumber(userId, year)).toBe(
+			`INV-${year}-0001`,
+		);
+		// Preview is idempotent — it must not consume the counter.
+		expect(await previewNextInvoiceNumber(userId, year)).toBe(
+			`INV-${year}-0001`,
+		);
+		// The next real issuance starts at the same number.
+		expect(await nextInvoiceNumber(userId, year)).toBe(`INV-${year}-0001`);
+	});
+
+	it("skips numbers taken by manual overrides", async () => {
+		const userId = await createTestUser();
+		const clientId = await createTestClient(userId);
+		const year = new Date().getFullYear();
+
+		await createInvoice(userId, clientId, `INV-${year}-0001`);
+
+		expect(await previewNextInvoiceNumber(userId, year)).toBe(
+			`INV-${year}-0002`,
+		);
+	});
+
+	it("continues after an existing counter position", async () => {
+		const userId = await createTestUser();
+		const year = new Date().getFullYear();
+
+		await nextInvoiceNumber(userId, year); // counter -> 0001
+		await nextInvoiceNumber(userId, year); // counter -> 0002
+
+		expect(await previewNextInvoiceNumber(userId, year)).toBe(
+			`INV-${year}-0003`,
+		);
 	});
 });
