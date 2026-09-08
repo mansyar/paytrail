@@ -23,9 +23,9 @@ Branch: `feat/invoice-builder-ui`
 - [ ] Task: Phase Verification & Checkpoint (Refer to workflow.md)
 
 ### Phase 4 — Lifecycle Actions & Read-Only Mode
-- [ ] Task: Save draft (create/update) with server re-validation; collision error surfaced inline
-- [ ] Task: Send action with lock-explaining confirmation; transition to read-only view
-- [ ] Task: Read-only mode for SENT/PAID (disabled inputs, status badge, Mark Paid for SENT); delete DRAFT
+- [x] Task: Save draft (create/update) `c7eadac` with server re-validation; collision error surfaced inline
+- [x] Task: Send action with lock `c7eadac`-explaining confirmation; transition to read-only view
+- [x] Task: Read-only mode for SENT/PAID `c7eadac` (disabled inputs, status badge, Mark Paid for SENT); delete DRAFT
 - [ ] Task: Phase Verification & Checkpoint (Refer to workflow.md)
 
 ### Phase 5 — Dashboard Link, E2E & Review Gate
