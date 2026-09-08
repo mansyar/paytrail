@@ -38,7 +38,16 @@ export default defineConfig({
 		// First prod build can take a while.
 		timeout: 300_000,
 		// Flag the server as E2E-driven (skips better-auth rate limiting).
-		env: { ...process.env, E2E: "1" },
+		env: {
+			...process.env,
+			E2E: "1",
+			// CI has no .env: give the test server throwaway auth config
+			// unless real values are already present in the environment.
+			BETTER_AUTH_SECRET:
+				process.env.BETTER_AUTH_SECRET ?? "e2e-only-not-a-production-secret",
+			BETTER_AUTH_URL:
+				process.env.BETTER_AUTH_URL ?? `http://localhost:${port}`,
+		},
 		reuseExistingServer: true,
 	},
 });
