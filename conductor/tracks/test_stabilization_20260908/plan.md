@@ -34,14 +34,14 @@
 
 ## Phase 3: CI / Release Hardening
 
-- [ ] Task: CI — E2E gate + concurrency
-	- [ ] Add Playwright job to `ci.yml` on every PR (chromium install, prod-build webServer, upload `playwright-report/` + `test-results/` on failure)
-	- [ ] Add `concurrency: { group: ci-${{ github.ref }}, cancel-in-progress: true }`
-	- [ ] Verify: push branch, observe PR checks green (or validate YAML + workflow syntax)
-- [ ] Task: Release — test gate + layer caching
-	- [ ] Add `verify` job (lint + typecheck + unit tests) to `release.yml`; `release` job `needs: verify`
-	- [ ] Add `cache-from: type=gha` / `cache-to: type=gha,mode=max` to `build-push-action`
-	- [ ] Verify: YAML valid; workflow syntax check
+- [x] Task: CI — E2E gate + concurrency (e85d614)
+	- [x] Add Playwright job to `ci.yml` on every PR (chromium install, prod-build webServer, upload `playwright-report/` + `test-results/` on failure)
+	- [x] Add `concurrency: { group: ci-${{ github.ref }}, cancel-in-progress: true }`
+	- [x] Verify: push branch, observe PR checks green (or validate YAML + workflow syntax)
+- [x] Task: Release — test gate + layer caching (633fc67)
+	- [x] Add `verify` job (lint + typecheck + unit tests) to `release.yml`; `release` job `needs: verify`
+	- [x] Add `cache-from: type=gha` / `cache-to: type=gha,mode=max` to `build-push-action`
+	- [x] Verify: YAML valid; workflow syntax check
 - [ ] Task: Phase Verification & Checkpoint (Refer to workflow.md)
 
 ## Phase 4: Documentation & Closure
