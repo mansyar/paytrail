@@ -3,9 +3,9 @@
 Branch: `feat/invoice-builder-ui`
 
 ### Phase 1 — Logic Glue: Units, Suggestions, Derived Status (TDD)
-- [ ] Task: Write failing tests for decimal-input → integer minor-units conversion helper (parsing, rounding, negative/invalid input)
-- [ ] Task: Write failing tests for rate-rule suggestion mapping (description + rules → matched suggestion with rule cue; no match → null; user override untouched)
-- [ ] Task: Implement `src/lib/` helpers to pass tests (reuse `pricing-engine` matching; no new data-layer logic)
+- [x] Task: Write failing tests for decimal-input → integer minor-units conversion helper (parsing, rounding, negative/invalid input) — `b5d8e68`
+- [x] Task: Write failing tests for rate-rule suggestion mapping (description + rules → matched suggestion with rule cue; no match → null; user override untouched) — `b5d8e68`
+- [x] Task: Implement `src/lib/` helpers to pass tests (reuse `pricing-engine` matching; no new data-layer logic) — `b5d8e68`
 - [ ] Task: Phase Verification & Checkpoint (Refer to workflow.md)
 
 ### Phase 2 — `/invoices` List Page (Status Hub)
