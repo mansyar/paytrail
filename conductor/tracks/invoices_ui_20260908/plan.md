@@ -33,3 +33,6 @@ Branch: `feat/invoice-builder-ui`
 - [x] Task: Playwright critical-path E2E (dashboard → new invoice → suggestion → send) within <2 min / <10 clicks; desktop + mobile viewport checks ``7351382``
 - [x] Task: Local review gate & docs (Biome, `tsc --noEmit`, coverage >80% on new lib modules, self-review vs guidelines) ``7351382``
 - [x] Task: Phase Verification & Checkpoint (Refer to workflow.md)
+
+## Phase: Review Fixes
+- [x] Task: Apply review suggestions 660334b
