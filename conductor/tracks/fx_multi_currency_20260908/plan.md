@@ -39,7 +39,7 @@ Branch: `feat/fx-snapshot-multi-currency` · Spec: [spec.md](./spec.md)
   - [x] Reuse `money-format` helpers for home-currency formatting
 - [x] Task: Phase Verification & Checkpoint (Refer to workflow.md)
 
-## Phase 4: E2E + closeout
+## Phase 4: E2E + closeout [checkpoint: 8ddef7f]
 
 - [x] Task: Playwright E2E for non-home-currency invoice (595ac5b)
   - [x] Test: create + send invoice for non-home-currency client; assert home-currency equivalent visible on list/detail; run `pnpm test:e2e`
