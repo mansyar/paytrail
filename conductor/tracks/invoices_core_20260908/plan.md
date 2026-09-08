@@ -29,14 +29,14 @@ Testing discipline: red→green for every logic-bearing task; coverage >80% on n
   - [ ] Confirm tests fail (red)
   - [ ] Implement `src/lib/invoice-numbering.ts`
   - [ ] Tests pass (green); coverage on module >80%
-- [ ] Task: Totals math in integer minor units (subtotal, flat discount, percent tax)
+- [x] Task: Totals math in integer minor units (subtotal, flat discount, percent tax) [62c16d3]
   - [ ] Write failing tests `src/lib/invoice-totals.test.ts`: subtotal = Σ items;
         discount applied before tax, floored at 0; tax rounded half-up to minor unit;
         zero items / zero discount / zero tax edge cases
   - [ ] Confirm tests fail (red)
   - [ ] Implement `src/lib/invoice-totals.ts`
   - [ ] Tests pass (green)
-- [ ] Task: Zod input/output schemas for invoice CRUD
+- [~] Task: Zod input/output schemas for invoice CRUD
   - [ ] Write failing tests `src/lib/invoice-schemas.test.ts`: input schemas
         transform-free (form-compatible), output schemas coerce/transform, invalid
         payloads rejected (missing items, bad dates, negative amounts, bad enum)
