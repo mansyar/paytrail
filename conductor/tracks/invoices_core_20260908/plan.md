@@ -69,7 +69,7 @@ Testing discipline: red→green for every logic-bearing task; coverage >80% on n
 
 ## Phase 4 - Server Actions & Local Review Gate
 
-- [x] Task: Server action wrappers `src/lib/invoices-actions.ts`
+- [x] Task: Server action wrappers `src/lib/invoices-actions.ts` [1fc8930]
   - [ ] Implement `"use server"` wrappers: session resolution + delegation to repo,
         Zod re-validation on every action (no business logic — excluded from coverage)
   - [ ] `pnpm vitest run` full suite green

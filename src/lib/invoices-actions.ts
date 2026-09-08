@@ -11,11 +11,11 @@ import {
 	updateInvoiceDataSchema,
 } from "./invoice-schemas";
 import {
-	InvoiceTransitionError,
-	type InvoiceWithItems,
 	createInvoice as createInvoiceRepo,
 	deleteInvoice as deleteInvoiceRepo,
 	getInvoice as getInvoiceRepo,
+	InvoiceTransitionError,
+	type InvoiceWithItems,
 	listInvoices as listInvoicesRepo,
 	markPaidInvoice as markPaidInvoiceRepo,
 	sendInvoice as sendInvoiceRepo,
@@ -99,10 +99,7 @@ export async function createInvoiceAction(
 		};
 	}
 	try {
-		const invoice = await createInvoiceRepo(
-			await requireUserId(),
-			parsed.data,
-		);
+		const invoice = await createInvoiceRepo(await requireUserId(), parsed.data);
 		return { ok: true, invoice };
 	} catch (error) {
 		return toErrorResult(error);
@@ -166,10 +163,7 @@ export async function deleteInvoiceAction(
 		return { ok: false, reason: "VALIDATION" };
 	}
 	try {
-		const deleted = await deleteInvoiceRepo(
-			await requireUserId(),
-			parsed.data,
-		);
+		const deleted = await deleteInvoiceRepo(await requireUserId(), parsed.data);
 		if (!deleted) {
 			return { ok: false, reason: "NOT_FOUND" };
 		}
@@ -194,10 +188,7 @@ export async function sendInvoiceAction(
 		return { ok: false, reason: "VALIDATION" };
 	}
 	try {
-		const invoice = await sendInvoiceRepo(
-			await requireUserId(),
-			parsed.data,
-		);
+		const invoice = await sendInvoiceRepo(await requireUserId(), parsed.data);
 		return { ok: true, invoice };
 	} catch (error) {
 		return toErrorResult(error);

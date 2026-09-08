@@ -1,5 +1,5 @@
-import { CURRENCIES } from "./schemas";
 import { z } from "zod";
+import { CURRENCIES } from "./schemas";
 
 /**
  * Invoice CRUD schemas, split per tech-stack convention:
@@ -17,7 +17,10 @@ const moneyString = z
 
 const taxRateString = z
 	.string()
-	.regex(/^\d{1,3}(\.\d{1,2})?$/, "Must be a non-negative number with at most 2 decimals")
+	.regex(
+		/^\d{1,3}(\.\d{1,2})?$/,
+		"Must be a non-negative number with at most 2 decimals",
+	)
 	.refine((v) => Number(v) <= 100, "Must be at most 100");
 
 const dateString = z
@@ -31,7 +34,10 @@ const optionalInvoiceNumber = z.preprocess(
 	(v) => (v === "" || v == null ? undefined : v),
 	z
 		.string()
-		.regex(/^INV-\d{4}-\d{4,}$/, "Must match INV-<year>-<sequence>, e.g. INV-2026-0001")
+		.regex(
+			/^INV-\d{4}-\d{4,}$/,
+			"Must match INV-<year>-<sequence>, e.g. INV-2026-0001",
+		)
 		.optional(),
 );
 
@@ -55,12 +61,17 @@ const createBaseFields = {
 	currencyCode: z.enum(CURRENCIES),
 	taxRate: taxRateString.default("0"),
 	discount: moneyString.default("0"),
-	items: z.array(invoiceItemInputSchema).min(1, "At least one line item is required").max(100),
+	items: z
+		.array(invoiceItemInputSchema)
+		.min(1, "At least one line item is required")
+		.max(100),
 };
 
 const dateOrderRefine = <T extends { issueDate: string; dueDate: string }>(
 	data: T,
-) => new Date(`${data.dueDate}T00:00:00Z`) >= new Date(`${data.issueDate}T00:00:00Z`);
+) =>
+	new Date(`${data.dueDate}T00:00:00Z`) >=
+	new Date(`${data.issueDate}T00:00:00Z`);
 
 export const createInvoiceInputSchema = z
 	.object({
@@ -92,9 +103,7 @@ export const createInvoiceDataSchema = z
 		...rest,
 		taxRate: Number(taxRate),
 		discountMinor: Math.round(Number(discount) * 100),
-		items: items.map((item) =>
-			invoiceItemDataSchema.parse(item),
-		),
+		items: items.map((item) => invoiceItemDataSchema.parse(item)),
 	}));
 
 export const updateInvoiceInputSchema = z
@@ -104,7 +113,10 @@ export const updateInvoiceInputSchema = z
 		currencyCode: z.enum(CURRENCIES),
 		taxRate: taxRateString.default("0"),
 		discount: moneyString.default("0"),
-		items: z.array(invoiceItemInputSchema).min(1, "At least one line item is required").max(100),
+		items: z
+			.array(invoiceItemInputSchema)
+			.min(1, "At least one line item is required")
+			.max(100),
 	})
 	.refine(dateOrderRefine, {
 		message: "Due date must be on or after the issue date",
@@ -118,7 +130,10 @@ export const updateInvoiceDataSchema = z
 		currencyCode: z.enum(CURRENCIES),
 		taxRate: taxRateString.default("0"),
 		discount: moneyString.default("0"),
-		items: z.array(invoiceItemInputSchema).min(1, "At least one line item is required").max(100),
+		items: z
+			.array(invoiceItemInputSchema)
+			.min(1, "At least one line item is required")
+			.max(100),
 	})
 	.refine(dateOrderRefine, {
 		message: "Due date must be on or after the issue date",

@@ -1,10 +1,10 @@
 import { afterAll, afterEach, describe, expect, it } from "vitest";
 import { prisma } from "./db";
 import {
-	InvoiceTransitionError,
 	createInvoice,
 	deleteInvoice,
 	getInvoice,
+	InvoiceTransitionError,
 	listInvoices,
 	markPaidInvoice,
 	sendInvoice,
@@ -65,9 +65,7 @@ async function seedInvoice(
 		currencyCode: "USD",
 		taxRate: 10,
 		discountMinor: 0,
-		items: overrides.items ?? [
-			{ description: "Work", amountMinor: 10000 },
-		],
+		items: overrides.items ?? [{ description: "Work", amountMinor: 10000 }],
 	});
 	return { id: invoice.id, invoiceNumber: invoice.invoiceNumber };
 }
@@ -142,9 +140,7 @@ describe("getInvoice / listInvoices — user scoping", () => {
 		expect(invoices).toHaveLength(2);
 		expect(invoices[0].invoiceNumber).toBe("INV-2026-0002");
 		expect(invoices[0].client).toBeDefined();
-		expect(
-			invoices.every((i) => i.invoiceNumber !== "Not-mine"),
-		).toBe(true);
+		expect(invoices.every((i) => i.invoiceNumber !== "Not-mine")).toBe(true);
 	});
 });
 

@@ -62,16 +62,25 @@ describe("createInvoiceInputSchema — transform-free input", () => {
 
 	it("rejects malformed or unparseable dates", () => {
 		expect(() =>
-			createInvoiceInputSchema.parse({ ...validCreateInput, issueDate: "09/08/2026" }),
+			createInvoiceInputSchema.parse({
+				...validCreateInput,
+				issueDate: "09/08/2026",
+			}),
 		).toThrow();
 		expect(() =>
-			createInvoiceInputSchema.parse({ ...validCreateInput, dueDate: "2026-02-30" }),
+			createInvoiceInputSchema.parse({
+				...validCreateInput,
+				dueDate: "2026-02-30",
+			}),
 		).toThrow();
 	});
 
 	it("rejects dueDate earlier than issueDate", () => {
 		expect(() =>
-			createInvoiceInputSchema.parse({ ...validCreateInput, dueDate: "2026-09-01" }),
+			createInvoiceInputSchema.parse({
+				...validCreateInput,
+				dueDate: "2026-09-01",
+			}),
 		).toThrow();
 	});
 
@@ -86,7 +95,10 @@ describe("createInvoiceInputSchema — transform-free input", () => {
 
 	it("rejects unknown currency codes", () => {
 		expect(() =>
-			createInvoiceInputSchema.parse({ ...validCreateInput, currencyCode: "XYZ" }),
+			createInvoiceInputSchema.parse({
+				...validCreateInput,
+				currencyCode: "XYZ",
+			}),
 		).toThrow();
 	});
 

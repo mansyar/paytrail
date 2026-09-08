@@ -85,15 +85,9 @@ describe("nextInvoiceNumber — per-user yearly auto sequence", () => {
 		const userId = await createTestUser();
 		const year = new Date().getFullYear();
 
-		expect(await nextInvoiceNumber(userId, year)).toBe(
-			`INV-${year}-0001`,
-		);
-		expect(await nextInvoiceNumber(userId, year)).toBe(
-			`INV-${year}-0002`,
-		);
-		expect(await nextInvoiceNumber(userId, year)).toBe(
-			`INV-${year}-0003`,
-		);
+		expect(await nextInvoiceNumber(userId, year)).toBe(`INV-${year}-0001`);
+		expect(await nextInvoiceNumber(userId, year)).toBe(`INV-${year}-0002`);
+		expect(await nextInvoiceNumber(userId, year)).toBe(`INV-${year}-0003`);
 	});
 
 	it("starts at 0001 again for a new year for the same user", async () => {
@@ -114,9 +108,7 @@ describe("nextInvoiceNumber — per-user yearly auto sequence", () => {
 		await nextInvoiceNumber(userIdA, year);
 		await nextInvoiceNumber(userIdA, year);
 
-		expect(await nextInvoiceNumber(userIdB, year)).toBe(
-			`INV-${year}-0001`,
-		);
+		expect(await nextInvoiceNumber(userIdB, year)).toBe(`INV-${year}-0001`);
 	});
 });
 
@@ -154,9 +146,7 @@ describe("resolveInvoiceNumber — manual override", () => {
 		expect(result.number).toBe(`INV-${year}-0005`);
 
 		// The next auto number must skip past the manual one.
-		expect(await nextInvoiceNumber(userId, year)).toBe(
-			`INV-${year}-0006`,
-		);
+		expect(await nextInvoiceNumber(userId, year)).toBe(`INV-${year}-0006`);
 	});
 
 	it("rejects a manual number that collides with an existing invoice", async () => {

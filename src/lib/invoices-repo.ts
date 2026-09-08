@@ -1,4 +1,8 @@
-import type { Invoice, InvoiceItem, InvoiceStatus } from "../generated/prisma/client";
+import type {
+	Invoice,
+	InvoiceItem,
+	InvoiceStatus,
+} from "../generated/prisma/client";
 import { prisma } from "./db";
 import { resolveInvoiceNumber } from "./invoice-numbering";
 
@@ -109,9 +113,7 @@ export async function createInvoice(
 			data: {
 				userId,
 				clientId: data.clientId,
-				...(data.projectId !== undefined
-					? { projectId: data.projectId }
-					: {}),
+				...(data.projectId !== undefined ? { projectId: data.projectId } : {}),
 				invoiceNumber: number,
 				status: "DRAFT",
 				issueDate: toDate(data.issueDate),
@@ -280,11 +282,7 @@ export async function markPaidInvoice(
 		select: { status: true },
 	});
 	if (!existing) {
-		throw new InvoiceTransitionError(
-			"Invoice not found",
-			"DRAFT",
-			"MARK_PAID",
-		);
+		throw new InvoiceTransitionError("Invoice not found", "DRAFT", "MARK_PAID");
 	}
 	if (existing.status !== "SENT") {
 		throw new InvoiceTransitionError(

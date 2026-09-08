@@ -29,10 +29,7 @@ export function computeInvoiceTotals({
 	taxRate,
 	discountMinor,
 }: InvoiceTotalsInput): InvoiceTotals {
-	const subtotalMinor = items.reduce(
-		(sum, item) => sum + item.amountMinor,
-		0,
-	);
+	const subtotalMinor = items.reduce((sum, item) => sum + item.amountMinor, 0);
 
 	const discountAppliedMinor = Math.min(
 		Math.max(discountMinor, 0),
