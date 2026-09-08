@@ -8,7 +8,7 @@ Branch: `feat/invoice-builder-ui`
 - [x] Task: Implement `src/lib/` helpers to pass tests (reuse `pricing-engine` matching; no new data-layer logic) — `b5d8e68`
 - [ ] Task: Phase Verification & Checkpoint (Refer to workflow.md)
 
-### Phase 2 — `/invoices` List Page (Status Hub)
+### Phase 2 — `/invoices` List Page (Status Hub) [checkpoint: ef395b4]
 - [x] Task: List server page + user-scoped data load via `listInvoices`, newest-first — `6251357`
 - [x] Task: Status chips incl. derived OVERDUE; status filter chips + text search (client name / invoice number) — `6251357`
 - [x] Task: Row actions — Edit/Send/Mark Paid/Delete with confirmation dialogs; server-action errors surfaced as snackbars — `6251357`
