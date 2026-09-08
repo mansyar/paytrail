@@ -2,6 +2,8 @@ import { describe, expect, it } from "vitest";
 import {
 	createInvoiceDataSchema,
 	createInvoiceInputSchema,
+	fxRateDataSchema,
+	fxRateInputSchema,
 	invoiceIdSchema,
 	updateInvoiceDataSchema,
 	updateInvoiceInputSchema,
@@ -198,5 +200,30 @@ describe("updateInvoiceInputSchema / updateInvoiceDataSchema", () => {
 				items: [{ description: "x", amount: "1.00" }],
 			}),
 		).toThrow();
+	});
+});
+
+describe("fxRate override schema (fx_multi_currency_20260908)", () => {
+	it("accepts a positive decimal string and outputs a number", () => {
+		expect(fxRateDataSchema.parse("1.25")).toBe(1.25);
+		expect(fxRateDataSchema.parse("0.00006154")).toBeCloseTo(0.00006154, 10);
+		expect(fxRateDataSchema.parse("16250")).toBe(16250);
+	});
+
+	it("rejects zero, negative-looking, and non-numeric input", () => {
+		expect(() => fxRateInputSchema.parse("0")).toThrow();
+		expect(() => fxRateInputSchema.parse("-1.5")).toThrow();
+		expect(() => fxRateInputSchema.parse("abc")).toThrow();
+		expect(() => fxRateInputSchema.parse("")).toThrow();
+	});
+
+	it("rejects values outside the sane bound", () => {
+		expect(() => fxRateInputSchema.parse("1000001")).toThrow();
+		expect(fxRateInputSchema.parse("1000000")).toBeTruthy();
+	});
+
+	it("rejects more than 8 decimal places", () => {
+		expect(() => fxRateInputSchema.parse("1.123456789")).toThrow();
+		expect(fxRateInputSchema.parse("1.12345678")).toBeTruthy();
 	});
 });

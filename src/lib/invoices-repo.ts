@@ -387,3 +387,43 @@ export async function markPaidInvoice(
 	});
 	return withDerived(paid);
 }
+
+/**
+ * Manual FX override (fx_multi_currency_20260908): stamps a caller-supplied
+ * rate on a DRAFT invoice whose currency differs from the account home
+ * currency. Session scoping via findFirst; drafts only (sent/paid snapshots
+ * are frozen). fxRateCurrency is set to the home code so an override can
+ * fill in a snapshot that was never derived.
+ */
+export async function setInvoiceFxRate(
+	userId: string,
+	id: string,
+	fxRate: number,
+): Promise<InvoiceWithItems | null> {
+	const existing = await findOwnedInvoiceWithItems(userId, id);
+	if (!existing) return null;
+	if (existing.status !== "DRAFT") {
+		throw new InvoiceTransitionError(
+			"Only draft invoices can override the FX rate — the invoice was already sent or paid",
+			existing.status,
+			"UPDATE",
+		);
+	}
+
+	const home = await getHomeCurrency(userId);
+	if (!home || existing.currencyCode.toUpperCase() === home) {
+		throw new InvoiceValidationError(
+			"FX override only applies to invoices in a non-home currency",
+		);
+	}
+
+	const updated = await prisma.invoice.update({
+		where: { id },
+		data: { fxRate: new Prisma.Decimal(fxRate), fxRateCurrency: home },
+		include: {
+			items: { orderBy: { sortOrder: "asc" } },
+			client: { select: { id: true, name: true } },
+		},
+	});
+	return withDerived(updated);
+}

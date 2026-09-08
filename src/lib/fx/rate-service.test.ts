@@ -1,7 +1,15 @@
-import { afterAll, afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import {
+	afterAll,
+	afterEach,
+	beforeEach,
+	describe,
+	expect,
+	it,
+	vi,
+} from "vitest";
+import type { FxRate } from "../../generated/prisma/client";
 import { Prisma } from "../../generated/prisma/client";
 import { prisma } from "../db";
-import type { FxRate } from "../../generated/prisma/client";
 import { getRate } from "./rate-service";
 
 const PAIRS_TO_CLEAN = [
@@ -73,13 +81,19 @@ describe("getRate", () => {
 		// Every pair in the payload is now cached and fresh.
 		const idr = await prisma.fxRate.findUnique({
 			where: {
-				baseCurrency_quoteCurrency: { baseCurrency: "USD", quoteCurrency: "IDR" },
+				baseCurrency_quoteCurrency: {
+					baseCurrency: "USD",
+					quoteCurrency: "IDR",
+				},
 			},
 		});
 		expect(idr?.rate.toString()).toBe("16000");
 		const jpy = await prisma.fxRate.findUnique({
 			where: {
-				baseCurrency_quoteCurrency: { baseCurrency: "USD", quoteCurrency: "JPY" },
+				baseCurrency_quoteCurrency: {
+					baseCurrency: "USD",
+					quoteCurrency: "JPY",
+				},
 			},
 		});
 		expect(jpy?.rate.toString()).toBe("150");
@@ -102,5 +116,3 @@ describe("getRate", () => {
 		expect(rate).toBeNull();
 	});
 });
-
-

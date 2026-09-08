@@ -1,4 +1,12 @@
-import { afterAll, afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import {
+	afterAll,
+	afterEach,
+	beforeEach,
+	describe,
+	expect,
+	it,
+	vi,
+} from "vitest";
 import { prisma } from "./db";
 import {
 	createInvoice,
@@ -8,6 +16,7 @@ import {
 	listInvoices,
 	markPaidInvoice,
 	sendInvoice,
+	setInvoiceFxRate,
 	updateInvoice,
 } from "./invoices-repo";
 
@@ -44,7 +53,12 @@ async function createTestClient(
 	currencyCode = "USD",
 ): Promise<string> {
 	const client = await prisma.client.create({
-		data: { id: crypto.randomUUID(), userId, name: "Invoice Test Client", currencyCode },
+		data: {
+			id: crypto.randomUUID(),
+			userId,
+			name: "Invoice Test Client",
+			currencyCode,
+		},
 	});
 	return client.id;
 }
@@ -619,5 +633,78 @@ describe("FX snapshot semantics (fx_multi_currency_20260908)", () => {
 
 		expect(sent.status).toBe("SENT");
 		expect(sent.fxRate?.toNumber()).toBeCloseTo(1.25, 6);
+	});
+});
+
+describe("setInvoiceFxRate — manual override (fx_multi_currency_20260908)", () => {
+	beforeEach(async () => {
+		await prisma.fxRate.deleteMany({
+			where: { baseCurrency: "USD", quoteCurrency: { in: ["EUR", "IDR"] } },
+		});
+	});
+
+	it("stamps the override rate and home currency on a draft", async () => {
+		const userId = await createTestUser();
+		await createBusinessProfile(userId, "USD");
+		const clientId = await createTestClient(userId, "EUR");
+		const created = await createInvoice(
+			userId,
+			{
+				clientId,
+				issueDate: "2026-09-01",
+				dueDate: "2026-09-15",
+				currencyCode: "EUR",
+				taxRate: 0,
+				discountMinor: 0,
+				items: [{ description: "x", amountMinor: 10000 }],
+			},
+			{ fetchJson: vi.fn().mockRejectedValue(new Error("down")) },
+		);
+		expect(created.fxRate).toBeNull();
+
+		const updated = await setInvoiceFxRate(userId, created.id, 1.42);
+
+		expect(updated?.fxRate?.toNumber()).toBe(1.42);
+		expect(updated?.fxRateCurrency).toBe("USD");
+	});
+
+	it("only lets the owner override and only on drafts", async () => {
+		const userId = await createTestUser();
+		const otherUserId = await createTestUser();
+		await createBusinessProfile(otherUserId, "USD");
+		const clientId = await createTestClient(otherUserId, "EUR");
+		const created = await createInvoice(
+			otherUserId,
+			{
+				clientId,
+				issueDate: "2026-09-01",
+				dueDate: "2026-09-15",
+				currencyCode: "EUR",
+				taxRate: 0,
+				discountMinor: 0,
+				items: [{ description: "x", amountMinor: 10000 }],
+			},
+			{ fetchJson: vi.fn().mockRejectedValue(new Error("down")) },
+		);
+
+		// Another user's invoice: invisible.
+		await expect(setInvoiceFxRate(userId, created.id, 1.5)).resolves.toBeNull();
+
+		// Sent invoices are frozen.
+		await sendInvoice(otherUserId, created.id);
+		await expect(
+			setInvoiceFxRate(otherUserId, created.id, 1.5),
+		).rejects.toBeInstanceOf(InvoiceTransitionError);
+	});
+
+	it("rejects an override on a home-currency invoice", async () => {
+		const userId = await createTestUser();
+		await createBusinessProfile(userId, "USD");
+		const clientId = await createTestClient(userId, "USD");
+		const { id } = await seedInvoice(userId, { clientId });
+
+		await expect(setInvoiceFxRate(userId, id, 1.5)).rejects.toThrow(
+			/home currency/i,
+		);
 	});
 });
