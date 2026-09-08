@@ -751,6 +751,9 @@ export function InvoiceBuilder({
 							</Stack>
 							{isForeignCurrency && fxRateValid && (
 								<Stack direction="row" sx={{ justifyContent: "flex-end" }}>
+									{/* Display-only approximation (marked with a tilde): float math
+								is exact at these magnitudes and deterministic after round(); money
+								persistence stays integer minor units. */}
 									<Typography color="text.secondary" variant="caption">
 										{`≈ ${formatMoney(Math.round(totals.totalMinor * parsedFxRate), profile.currencyCode)} @ ${formatFxRate(fxRateValue)} ${profile.currencyCode}`}
 									</Typography>

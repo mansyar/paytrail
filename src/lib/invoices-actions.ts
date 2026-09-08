@@ -86,7 +86,8 @@ export type InvoiceActionResult<T> =
 				| "VALIDATION"
 				| "NOT_FOUND"
 				| "NUMBER_TAKEN"
-				| "INVALID_TRANSITION";
+				| "INVALID_TRANSITION"
+				| "INVALID_STATE";
 			message?: string;
 			issues?: ValidationIssue[];
 	  };
@@ -125,7 +126,7 @@ function toErrorResult(error: unknown): InvoiceActionResult<never> {
 		return { ok: false, reason: "NUMBER_TAKEN", message: error.message };
 	}
 	if (error instanceof InvoiceValidationError) {
-		return { ok: false, reason: "NOT_FOUND", message: error.message };
+		return { ok: false, reason: "INVALID_STATE", message: error.message };
 	}
 	throw error;
 }

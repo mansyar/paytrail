@@ -107,4 +107,29 @@ describe("getRate", () => {
 
 		expect(rate).toBeNull();
 	});
+
+	it("rethrows non-provider errors instead of masking them as a missing rate", async () => {
+		await seedRate("USD", "EUR", "0.8", 30);
+		const dbError = new Error("db connection lost");
+		const prismaClient = {
+			fxRate: {
+				findUnique: vi.fn().mockResolvedValue(null),
+				deleteMany: vi.fn().mockResolvedValue({ count: 0 }),
+				createMany: vi.fn().mockResolvedValue({ count: 0 }),
+			},
+			$transaction: vi.fn().mockRejectedValue(dbError),
+		};
+		const fetchJson = vi.fn().mockResolvedValue({
+			result: "success",
+			rates: { EUR: 0.9 },
+		});
+
+		const deps: NonNullable<Parameters<typeof getRate>[2]> = {
+			fetchJson,
+			prismaClient: prismaClient as unknown as NonNullable<
+				Parameters<typeof getRate>[2]
+			>["prismaClient"],
+		};
+		await expect(getRate("USD", "EUR", deps)).rejects.toBe(dbError);
+	});
 });

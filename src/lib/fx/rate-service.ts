@@ -1,6 +1,6 @@
 import { Prisma } from "../../generated/prisma/client";
 import { prisma } from "../db";
-import { type FetchJson, fetchLatestRates } from "./provider";
+import { type FetchJson, FxProviderError, fetchLatestRates } from "./provider";
 
 /**
  * FX rate service (fx_multi_currency_20260908).
@@ -70,15 +70,18 @@ export async function getRate(
 		const latest = await fetchLatestRates(home, fetchJson);
 		const raw = latest.rates[invoice];
 		if (raw === undefined) {
-			throw new Error(
+			throw new FxProviderError(
 				`FX provider payload for ${home} does not include ${invoice}`,
 			);
 		}
 
 		await refreshRatePayload(db, latest.base, latest.rates);
 		return new Prisma.Decimal(1).div(raw);
-	} catch {
-		// Provider unreachable or payload unusable: last-known rate wins.
+	} catch (error) {
+		// Provider failures (network, invalid payload, missing pair) fall back
+		// to the last-known rate; unexpected errors (e.g. DB faults) propagate
+		// instead of being masked as a missing rate.
+		if (!(error instanceof FxProviderError)) throw error;
 		return cached !== null ? deriveMultiplier(cached.rate) : null;
 	}
 }

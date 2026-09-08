@@ -31,7 +31,9 @@ export default async function InvoicesPage() {
 	const rows: InvoiceListRow[] = invoices.map((invoice) => {
 		// Home-currency equivalent, only for non-home currency invoices with
 		// a snapshot (fx_multi_currency_20260908): legacy/missing-rate invoices
-		// show nothing rather than a wrong "1" conversion.
+		// show nothing rather than a wrong "1" conversion. Float math is
+		// acceptable here: display-only approximation (marked "≈"), exact in
+		// doubles at these magnitudes and deterministic after round().
 		const fxRate = invoice.fxRate?.toString() ?? null;
 		const homeEquivalentMinor =
 			homeCurrency !== invoice.currencyCode && fxRate

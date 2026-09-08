@@ -59,17 +59,23 @@ export default async function NewInvoicePage() {
 	// Effective FX rates for the builder's rate field
 	// (fx_multi_currency_20260908): one rate-service call per foreign client
 	// currency (cache-backed), rounded to the 8 decimals the schema accepts.
+	// Concurrent resolution: sequential getRate calls can stack 5s provider
+	// timeouts serially on a cold cache.
+	const foreignCurrencies = [
+		...new Set(
+			clients.map((c) => c.currencyCode).filter((c) => c !== profile.currency),
+		),
+	];
+	const rates = await Promise.all(
+		foreignCurrencies.map((c) => getRate(profile.currency, c)),
+	);
 	const fxRates: Record<string, string | null> = {};
-	for (const currency of new Set(
-		clients
-			.map((client) => client.currencyCode)
-			.filter((c) => c !== profile.currency),
-	)) {
-		const rate = await getRate(profile.currency, currency);
+	foreignCurrencies.forEach((currency, i) => {
+		const rate = rates[i];
 		fxRates[currency] = rate
 			? (Math.round(rate.toNumber() * 1e8) / 1e8).toString()
 			: null;
-	}
+	});
 
 	return (
 		<Stack
