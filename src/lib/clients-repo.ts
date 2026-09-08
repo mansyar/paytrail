@@ -21,11 +21,10 @@ export type ClientWithProjectCount = Prisma.ClientGetPayload<{
 }>;
 
 /**
- * Counts invoices attached to a client. The Invoices track will replace
- * this stub with a real `prisma.invoice.count` query once the model exists.
+ * Counts invoices attached to a client.
  */
-async function countInvoicesByClient(_clientId: string): Promise<number> {
-	return 0;
+async function countInvoicesByClient(clientId: string): Promise<number> {
+	return prisma.invoice.count({ where: { clientId } });
 }
 
 export async function createClient(
