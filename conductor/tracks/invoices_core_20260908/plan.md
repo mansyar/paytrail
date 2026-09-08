@@ -19,7 +19,7 @@ Testing discipline: red→green for every logic-bearing task; coverage >80% on n
   - [ ] `pnpm exec tsc --noEmit` clean
 - [x] Task: Phase Verification & Checkpoint (refer to workflow.md) [fa60f69]
 
-## Phase 2 — Domain Logic: Numbering, Totals, Schemas (TDD)
+## Phase 2 - Domain Logic: Numbering, Totals, Schemas (TDD) [checkpoint: ba44c1b]
 
 - [x] Task: Invoice numbering (per-user yearly sequence, manual override, collision skip) [ba44c1b]
   - [ ] Write failing tests `src/lib/invoice-numbering.test.ts`: first invoice of a year
@@ -43,7 +43,7 @@ Testing discipline: red→green for every logic-bearing task; coverage >80% on n
   - [ ] Confirm tests fail (red)
   - [ ] Implement `src/lib/invoice-schemas.ts` following the input/output split
   - [ ] Tests pass (green)
-- [ ] Task: Phase Verification & Checkpoint (refer to workflow.md)
+- [x] Task: Phase Verification & Checkpoint (refer to workflow.md) [ba44c1b]
 
 ## Phase 3 — Repo: Ownership Scoping, Status Lifecycle, Deletion Safety (TDD)
 
