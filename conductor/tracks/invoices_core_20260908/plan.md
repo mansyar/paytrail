@@ -47,7 +47,7 @@ Testing discipline: red→green for every logic-bearing task; coverage >80% on n
 
 ## Phase 3 — Repo: Ownership Scoping, Status Lifecycle, Deletion Safety (TDD)
 
-- [ ] Task: Invoice repository `src/lib/invoices-repo.ts`
+- [x] Task: Invoice repository `src/lib/invoices-repo.ts` [e9b5ee2]
   - [ ] Write failing tests `src/lib/invoices-repo.test.ts` (mock/DB per existing
         repo-test style, e.g. `clients-repo.test.ts`): create with items; list/get
         user-scoped (cross-user access impossible); update restricted to DRAFT; delete
@@ -57,7 +57,7 @@ Testing discipline: red→green for every logic-bearing task; coverage >80% on n
   - [ ] Confirm tests fail (red)
   - [ ] Implement `src/lib/invoices-repo.ts`
   - [ ] Tests pass (green); coverage >80%
-- [ ] Task: Deletion safety for clients/projects with attached invoices
+- [~] Task: Deletion safety for clients/projects with attached invoices
   - [ ] Write failing tests extending `src/lib/clients-repo.test.ts` /
         `src/lib/projects-repo.test.ts`: client deletion blocked when invoices attached;
         project deletion blocked when invoices attached; deletion allowed when none;
