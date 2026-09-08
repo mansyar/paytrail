@@ -150,9 +150,9 @@ test("critical path: dashboard → invoice → send in under 2 minutes and 10 cl
 			.or(page.getByRole("link", { name: /back/i })),
 	);
 	await expect(page).toHaveURL(/\/invoices$/);
-	await expect(page.getByText(/^INV-\d{4}-\d{4,}$/).first()).toBeVisible({
-		timeout: 30_000,
-	});
+	await expect(
+		page.locator("a:visible", { hasText: /^INV-\d{4}-\d{4,}$/ }).first(),
+	).toBeVisible({ timeout: 30_000 });
 
 	// Dashboard reflects one outstanding (sent, unpaid) invoice
 	await page.getByRole("link", { name: "Dashboard", exact: true }).click();

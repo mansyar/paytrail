@@ -6,9 +6,10 @@ import { notFound, redirect } from "next/navigation";
 import { InvoiceBuilder } from "@/components/invoices/invoice-builder";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/db";
+import { invoiceIdSchema } from "@/lib/invoice-schemas";
 import { getInvoice } from "@/lib/invoices-repo";
 import { isOnboardingComplete } from "@/lib/onboarding";
-import type { PaymentTerms } from "@/lib/schemas";
+import type { CurrencyCode, PaymentTerms } from "@/lib/schemas";
 
 export const metadata = { title: "Invoice — PayTrail" };
 
@@ -18,6 +19,11 @@ export default async function InvoicePage({
 	params: Promise<{ id: string }>;
 }) {
 	const { id } = await params;
+	// The id comes from the URL — validate before it reaches the data layer.
+	const parsedId = invoiceIdSchema.safeParse(id);
+	if (!parsedId.success) {
+		notFound();
+	}
 
 	const session = await auth.api.getSession({
 		headers: await headers(),
@@ -35,7 +41,7 @@ export default async function InvoicePage({
 	const userId = session.user.id;
 
 	const [invoice, clients, projects, rules, profile] = await Promise.all([
-		getInvoice(userId, id),
+		getInvoice(userId, parsedId.data),
 		prisma.client.findMany({
 			where: { userId },
 			orderBy: { name: "asc" },
@@ -89,6 +95,9 @@ export default async function InvoicePage({
 					id: invoice.id,
 					status: invoice.derivedStatus,
 					clientId: invoice.clientId,
+					// The schema validated currencyCode at creation; the Prisma column
+					// is a plain string, so this cast only restores the union type.
+					currencyCode: invoice.currencyCode as CurrencyCode,
 					projectId: invoice.projectId,
 					invoiceNumber: invoice.invoiceNumber,
 					issueDate: invoice.issueDate.toISOString().slice(0, 10),
@@ -111,6 +120,8 @@ export default async function InvoicePage({
 					logo: profile.logo,
 					currencyCode: profile.currency,
 					defaultTaxRate: profile.defaultTaxRate.toFixed(2),
+					// profile.paymentTerms is a nullable string column; PAYMENT_TERMS
+					// values are the only ones written (schemas.ts), so the cast is safe.
 					paymentTerms: profile.paymentTerms as PaymentTerms | null,
 				}}
 				projects={projects}

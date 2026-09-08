@@ -38,7 +38,7 @@ import { formatMoney } from "@/lib/money-format";
 import { minorToAmountString, parseAmountToMinor } from "@/lib/money-input";
 import type { RateSuggestion } from "@/lib/rate-suggestions";
 import { suggestRateForDescription } from "@/lib/rate-suggestions";
-import type { PaymentTerms } from "@/lib/schemas";
+import type { CurrencyCode, PaymentTerms } from "@/lib/schemas";
 import { InvoicePreview } from "./invoice-preview";
 import { InvoiceStatusChip } from "./invoice-status-chip";
 
@@ -76,6 +76,8 @@ export interface BuilderInvoice {
 	id: string;
 	status: "DRAFT" | "SENT" | "PAID" | "OVERDUE";
 	clientId: string;
+	/** The invoice's stored currency — edit-mode form default (locked to the client). */
+	currencyCode: CurrencyCode;
 	projectId: string | null;
 	invoiceNumber: string;
 	issueDate: string;
@@ -152,7 +154,7 @@ export function InvoiceBuilder({
 				invoiceNumber: invoice.invoiceNumber,
 				issueDate: invoice.issueDate,
 				dueDate: invoice.dueDate,
-				currencyCode: "" as CreateInvoiceInput["currencyCode"],
+				currencyCode: invoice.currencyCode,
 				taxRate: invoice.taxRate,
 				discount: minorToAmountString(invoice.discountMinor),
 				items: invoice.items.map((item) => ({
@@ -166,6 +168,8 @@ export function InvoiceBuilder({
 				invoiceNumber: nextInvoiceNumber,
 				issueDate: todayUTC(),
 				dueDate: dueDateUTC(profile.paymentTerms),
+				// profile.currencyCode is a plain string column; CURRENCIES values
+				// are the only ones ever written (schemas.ts), so the cast is safe.
 				currencyCode:
 					profile.currencyCode as CreateInvoiceInput["currencyCode"],
 				taxRate: profile.defaultTaxRate,
@@ -247,7 +251,7 @@ export function InvoiceBuilder({
 		return amount === auto.rateMinor ? auto : null;
 	};
 
-	const onSubmit = async (values: CreateInvoiceInput) => {
+	const submitInvoice = async (values: CreateInvoiceInput) => {
 		setFormError(null);
 		const shouldSend = sendAfterSave.current;
 		sendAfterSave.current = false;
@@ -314,6 +318,15 @@ export function InvoiceBuilder({
 		router.push(`/invoices/${result.invoice.id}`);
 	};
 
+	// Catches thrown transport/server failures the typed results don't cover.
+	const onSubmit = async (values: CreateInvoiceInput) => {
+		try {
+			await submitInvoice(values);
+		} catch {
+			setFormError("Something went wrong. Please try again.");
+		}
+	};
+
 	const openSendConfirm = () => {
 		setSendConfirmOpen(true);
 	};
@@ -327,12 +340,16 @@ export function InvoiceBuilder({
 
 	const markPaid = async () => {
 		if (!invoice) return;
-		const result = await markPaidInvoiceAction(invoice.id);
-		if (!result.ok) {
-			setFormError(result.message ?? "Could not mark the invoice as paid.");
-			return;
+		try {
+			const result = await markPaidInvoiceAction(invoice.id);
+			if (!result.ok) {
+				setFormError(result.message ?? "Could not mark the invoice as paid.");
+				return;
+			}
+			router.refresh();
+		} catch {
+			setFormError("Something went wrong. Please try again.");
 		}
-		router.refresh();
 	};
 
 	return (
@@ -702,6 +719,8 @@ export function InvoiceBuilder({
 					<InvoicePreview
 						clientName={selectedClient?.name ?? "—"}
 						currencyCode={currencyCode}
+						// useWatch returns loosely-typed field values; these casts narrow
+						// fields with known string shapes.
 						dueDate={(watched.dueDate as string | undefined) ?? ""}
 						invoiceNumber={
 							(watched.invoiceNumber as string | undefined) || nextInvoiceNumber
@@ -716,6 +735,8 @@ export function InvoiceBuilder({
 					<InvoicePreview
 						clientName={selectedClient?.name ?? "—"}
 						currencyCode={currencyCode}
+						// useWatch returns loosely-typed field values; these casts narrow
+						// fields with known string shapes.
 						dueDate={(watched.dueDate as string | undefined) ?? ""}
 						invoiceNumber={
 							(watched.invoiceNumber as string | undefined) || nextInvoiceNumber

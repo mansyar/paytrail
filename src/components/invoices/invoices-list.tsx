@@ -121,6 +121,12 @@ export function InvoicesList({ invoices }: { invoices: InvoiceListRow[] }) {
 					message: actionErrorMessage(result.reason ?? "", result.message),
 				});
 			}
+		} catch {
+			// Transport/server failures the typed results don't cover.
+			setFeedback({
+				severity: "error",
+				message: "Something went wrong. Please try again.",
+			});
 		} finally {
 			setPending(false);
 			setConfirm(null);

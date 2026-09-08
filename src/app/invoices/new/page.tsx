@@ -103,6 +103,8 @@ export default async function NewInvoicePage() {
 						logo: profile.logo,
 						currencyCode: profile.currency,
 						defaultTaxRate: profile.defaultTaxRate.toFixed(2),
+						// profile.paymentTerms is a nullable string column; PAYMENT_TERMS
+						// values are the only ones written (schemas.ts), so the cast is safe.
 						paymentTerms: profile.paymentTerms as PaymentTerms | null,
 					}}
 					projects={projects}
