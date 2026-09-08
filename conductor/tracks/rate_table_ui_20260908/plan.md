@@ -20,7 +20,7 @@
 - [ ] Task: Phase Verification & Checkpoint (Refer to workflow.md)
 
 ## Phase 3: E2E + review gate
-- [~] Task: Playwright e2e spec (`e2e/profile-rate-rules.spec.ts`)
+- [x] Task: Playwright e2e spec (`e2e/profile-rate-rules.spec.ts`) — `776f9e6`
   - On `/profile`: add → edit → duplicate keyword rejected with visible error → reorder → delete (confirm + cancel paths).
-- [ ] Task: Local review gate — Biome, `tsc --noEmit`, `vitest run`, `pnpm build`, self-review vs product-guidelines + security checklist (Refer to workflow.md)
+- [x] Task: Local review gate — Biome, `tsc --noEmit`, `vitest run`, `pnpm build`, self-review vs product-guidelines + security checklist (Refer to workflow.md) — `776f9e6`
 - [ ] Task: Phase Verification & Checkpoint (Refer to workflow.md)
