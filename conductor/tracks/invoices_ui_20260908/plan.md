@@ -2,7 +2,7 @@
 
 Branch: `feat/invoice-builder-ui`
 
-### Phase 1 — Logic Glue: Units, Suggestions, Derived Status (TDD)
+### Phase 1 — Logic Glue: Units, Suggestions, Derived Status (TDD) [checkpoint: 86f780f]
 - [x] Task: Write failing tests for decimal-input → integer minor-units conversion helper (parsing, rounding, negative/invalid input) — `b5d8e68`
 - [x] Task: Write failing tests for rate-rule suggestion mapping (description + rules → matched suggestion with rule cue; no match → null; user override untouched) — `b5d8e68`
 - [x] Task: Implement `src/lib/` helpers to pass tests (reuse `pricing-engine` matching; no new data-layer logic) — `b5d8e68`
