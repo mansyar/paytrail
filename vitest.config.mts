@@ -10,6 +10,7 @@ const DB_SUITES = [
 	"src/lib/onboarding.test.ts",
 	"src/lib/projects-repo.test.ts",
 	"src/lib/rate-rules.test.ts",
+	"src/lib/fx/rate-service.test.ts",
 ];
 
 export default defineConfig({
