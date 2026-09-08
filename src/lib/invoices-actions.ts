@@ -43,6 +43,39 @@ async function requireUserId(): Promise<string> {
 
 type ValidationIssue = { path: string; message: string };
 
+/**
+ * Plain, Flight-serializable invoice snapshot. Server-action results
+ * cross the RSC boundary to client components, so Prisma-only types
+ * (Decimal taxRate, Date fields) must not leak into the return value.
+ */
+export type SerializableInvoice = {
+	id: string;
+	invoiceNumber: string;
+	status: InvoiceWithItems["status"];
+	derivedStatus: InvoiceWithItems["derivedStatus"];
+	clientId: string;
+	projectId: string | null;
+	currencyCode: string;
+	issueDate: string;
+	dueDate: string;
+	totalMinor: number;
+};
+
+function toSerializableInvoice(invoice: InvoiceWithItems): SerializableInvoice {
+	return {
+		id: invoice.id,
+		invoiceNumber: invoice.invoiceNumber,
+		status: invoice.status,
+		derivedStatus: invoice.derivedStatus,
+		clientId: invoice.clientId,
+		projectId: invoice.projectId,
+		currencyCode: invoice.currencyCode,
+		issueDate: invoice.issueDate.toISOString().slice(0, 10),
+		dueDate: invoice.dueDate.toISOString().slice(0, 10),
+		totalMinor: invoice.totals.totalMinor,
+	};
+}
+
 export type InvoiceActionResult<T> =
 	| { ok: true; invoice: T }
 	| {
@@ -57,7 +90,7 @@ export type InvoiceActionResult<T> =
 	  };
 
 export type InvoiceListResult =
-	| { ok: true; invoices: InvoiceWithItems[] }
+	| { ok: true; invoices: SerializableInvoice[] }
 	| { ok: false; reason: "VALIDATION"; message?: string };
 
 export type InvoiceDeleteResult =
@@ -97,7 +130,7 @@ function toErrorResult(error: unknown): InvoiceActionResult<never> {
 
 export async function createInvoiceAction(
 	input: CreateInvoiceInput,
-): Promise<InvoiceActionResult<InvoiceWithItems>> {
+): Promise<InvoiceActionResult<SerializableInvoice>> {
 	const parsed = createInvoiceDataSchema.safeParse(input);
 	if (!parsed.success) {
 		return {
@@ -108,7 +141,7 @@ export async function createInvoiceAction(
 	}
 	try {
 		const invoice = await createInvoiceRepo(await requireUserId(), parsed.data);
-		return { ok: true, invoice };
+		return { ok: true, invoice: toSerializableInvoice(invoice) };
 	} catch (error) {
 		return toErrorResult(error);
 	}
@@ -116,7 +149,7 @@ export async function createInvoiceAction(
 
 export async function getInvoiceAction(
 	invoiceId: string,
-): Promise<InvoiceActionResult<InvoiceWithItems>> {
+): Promise<InvoiceActionResult<SerializableInvoice>> {
 	const parsed = invoiceIdSchema.safeParse(invoiceId);
 	if (!parsed.success) {
 		return { ok: false, reason: "VALIDATION" };
@@ -125,17 +158,22 @@ export async function getInvoiceAction(
 	if (!invoice) {
 		return { ok: false, reason: "NOT_FOUND" };
 	}
-	return { ok: true, invoice };
+	return { ok: true, invoice: toSerializableInvoice(invoice) };
 }
 
 export async function listInvoicesAction(): Promise<InvoiceListResult> {
-	return { ok: true, invoices: await listInvoicesRepo(await requireUserId()) };
+	return {
+		ok: true,
+		invoices: (await listInvoicesRepo(await requireUserId())).map(
+			toSerializableInvoice,
+		),
+	};
 }
 
 export async function updateInvoiceAction(
 	invoiceId: string,
 	input: UpdateInvoiceInput,
-): Promise<InvoiceActionResult<InvoiceWithItems>> {
+): Promise<InvoiceActionResult<SerializableInvoice>> {
 	const id = invoiceIdSchema.safeParse(invoiceId);
 	if (!id.success) {
 		return { ok: false, reason: "VALIDATION" };
@@ -157,7 +195,7 @@ export async function updateInvoiceAction(
 		if (!invoice) {
 			return { ok: false, reason: "NOT_FOUND" };
 		}
-		return { ok: true, invoice };
+		return { ok: true, invoice: toSerializableInvoice(invoice) };
 	} catch (error) {
 		return toErrorResult(error);
 	}
@@ -190,14 +228,14 @@ export async function deleteInvoiceAction(
 
 export async function sendInvoiceAction(
 	invoiceId: string,
-): Promise<InvoiceActionResult<InvoiceWithItems>> {
+): Promise<InvoiceActionResult<SerializableInvoice>> {
 	const parsed = invoiceIdSchema.safeParse(invoiceId);
 	if (!parsed.success) {
 		return { ok: false, reason: "VALIDATION" };
 	}
 	try {
 		const invoice = await sendInvoiceRepo(await requireUserId(), parsed.data);
-		return { ok: true, invoice };
+		return { ok: true, invoice: toSerializableInvoice(invoice) };
 	} catch (error) {
 		return toErrorResult(error);
 	}
@@ -205,7 +243,7 @@ export async function sendInvoiceAction(
 
 export async function markPaidInvoiceAction(
 	invoiceId: string,
-): Promise<InvoiceActionResult<InvoiceWithItems>> {
+): Promise<InvoiceActionResult<SerializableInvoice>> {
 	const parsed = invoiceIdSchema.safeParse(invoiceId);
 	if (!parsed.success) {
 		return { ok: false, reason: "VALIDATION" };
@@ -215,7 +253,7 @@ export async function markPaidInvoiceAction(
 			await requireUserId(),
 			parsed.data,
 		);
-		return { ok: true, invoice };
+		return { ok: true, invoice: toSerializableInvoice(invoice) };
 	} catch (error) {
 		return toErrorResult(error);
 	}

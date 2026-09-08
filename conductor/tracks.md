@@ -4,3 +4,4 @@
 - [x] **Track: Clients & Projects CRUD** *Link: [archive/clients_projects_20260907/index.md](./archive/clients_projects_20260907/index.md)*
 - [x] **Track: Invoice core data model + CRUD — Invoice/InvoiceItem schema, yearly numbering with collision skip, status lifecycle (DRAFT→SENT→PAID), user-scoped server actions, deletion safety** *Link: [archive/invoices_core_20260908/index.md](./archive/invoices_core_20260908/index.md)*
 - [x] **Track: Test Suite Stabilization & CI Hardening** *Link: [archive/test_stabilization_20260908/index.md](./archive/test_stabilization_20260908/index.md)*
+- [x] **Track: Invoice Builder UI — /invoices status hub + mobile-first builder with live preview, rate-rule price suggestions, send/lock flow, dashboard link, critical-path E2E** *Link: [archive/invoices_ui_20260908/index.md](./archive/invoices_ui_20260908/index.md)*
