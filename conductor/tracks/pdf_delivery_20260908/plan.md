@@ -38,10 +38,10 @@ Branch: `feat/pdf-generation-delivery`
 - [x] Task: Commit `feat(invoices): download and email actions on invoice detail` + git note + plan update — sha d15b204
 - [x] Task: Phase Verification & Checkpoint (Refer to workflow.md) — user verified manually; report in git notes on dce9a9d
 
-## Phase 4: E2E, docs, and pre-push gate [checkpoint: pending-final]
+## Phase 4: E2E, docs, and pre-push gate [checkpoint: e3b9474]
 
 - [x] Task: Playwright E2E — download response headers + PDF magic bytes; DRAFT vs SENT watermark via unit-covered renderer; mobile viewport pass — sha 6b9d814
 - [x] Task: Update tech-stack.md notes if any deviations surfaced (pdfkit specifics)
 - [x] Task: Full local review gate — biome ✓, tsc ✓, test:all 202 passed ✓, build ✓
-- [x] Task: Push, open PR, merge after green CI — pushed 19dcec2; PR #10; merge pending CI green
+- [x] Task: Push, open PR, merge after green CI — pushed 19dcec2; PR #10 merged after green CI (verify ✓, e2e ✓) — merge sha e3b9474
 - [x] Task: Phase Verification & Checkpoint (Refer to workflow.md) — user approved; report in git notes
