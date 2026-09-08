@@ -45,7 +45,7 @@ Testing discipline: red→green for every logic-bearing task; coverage >80% on n
   - [ ] Tests pass (green)
 - [x] Task: Phase Verification & Checkpoint (refer to workflow.md) [ba44c1b]
 
-## Phase 3 — Repo: Ownership Scoping, Status Lifecycle, Deletion Safety (TDD)
+## Phase 3 - Repo: Ownership Scoping, Status Lifecycle, Deletion Safety (TDD) [checkpoint: 663b72f]
 
 - [x] Task: Invoice repository `src/lib/invoices-repo.ts` [e9b5ee2]
   - [ ] Write failing tests `src/lib/invoices-repo.test.ts` (mock/DB per existing
@@ -65,9 +65,9 @@ Testing discipline: red→green for every logic-bearing task; coverage >80% on n
   - [ ] Confirm tests fail (red)
   - [ ] Implement guards in `src/lib/clients-repo.ts` / `src/lib/projects-repo.ts`
   - [ ] Tests pass (green)
-- [ ] Task: Phase Verification & Checkpoint (refer to workflow.md)
+- [x] Task: Phase Verification & Checkpoint (refer to workflow.md) [663b72f]
 
-## Phase 4 — Server Actions & Local Review Gate
+## Phase 4 - Server Actions & Local Review Gate
 
 - [ ] Task: Server action wrappers `src/lib/invoices-actions.ts`
   - [ ] Implement `"use server"` wrappers: session resolution + delegation to repo,
