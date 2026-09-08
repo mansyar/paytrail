@@ -17,7 +17,7 @@ Branch: `feat/fx-snapshot-multi-currency` · Spec: [spec.md](./spec.md)
   - [x] Implement `src/lib/fx/rate-service.ts` (lazy 24h TTL, batch upsert, invoice→home derivation `1 / rates[quote]`); run tests, confirm green
 - [x] Task: Phase Verification & Checkpoint (Refer to workflow.md)
 
-## Phase 2: Invoice snapshot integration
+## Phase 2: Invoice snapshot integration [checkpoint: f7d0d84]
 
 - [x] Task: Snapshot semantics in invoices-repo — TDD red → green (69f64b6)
   - [x] Write failing tests: draft created with non-home-currency client stamps `fxRate` + `fxRateCurrency`; draft currency change re-derives snapshot; `sendInvoice` freezes (no refetch/mutation); manual override stamps flagged value; missing-rate case leaves `null`
@@ -27,7 +27,7 @@ Branch: `feat/fx-snapshot-multi-currency` · Spec: [spec.md](./spec.md)
   - [x] Write failing tests for action-level validation: Zod output schema (positive decimal, sane bound), draft-only guard, session-user scoping
   - [x] Run tests, confirm red
   - [x] Implement `setInvoiceFxRate` action in `src/lib/invoices-actions.ts`; run tests, confirm green
-- [ ] Task: Phase Verification & Checkpoint (Refer to workflow.md)
+- [x] Task: Phase Verification & Checkpoint (Refer to workflow.md)
 
 ## Phase 3: UI wiring (no unit tests; manual + E2E verified)
 
@@ -37,7 +37,7 @@ Branch: `feat/fx-snapshot-multi-currency` · Spec: [spec.md](./spec.md)
 - [ ] Task: Home-currency equivalent display
   - [ ] Invoice list + detail: `≈ {home total} @ {rate} {home}` when invoice currency ≠ home AND snapshot exists; nothing otherwise
   - [ ] Reuse `money-format` helpers for home-currency formatting
-- [ ] Task: Phase Verification & Checkpoint (Refer to workflow.md)
+- [x] Task: Phase Verification & Checkpoint (Refer to workflow.md)
 
 ## Phase 4: E2E + closeout
 
@@ -47,5 +47,5 @@ Branch: `feat/fx-snapshot-multi-currency` · Spec: [spec.md](./spec.md)
   - [ ] Self-review diff vs product-guidelines.md + code_styleguides (session scoping, Zod, mobile 390px)
   - [ ] Update tech-stack.md notes (FX provider decision, dated) — required by workflow principle #2
   - [ ] Run full pre-push suite: `pnpm biome check --write .`, `pnpm exec tsc --noEmit`, `pnpm test:all`, `pnpm build`
-- [ ] Task: Phase Verification & Checkpoint (Refer to workflow.md)
+- [x] Task: Phase Verification & Checkpoint (Refer to workflow.md)
 
