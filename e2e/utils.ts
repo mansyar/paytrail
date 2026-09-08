@@ -51,9 +51,9 @@ export async function signUpToProfile(page: Page, email: string) {
 }
 
 /**
- * Clicks the trigger and waits for the dialog. The page may not be
- * hydrated yet in dev mode — a click before hydration is a no-op, so
- * retry until the dialog actually appears.
+ * Clicks the trigger and waits for the dialog. A click before hydration
+ * is a no-op, so retry until the dialog actually appears (defensive:
+ * the prod-build server still has a first-paint gap under CI cold starts).
  */
 export async function openAddClientDialog(page: Page) {
 	const dialog = page.getByRole("dialog");

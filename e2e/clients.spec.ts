@@ -1,4 +1,4 @@
-import { expect, test } from "@playwright/test";
+import { expect, type Page, test } from "@playwright/test";
 import {
 	openAddClientDialog,
 	openClientDetail,
@@ -6,7 +6,7 @@ import {
 	uniqueEmail,
 } from "./utils";
 
-async function openClientsPage(page: import("@playwright/test").Page) {
+async function openClientsPage(page: Page) {
 	// Signup lands on the onboarding gate; /clients is not gated, so go direct.
 	await page.goto("/clients");
 	await expect(page).toHaveURL(/\/clients$/);
