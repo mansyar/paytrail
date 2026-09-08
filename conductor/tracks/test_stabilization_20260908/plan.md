@@ -2,19 +2,19 @@
 
 ## Phase 1: E2E Stability
 
-- [ ] Task: Extract shared E2E helpers and fix drifted specs
-	- [ ] Create `e2e/utils.ts` with `uniqueEmail()`, shared `password`, single `signUp(page, opts)`, `signUpToProfile()`, retry helpers (`openAddClientDialog`, `openClientDetail`)
-	- [ ] Update `auth.spec.ts`, `clients.spec.ts`, `onboarding.spec.ts`, `profile-rate-rules.spec.ts` to use shared helpers
-	- [ ] Fix `clients.spec.ts` post-signup expectation to `/onboarding`
-	- [ ] Verify: `pnpm test:e2e` green against current dev server (baseline)
-- [ ] Task: Fix wizard ghost-click bug and remove timeout workarounds (red/green: spec assertions written first, wizard fix makes them pass)
-	- [ ] Replace `waitForTimeout` pacing in `onboarding.spec.ts` + `profile-rate-rules.spec.ts` with auto-retrying assertions
-	- [ ] Disable Next/Finish buttons during step transitions in `onboarding-wizard.tsx`
-	- [ ] Verify: rapid-click manual check + E2E green
-- [ ] Task: Production-build webServer + failure diagnostics
-	- [ ] `playwright.config.ts`: webServer → `next build && next start` (prod default), opt-in dev flag, keep `PLAYWRIGHT_PORT`/`reuseExistingServer`
-	- [ ] Add `trace: "retain-on-failure"`, `screenshot: "only-on-failure"`
-	- [ ] Verify: full E2E suite green against prod build
+- [x] Task: Extract shared E2E helpers and fix drifted specs (eb4980e)
+	- [x] Create `e2e/utils.ts` with `uniqueEmail()`, shared `password`, single `signUp(page, opts)`, `signUpToProfile()`, retry helpers (`openAddClientDialog`, `openClientDetail`)
+	- [x] Update `auth.spec.ts`, `clients.spec.ts`, `onboarding.spec.ts`, `profile-rate-rules.spec.ts` to use shared helpers
+	- [x] Fix `clients.spec.ts` post-signup expectation to `/onboarding`
+	- [x] Verify: `pnpm test:e2e` green against current dev server (baseline)
+- [x] Task: Fix wizard ghost-click bug and remove timeout workarounds (red/green: spec assertions written first, wizard fix makes them pass) (90be032)
+	- [x] Replace `waitForTimeout` pacing in `onboarding.spec.ts` + `profile-rate-rules.spec.ts` with auto-retrying assertions
+	- [x] Disable Next/Finish buttons during step transitions in `onboarding-wizard.tsx`
+	- [x] Verify: rapid-click manual check + E2E green
+- [x] Task: Production-build webServer + failure diagnostics (7f7c756)
+	- [x] `playwright.config.ts`: webServer → `next build && next start` (prod default), opt-in dev flag, keep `PLAYWRIGHT_PORT`/`reuseExistingServer`
+	- [x] Add `trace: "retain-on-failure"`, `screenshot: "only-on-failure"`
+	- [x] Verify: full E2E suite green against prod build
 - [ ] Task: Phase Verification & Checkpoint (Refer to workflow.md)
 
 ## Phase 2: Vitest Hygiene
