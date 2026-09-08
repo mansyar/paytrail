@@ -40,8 +40,8 @@ Branch: `feat/pdf-generation-delivery`
 
 ## Phase 4: E2E, docs, and pre-push gate
 
-- [ ] Task: Playwright E2E — download response headers + PDF magic bytes; DRAFT vs SENT watermark via unit-covered renderer; mobile viewport pass
+- [x] Task: Playwright E2E — download response headers + PDF magic bytes; DRAFT vs SENT watermark via unit-covered renderer; mobile viewport pass — sha 6b9d814
 - [ ] Task: Update tech-stack.md notes if any deviations surfaced (pdfkit specifics)
-- [ ] Task: Full local review gate — `pnpm biome check --write .`, `tsc --noEmit`, `test:all`, `build`
+- [x] Task: Full local review gate — biome ✓, tsc ✓, test:all 202 passed ✓, build ✓
 - [ ] Task: Push, open PR, merge after green CI
 - [ ] Task: Phase Verification & Checkpoint (Refer to workflow.md)
