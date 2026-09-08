@@ -29,7 +29,7 @@ Branch: `feat/fx-snapshot-multi-currency` · Spec: [spec.md](./spec.md)
   - [x] Implement `setInvoiceFxRate` action in `src/lib/invoices-actions.ts`; run tests, confirm green
 - [x] Task: Phase Verification & Checkpoint (Refer to workflow.md)
 
-## Phase 3: UI wiring (no unit tests; manual + E2E verified)
+## Phase 3: UI wiring (no unit tests; manual + E2E verified) [checkpoint: 700abea]
 
 - [x] Task: Invoice builder rate field + manual override (e95404c)
   - [x] Show effective rate (source-aware) when client currency ≠ home; editable field prefilled with effective rate on DRAFT invoices
