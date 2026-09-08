@@ -5,6 +5,8 @@ import type {
 } from "../generated/prisma/client";
 import { Prisma } from "../generated/prisma/client";
 import { prisma } from "./db";
+import type { FetchJson } from "./fx/provider";
+import { getRate } from "./fx/rate-service";
 import {
 	InvoiceNumberTakenError,
 	resolveInvoiceNumber,
@@ -67,7 +69,40 @@ export interface UpdateInvoiceData {
 	items: { description: string; amountMinor: number }[];
 }
 
+/** Injectable dependencies (tests pass a mock fetchJson to stay hermetic). */
+export interface InvoiceRepoDeps {
+	fetchJson?: FetchJson;
+}
+
 const toDate = (yyyyMmDd: string): Date => new Date(`${yyyyMmDd}T00:00:00Z`);
+
+async function getHomeCurrency(userId: string): Promise<string | null> {
+	const profile = await prisma.businessProfile.findUnique({
+		where: { userId },
+		select: { currency: true },
+	});
+	return profile?.currency.toUpperCase() ?? null;
+}
+
+/**
+ * Resolve the FX snapshot for an invoice currency against the account home
+ * currency (fx_multi_currency_20260908). Returns null when there is nothing
+ * to snapshot: no home currency, same currency, or no rate available
+ * (manual override is the caller's fallback). Snapshot value is the
+ * invoice-to-home multiplier; fxRateCurrency stores the home code.
+ */
+async function resolveFxSnapshot(
+	userId: string,
+	currencyCode: string,
+	deps?: InvoiceRepoDeps,
+): Promise<{ home: string; rate: Prisma.Decimal } | null> {
+	const home = await getHomeCurrency(userId);
+	if (!home) return null;
+	const currency = currencyCode.toUpperCase();
+	if (currency === home) return null;
+	const rate = await getRate(home, currency, { fetchJson: deps?.fetchJson });
+	return rate === null ? null : { home, rate };
+}
 
 function deriveStatus(invoice: {
 	status: InvoiceStatus;
@@ -105,6 +140,7 @@ const withDerived = <T extends DerivedFields>(
 export async function createInvoice(
 	userId: string,
 	data: CreateInvoiceData,
+	deps?: InvoiceRepoDeps,
 ): Promise<InvoiceWithItems> {
 	const client = await prisma.client.findFirst({
 		where: { id: data.clientId, userId },
@@ -135,6 +171,11 @@ export async function createInvoice(
 		manualNumber: data.invoiceNumber,
 	});
 
+	// Stamp the FX snapshot the moment the draft gets a non-home currency
+	// (spec FR4). Same currency or missing rate -> null; the builder then
+	// offers the manual override.
+	const snapshot = await resolveFxSnapshot(userId, data.currencyCode, deps);
+
 	try {
 		const invoice = await prisma.invoice.create({
 			data: {
@@ -148,6 +189,9 @@ export async function createInvoice(
 				currencyCode: data.currencyCode,
 				taxRate: data.taxRate,
 				discountMinor: data.discountMinor,
+				...(snapshot
+					? { fxRate: snapshot.rate, fxRateCurrency: snapshot.home }
+					: {}),
 				items: {
 					create: data.items.map((item, index) => ({
 						...item,
@@ -209,10 +253,11 @@ export async function updateInvoice(
 	userId: string,
 	id: string,
 	data: UpdateInvoiceData,
+	deps?: InvoiceRepoDeps,
 ): Promise<InvoiceWithItems | null> {
 	const existing = await prisma.invoice.findFirst({
 		where: { id, userId },
-		select: { status: true },
+		select: { status: true, currencyCode: true },
 	});
 	if (!existing) return null;
 	if (existing.status !== "DRAFT") {
@@ -222,6 +267,16 @@ export async function updateInvoice(
 			"UPDATE",
 		);
 	}
+
+	// Currency changed -> re-derive the snapshot from the rate service,
+	// replacing any manual override (spec FR4/FR5). A missing rate clears
+	// the stale snapshot instead of keeping values for the old currency.
+	// Currency unchanged -> leave fx fields untouched (manual override kept).
+	const currencyChanged =
+		data.currencyCode.toUpperCase() !== existing.currencyCode.toUpperCase();
+	const snapshot = currencyChanged
+		? await resolveFxSnapshot(userId, data.currencyCode, deps)
+		: null;
 
 	const updated = await prisma.$transaction(async (tx) => {
 		await tx.invoiceItem.deleteMany({ where: { invoiceId: id } });
@@ -233,6 +288,12 @@ export async function updateInvoice(
 				currencyCode: data.currencyCode,
 				taxRate: data.taxRate,
 				discountMinor: data.discountMinor,
+				...(currencyChanged
+					? {
+							fxRate: snapshot?.rate ?? null,
+							fxRateCurrency: snapshot?.home ?? null,
+						}
+					: {}),
 				items: {
 					create: data.items.map((item, index) => ({
 						...item,

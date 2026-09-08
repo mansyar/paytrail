@@ -1,4 +1,4 @@
-import { afterAll, afterEach, describe, expect, it } from "vitest";
+import { afterAll, afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { prisma } from "./db";
 import {
 	createInvoice,
@@ -39,11 +39,28 @@ async function createTestUser(): Promise<string> {
 	return user.id;
 }
 
-async function createTestClient(userId: string): Promise<string> {
+async function createTestClient(
+	userId: string,
+	currencyCode = "USD",
+): Promise<string> {
 	const client = await prisma.client.create({
-		data: { id: crypto.randomUUID(), userId, name: "Invoice Test Client" },
+		data: { id: crypto.randomUUID(), userId, name: "Invoice Test Client", currencyCode },
 	});
 	return client.id;
+}
+
+async function createBusinessProfile(
+	userId: string,
+	currency = "USD",
+): Promise<void> {
+	await prisma.businessProfile.create({
+		data: {
+			userId,
+			businessName: "FX Test Studio",
+			currency,
+			defaultTaxRate: 0,
+		},
+	});
 }
 
 interface CreateOverrides {
@@ -374,5 +391,233 @@ describe("number uniqueness per user", () => {
 				items: [{ description: "x", amountMinor: 100 }],
 			}),
 		).rejects.toThrow(/already in use/i);
+	});
+});
+
+describe("FX snapshot semantics (fx_multi_currency_20260908)", () => {
+	beforeEach(async () => {
+		await prisma.fxRate.deleteMany({
+			where: {
+				baseCurrency: "USD",
+				quoteCurrency: { in: ["EUR", "IDR"] },
+			},
+		});
+	});
+
+	it("stamps fxRate on a draft created with a non-home-currency client", async () => {
+		const userId = await createTestUser();
+		await createBusinessProfile(userId, "USD");
+		const clientId = await createTestClient(userId, "EUR");
+		await prisma.fxRate.create({
+			data: {
+				baseCurrency: "USD",
+				quoteCurrency: "EUR",
+				rate: "0.8",
+				fetchedAt: new Date(),
+			},
+		});
+		const fetchJson = vi.fn();
+
+		const invoice = await createInvoice(
+			userId,
+			{
+				clientId,
+				issueDate: "2026-09-01",
+				dueDate: "2026-09-15",
+				currencyCode: "EUR",
+				taxRate: 0,
+				discountMinor: 0,
+				items: [{ description: "x", amountMinor: 10000 }],
+			},
+			{ fetchJson },
+		);
+
+		expect(invoice.fxRate?.toNumber()).toBeCloseTo(1.25, 6);
+		expect(invoice.fxRateCurrency).toBe("USD");
+		expect(fetchJson).not.toHaveBeenCalled();
+	});
+
+	it("leaves fxRate null for a home-currency invoice", async () => {
+		const userId = await createTestUser();
+		await createBusinessProfile(userId, "USD");
+		const clientId = await createTestClient(userId, "USD");
+		const fetchJson = vi.fn();
+
+		const invoice = await createInvoice(
+			userId,
+			{
+				clientId,
+				issueDate: "2026-09-01",
+				dueDate: "2026-09-15",
+				currencyCode: "USD",
+				taxRate: 0,
+				discountMinor: 0,
+				items: [{ description: "x", amountMinor: 10000 }],
+			},
+			{ fetchJson },
+		);
+
+		expect(invoice.fxRate).toBeNull();
+		expect(invoice.fxRateCurrency).toBeNull();
+		expect(fetchJson).not.toHaveBeenCalled();
+	});
+
+	it("leaves fxRate null when no rate is available (provider fails, no cache)", async () => {
+		const userId = await createTestUser();
+		await createBusinessProfile(userId, "USD");
+		const clientId = await createTestClient(userId, "EUR");
+		const fetchJson = vi.fn().mockRejectedValue(new Error("provider down"));
+
+		const invoice = await createInvoice(
+			userId,
+			{
+				clientId,
+				issueDate: "2026-09-01",
+				dueDate: "2026-09-15",
+				currencyCode: "EUR",
+				taxRate: 0,
+				discountMinor: 0,
+				items: [{ description: "x", amountMinor: 10000 }],
+			},
+			{ fetchJson },
+		);
+
+		expect(invoice.fxRate).toBeNull();
+		expect(invoice.fxRateCurrency).toBeNull();
+	});
+
+	it("re-derives the snapshot when a draft currency changes", async () => {
+		const userId = await createTestUser();
+		await createBusinessProfile(userId, "USD");
+		const clientId = await createTestClient(userId, "EUR");
+		await prisma.fxRate.create({
+			data: {
+				baseCurrency: "USD",
+				quoteCurrency: "IDR",
+				rate: "16000",
+				fetchedAt: new Date(),
+			},
+		});
+		const created = await createInvoice(
+			userId,
+			{
+				clientId,
+				issueDate: "2026-09-01",
+				dueDate: "2026-09-15",
+				currencyCode: "EUR",
+				taxRate: 0,
+				discountMinor: 0,
+				items: [{ description: "x", amountMinor: 10000 }],
+			},
+			{ fetchJson: vi.fn().mockRejectedValue(new Error("down")) },
+		);
+		// Simulate a manual override left on the old currency.
+		await prisma.invoice.update({
+			where: { id: created.id },
+			data: { fxRate: "9.99" },
+		});
+		const fetchJson = vi.fn();
+
+		const updated = await updateInvoice(
+			userId,
+			created.id,
+			{
+				issueDate: "2026-09-01",
+				dueDate: "2026-09-15",
+				currencyCode: "IDR",
+				taxRate: 0,
+				discountMinor: 0,
+				items: [{ description: "x", amountMinor: 10000 }],
+			},
+			{ fetchJson },
+		);
+
+		expect(updated?.fxRate?.toNumber()).toBeCloseTo(1 / 16000, 10);
+		expect(updated?.fxRateCurrency).toBe("USD");
+		expect(fetchJson).not.toHaveBeenCalled();
+	});
+
+	it("keeps a manual override when a draft is saved without a currency change", async () => {
+		const userId = await createTestUser();
+		await createBusinessProfile(userId, "USD");
+		const clientId = await createTestClient(userId, "EUR");
+		const created = await createInvoice(
+			userId,
+			{
+				clientId,
+				issueDate: "2026-09-01",
+				dueDate: "2026-09-15",
+				currencyCode: "EUR",
+				taxRate: 0,
+				discountMinor: 0,
+				items: [{ description: "x", amountMinor: 10000 }],
+			},
+			{ fetchJson: vi.fn().mockRejectedValue(new Error("down")) },
+		);
+		// Manual override set directly (action covered in its own task).
+		await prisma.invoice.update({
+			where: { id: created.id },
+			data: { fxRate: "1.5", fxRateCurrency: "USD" },
+		});
+		const fetchJson = vi.fn();
+
+		const updated = await updateInvoice(
+			userId,
+			created.id,
+			{
+				issueDate: "2026-09-02",
+				dueDate: "2026-09-15",
+				currencyCode: "EUR",
+				taxRate: 0,
+				discountMinor: 0,
+				items: [{ description: "y", amountMinor: 20000 }],
+			},
+			{ fetchJson },
+		);
+
+		expect(updated?.fxRate?.toNumber()).toBe(1.5);
+		expect(fetchJson).not.toHaveBeenCalled();
+	});
+
+	it("freezes the snapshot when the invoice is sent", async () => {
+		const userId = await createTestUser();
+		await createBusinessProfile(userId, "USD");
+		const clientId = await createTestClient(userId, "EUR");
+		await prisma.fxRate.create({
+			data: {
+				baseCurrency: "USD",
+				quoteCurrency: "EUR",
+				rate: "0.8",
+				fetchedAt: new Date(),
+			},
+		});
+		const created = await createInvoice(
+			userId,
+			{
+				clientId,
+				issueDate: "2026-09-01",
+				dueDate: "2026-09-15",
+				currencyCode: "EUR",
+				taxRate: 0,
+				discountMinor: 0,
+				items: [{ description: "x", amountMinor: 10000 }],
+			},
+			{ fetchJson: vi.fn() },
+		);
+		// Cache goes stale / wrong after creation; send must not re-derive.
+		await prisma.fxRate.update({
+			where: {
+				baseCurrency_quoteCurrency: {
+					baseCurrency: "USD",
+					quoteCurrency: "EUR",
+				},
+			},
+			data: { rate: "0.1", fetchedAt: new Date(Date.now() - 48 * 3600_000) },
+		});
+
+		const sent = await sendInvoice(userId, created.id);
+
+		expect(sent.status).toBe("SENT");
+		expect(sent.fxRate?.toNumber()).toBeCloseTo(1.25, 6);
 	});
 });
