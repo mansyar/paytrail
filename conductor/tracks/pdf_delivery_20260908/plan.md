@@ -45,3 +45,7 @@ Branch: `feat/pdf-generation-delivery`
 - [x] Task: Full local review gate — biome ✓, tsc ✓, test:all 202 passed ✓, build ✓
 - [x] Task: Push, open PR, merge after green CI — pushed 19dcec2; PR #10 merged after green CI (verify ✓, e2e ✓) — merge sha e3b9474
 - [x] Task: Phase Verification & Checkpoint (Refer to workflow.md) — user approved; report in git notes
+
+## Phase: Review Fixes
+
+- [x] Task: Apply review suggestions — High: mapper hardcoded clientName: "" so every PDF rendered an empty BILLED TO client name (test asserted the bug); now sourced from invoice.client.name — sha 78b154f
