@@ -9,6 +9,7 @@ import {
 	updateClient,
 } from "./clients-repo";
 import { prisma } from "./db";
+import { createInvoice, deleteInvoice } from "./invoices-repo";
 
 const createdUserIds: string[] = [];
 
@@ -147,5 +148,44 @@ describe("client repo — deletion guard", () => {
 			invoiceCount: 3,
 		});
 		expect(await getClient(userId, client.id)).not.toBeNull();
+	});
+
+	it("deleteClient blocks deletion when real invoices are attached", async () => {
+		const userId = await createTestUser();
+		const client = await createClient(userId, { name: "Real Invoices" });
+		await createInvoice(userId, {
+			clientId: client.id,
+			issueDate: "2026-09-01",
+			dueDate: "2026-09-15",
+			currencyCode: "USD",
+			taxRate: 0,
+			discountMinor: 0,
+			items: [{ description: "Work", amountMinor: 10000 }],
+		});
+
+		const result = await deleteClient(userId, client.id);
+		expect(result).toEqual({
+			ok: false,
+			reason: "INVOICES_ATTACHED",
+			invoiceCount: 1,
+		});
+		expect(await getClient(userId, client.id)).not.toBeNull();
+	});
+
+	it("deleteClient succeeds once the attached invoices are gone", async () => {
+		const userId = await createTestUser();
+		const client = await createClient(userId, { name: "Temp Invoices" });
+		const invoice = await createInvoice(userId, {
+			clientId: client.id,
+			issueDate: "2026-09-01",
+			dueDate: "2026-09-15",
+			currencyCode: "USD",
+			taxRate: 0,
+			discountMinor: 0,
+			items: [{ description: "Work", amountMinor: 10000 }],
+		});
+
+		await deleteInvoice(userId, invoice.id);
+		expect(await deleteClient(userId, client.id)).toEqual({ ok: true });
 	});
 });

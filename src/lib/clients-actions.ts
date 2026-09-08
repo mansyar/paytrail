@@ -40,7 +40,11 @@ async function requireUserId(): Promise<string> {
 
 export type MutationResult =
 	| { ok: true }
-	| { ok: false; reason: "NOT_FOUND" | "DUPLICATE_PROJECT_NAME" };
+	| {
+			ok: false;
+			reason: "NOT_FOUND" | "DUPLICATE_PROJECT_NAME" | "INVOICES_ATTACHED";
+			invoiceCount?: number;
+	  };
 
 export async function createClientAction(
 	input: ClientInput,
@@ -107,7 +111,12 @@ export async function deleteProjectAction(
 	projectId: string,
 ): Promise<MutationResult> {
 	try {
-		await deleteProjectRepo(await requireUserId(), clientId, projectId);
+		const result = await deleteProjectRepo(
+			await requireUserId(),
+			clientId,
+			projectId,
+		);
+		if (!result.ok) return result;
 		return { ok: true };
 	} catch (error) {
 		const result = toMutationResult(error);

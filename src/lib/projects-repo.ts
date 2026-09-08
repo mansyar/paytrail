@@ -100,11 +100,15 @@ export async function updateProject(
 	}
 }
 
+export type DeleteProjectResult =
+	| { ok: true }
+	| { ok: false; reason: "INVOICES_ATTACHED"; invoiceCount: number };
+
 export async function deleteProject(
 	userId: string,
 	clientId: string,
 	projectId: string,
-): Promise<{ ok: true }> {
+): Promise<DeleteProjectResult> {
 	await getOwnedClient(userId, clientId);
 	const existing = await prisma.project.findFirst({
 		where: { id: projectId, clientId },
@@ -113,6 +117,12 @@ export async function deleteProject(
 	if (!existing) {
 		throw new NotFoundError("Project not found for this client");
 	}
+
+	const invoiceCount = await prisma.invoice.count({ where: { projectId } });
+	if (invoiceCount > 0) {
+		return { ok: false, reason: "INVOICES_ATTACHED", invoiceCount };
+	}
+
 	await prisma.project.delete({ where: { id: projectId } });
 	return { ok: true };
 }

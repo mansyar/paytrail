@@ -2,6 +2,7 @@ import { afterAll, afterEach, describe, expect, it } from "vitest";
 import { auth } from "./auth";
 import { createClient } from "./clients-repo";
 import { prisma } from "./db";
+import { createInvoice, deleteInvoice } from "./invoices-repo";
 import {
 	createProject,
 	deleteProject,
@@ -142,5 +143,54 @@ describe("project repo — session-scoped CRUD", () => {
 		});
 		const projects = await listProjects(userId, client.id);
 		expect(projects).toEqual([]);
+	});
+
+	it("deleteProject reports INVOICES_ATTACHED instead of deleting when invoices reference the project", async () => {
+		const userId = await createTestUser();
+		const client = await createClient(userId, { name: "Project Invoices" });
+		const project = await createProject(userId, client.id, {
+			name: "Invoiced Project",
+		});
+		await createInvoice(userId, {
+			clientId: client.id,
+			projectId: project.id,
+			issueDate: "2026-09-01",
+			dueDate: "2026-09-15",
+			currencyCode: "USD",
+			taxRate: 0,
+			discountMinor: 0,
+			items: [{ description: "Work", amountMinor: 10000 }],
+		});
+
+		const result = await deleteProject(userId, client.id, project.id);
+		expect(result).toEqual({
+			ok: false,
+			reason: "INVOICES_ATTACHED",
+			invoiceCount: 1,
+		});
+		expect(await listProjects(userId, client.id)).toHaveLength(1);
+	});
+
+	it("deleteProject succeeds once the attached invoices are gone", async () => {
+		const userId = await createTestUser();
+		const client = await createClient(userId, { name: "Project Invoices 2" });
+		const project = await createProject(userId, client.id, {
+			name: "Invoiced Project 2",
+		});
+		const invoice = await createInvoice(userId, {
+			clientId: client.id,
+			projectId: project.id,
+			issueDate: "2026-09-01",
+			dueDate: "2026-09-15",
+			currencyCode: "USD",
+			taxRate: 0,
+			discountMinor: 0,
+			items: [{ description: "Work", amountMinor: 10000 }],
+		});
+
+		await deleteInvoice(userId, invoice.id);
+		expect(await deleteProject(userId, client.id, project.id)).toEqual({
+			ok: true,
+		});
 	});
 });
