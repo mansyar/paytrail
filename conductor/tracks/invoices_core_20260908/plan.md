@@ -57,7 +57,7 @@ Testing discipline: red→green for every logic-bearing task; coverage >80% on n
   - [ ] Confirm tests fail (red)
   - [ ] Implement `src/lib/invoices-repo.ts`
   - [ ] Tests pass (green); coverage >80%
-- [~] Task: Deletion safety for clients/projects with attached invoices
+- [x] Task: Deletion safety for clients/projects with attached invoices [663b72f]
   - [ ] Write failing tests extending `src/lib/clients-repo.test.ts` /
         `src/lib/projects-repo.test.ts`: client deletion blocked when invoices attached;
         project deletion blocked when invoices attached; deletion allowed when none;
