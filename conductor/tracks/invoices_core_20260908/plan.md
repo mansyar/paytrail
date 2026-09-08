@@ -9,10 +9,10 @@ Testing discipline: red→green for every logic-bearing task; coverage >80% on n
 
 ## Phase 1 — Schema & Migration
 
-- [ ] Task: Prisma schema — add `InvoiceStatus` enum, `Invoice`, `InvoiceItem`,
+- [x] Task: Prisma schema — add `InvoiceStatus` enum, `Invoice`, `InvoiceItem`,
       `InvoiceNumberCounter` models with relations to `User`/`Client`/`Project`,
       per-user-unique `invoiceNumber`, `(userId, year)` unique counter, nullable FX
-      snapshot fields (reserved, unpopulated)
+      snapshot fields (reserved, unpopulated) `fa60f69`
   - [ ] Edit `prisma/schema.prisma`
   - [ ] Run `pnpm exec prisma migrate dev --name invoice_core` (commit migration)
   - [ ] Run `pnpm exec prisma generate` and confirm client regenerated in `src/generated/prisma`
