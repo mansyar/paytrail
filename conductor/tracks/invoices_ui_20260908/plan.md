@@ -15,7 +15,7 @@ Branch: `feat/invoice-builder-ui`
 - [x] Task: Responsive table→cards layout (390px), guided empty state, `error.tsx`/`loading.tsx` — `6251357`
 - [ ] Task: Phase Verification & Checkpoint (Refer to workflow.md)
 
-### Phase 3 — Builder Form & Live Preview
+### Phase 3 — Builder Form & Live Preview [checkpoint: d57a9e6]
 - [x] Task: Builder routes `dcc0926` + RHF form with Zod input schemas; prefills (client→currency read-only, project scope, profile tax rate, dates, auto number via counter preview)
 - [x] Task: Inline line-items editor `dcc0926` (add/remove/reorder, description + amount via minor-units helper, rate-rule auto-suggest cue)
 - [x] Task: Adjustments block `dcc0926` (tax %, flat discount) + live totals bar via `invoice-totals`
