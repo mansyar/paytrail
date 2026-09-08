@@ -6,6 +6,7 @@ import { notFound, redirect } from "next/navigation";
 import { InvoiceBuilder } from "@/components/invoices/invoice-builder";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/db";
+import { getRate } from "@/lib/fx/rate-service";
 import { invoiceIdSchema } from "@/lib/invoice-schemas";
 import { getInvoice } from "@/lib/invoices-repo";
 import { isOnboardingComplete } from "@/lib/onboarding";
@@ -67,6 +68,20 @@ export default async function InvoicePage({
 		redirect("/onboarding");
 	}
 
+	// Effective FX rates for the builder's rate field
+	// (fx_multi_currency_20260908), rounded to the 8 decimals the schema accepts.
+	const fxRates: Record<string, string | null> = {};
+	for (const currency of new Set(
+		clients
+			.map((client) => client.currencyCode)
+			.filter((c) => c !== profile.currency),
+	)) {
+		const rate = await getRate(profile.currency, currency);
+		fxRates[currency] = rate
+			? (Math.round(rate.toNumber() * 1e8) / 1e8).toString()
+			: null;
+	}
+
 	return (
 		<Stack
 			component="main"
@@ -91,6 +106,7 @@ export default async function InvoicePage({
 
 			<InvoiceBuilder
 				clients={clients}
+				fxRates={fxRates}
 				invoice={{
 					id: invoice.id,
 					status: invoice.derivedStatus,
@@ -104,6 +120,7 @@ export default async function InvoicePage({
 					dueDate: invoice.dueDate.toISOString().slice(0, 10),
 					taxRate: invoice.taxRate.toFixed(2),
 					discountMinor: invoice.discountMinor,
+					fxRate: invoice.fxRate?.toString() ?? null,
 					items: invoice.items.map((item) => ({
 						description: item.description,
 						amountMinor: item.amountMinor,

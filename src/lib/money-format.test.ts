@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { formatMoney } from "./money-format";
+import { formatFxRate, formatMoney } from "./money-format";
 
 describe("formatMoney", () => {
 	it("formats two-decimal currencies from minor units", () => {
@@ -20,5 +20,17 @@ describe("formatMoney", () => {
 
 	it("formats zero", () => {
 		expect(formatMoney(0, "GBP")).toBe("£0.00");
+	});
+});
+
+describe("formatFxRate", () => {
+	it("formats a multiplier with up to 6 decimals, trimmed", () => {
+		expect(formatFxRate("1.08")).toBe("1.08");
+		expect(formatFxRate("1.11111111")).toBe("1.11111111");
+		expect(formatFxRate("0.0000625")).toBe("0.0000625");
+	});
+
+	it("falls back to the raw string for unparseable input", () => {
+		expect(formatFxRate("")).toBe("");
 	});
 });

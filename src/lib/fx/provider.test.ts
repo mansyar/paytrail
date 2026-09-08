@@ -1,9 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
-import {
-	FxProviderError,
-	fetchLatestRates,
-	type FetchJson,
-} from "./provider";
+import { type FetchJson, FxProviderError, fetchLatestRates } from "./provider";
 
 function jsonResponse(body: unknown): FetchJson {
 	return vi.fn().mockResolvedValue(body);
@@ -84,12 +80,12 @@ describe("fetchLatestRates", () => {
 
 	it("does not spend more than 5 seconds on a fetch", async () => {
 		let capturedSignal: AbortSignal | undefined;
-		const fetchJson = vi.fn().mockImplementation(
-			(_url: string, init?: { signal?: AbortSignal }) => {
+		const fetchJson = vi
+			.fn()
+			.mockImplementation((_url: string, init?: { signal?: AbortSignal }) => {
 				capturedSignal = init?.signal;
 				return Promise.resolve({ result: "success", rates: { USD: 1 } });
-			},
-		);
+			});
 
 		await fetchLatestRates("USD", fetchJson);
 

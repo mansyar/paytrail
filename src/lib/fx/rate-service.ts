@@ -1,6 +1,6 @@
 import { Prisma } from "../../generated/prisma/client";
 import { prisma } from "../db";
-import { fetchLatestRates, type FetchJson } from "./provider";
+import { type FetchJson, fetchLatestRates } from "./provider";
 
 /**
  * FX rate service (fx_multi_currency_20260908).

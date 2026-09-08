@@ -1,12 +1,4 @@
-import {
-	afterAll,
-	afterEach,
-	beforeEach,
-	describe,
-	expect,
-	it,
-	vi,
-} from "vitest";
+import { afterAll, beforeEach, describe, expect, it, vi } from "vitest";
 import type { FxRate } from "../../generated/prisma/client";
 import { Prisma } from "../../generated/prisma/client";
 import { prisma } from "../db";

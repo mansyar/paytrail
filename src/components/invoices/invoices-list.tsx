@@ -32,7 +32,7 @@ import {
 	markPaidInvoiceAction,
 	sendInvoiceAction,
 } from "@/lib/invoices-actions";
-import { formatMoney } from "@/lib/money-format";
+import { formatFxRate, formatMoney } from "@/lib/money-format";
 import type { DisplayStatus } from "./invoice-status-chip";
 import { InvoiceStatusChip } from "./invoice-status-chip";
 
@@ -45,6 +45,11 @@ export interface InvoiceListRow {
 	dueDate: string;
 	totalMinor: number;
 	currencyCode: string;
+	/** Home-currency equivalent display (fx_multi_currency_20260908). */
+	homeCurrencyCode?: string;
+	/** 1 invoice-currency unit in home-currency minor units, when a snapshot exists. */
+	homeEquivalentMinor?: number | null;
+	fxRate?: string | null;
 }
 
 type StatusFilter = "ALL" | DisplayStatus;
@@ -56,6 +61,26 @@ const FILTERS: { value: StatusFilter; label: string }[] = [
 	{ value: "PAID", label: "Paid" },
 	{ value: "OVERDUE", label: "Overdue" },
 ];
+
+/**
+ * Home-currency equivalent line, shown only when the invoice is in a
+ * non-home currency AND an FX snapshot exists (fx_multi_currency_20260908).
+ */
+function HomeEquivalentLine({ invoice }: { invoice: InvoiceListRow }) {
+	if (
+		invoice.homeEquivalentMinor == null ||
+		!invoice.homeCurrencyCode ||
+		!invoice.fxRate
+	) {
+		return null;
+	}
+	return (
+		<Typography
+			color="text.secondary"
+			variant="caption"
+		>{`≈ ${formatMoney(invoice.homeEquivalentMinor, invoice.homeCurrencyCode)} @ ${formatFxRate(invoice.fxRate)} ${invoice.homeCurrencyCode}`}</Typography>
+	);
+}
 
 type ConfirmState = { kind: "send" | "delete"; invoice: InvoiceListRow } | null;
 type Feedback = { severity: "success" | "error"; message: string } | null;
@@ -319,6 +344,7 @@ export function InvoicesList({ invoices }: { invoices: InvoiceListRow[] }) {
 											<TableCell>{formatDate(invoice.dueDate)}</TableCell>
 											<TableCell align="right">
 												{formatMoney(invoice.totalMinor, invoice.currencyCode)}
+												<HomeEquivalentLine invoice={invoice} />
 											</TableCell>
 											<TableCell>
 												<InvoiceStatusChip status={invoice.status} />
@@ -370,6 +396,7 @@ export function InvoicesList({ invoices }: { invoices: InvoiceListRow[] }) {
 												{formatMoney(invoice.totalMinor, invoice.currencyCode)}
 											</Typography>
 										</Stack>
+										<HomeEquivalentLine invoice={invoice} />
 										<Divider />
 										{rowActions(invoice)}
 									</Stack>
