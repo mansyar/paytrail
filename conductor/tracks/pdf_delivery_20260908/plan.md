@@ -1,0 +1,46 @@
+# Plan: PDF Generation & Delivery
+
+Branch: `feat/pdf-generation-delivery`
+
+## Phase 1: PDF renderer module (logic-bearing — TDD)
+
+- [ ] Task: Write failing renderer tests (Red)
+	- [ ] New `src/lib/invoice-pdf.test.ts`: valid PDF magic bytes; contains invoice number, client name, ISO-prefixed total (e.g. `USD 1,234.50`); DRAFT watermark present for DRAFT and absent for SENT; missing logo renders without error; many items (25+) flow across pages without throw
+	- [ ] Run `pnpm vitest run` — confirm failures
+- [ ] Task: Implement renderer to pass (Green)
+	- [ ] `src/lib/invoice-pdf.ts`: pdfkit A4 template — header (logo decode/skip, business name/address/tax ID), meta block (number, issue/due date, status), client block, items table with page-flow + repeated column header, totals block on final page (subtotal, tax, discount, total), payment terms
+	- [ ] ISO-code-prefix currency formatting via existing money-format helpers; integer minor units throughout
+- [ ] Task: Refactor + coverage check — >80% on the new module
+- [ ] Task: Commit `feat(invoices): pdf renderer module with watermark and ISO currency totals` + git note + plan update
+- [ ] Task: Phase Verification & Checkpoint (Refer to workflow.md)
+
+## Phase 2: PDF route handler (logic-bearing — TDD)
+
+- [ ] Task: Write failing tests for the route's logic (Red)
+	- [ ] `src/lib/invoice-pdf-query.test.ts` (or extend invoices-repo tests): user-scoped fetch of the full aggregate (invoice + items + client + project + business profile); 404 on other user's invoice / missing; 400 on malformed id; filename derived from `invoiceNumber`
+	- [ ] Run tests — confirm failures
+- [ ] Task: Implement (Green)
+	- [ ] Aggregate query in invoices-repo (session user id filter)
+	- [ ] `src/app/api/invoices/[id]/pdf/route.ts`: session guard → 401; Zod param validation → 400; scope check → 404; stream PDF with `Content-Type`, `Content-Disposition: attachment; filename="<number>.pdf"`, `Cache-Control: no-store`
+- [ ] Task: Refactor + verify Zod on external input, ownership guard per quality gates
+- [ ] Task: Commit `feat(invoices): authenticated pdf download route` + git note + plan update
+- [ ] Task: Phase Verification & Checkpoint (Refer to workflow.md)
+
+## Phase 3: Detail page actions (UI + small logic)
+
+- [ ] Task: mailto builder — logic-bearing (Red → Green)
+	- [ ] Failing tests: `src/lib/invoice-email-draft.test.ts` — subject `Invoice <number> from <businessName>`, concise body (greeting, number, total, due date, payment terms), URL-encoded mailto href
+	- [ ] Implement `src/lib/invoice-email-draft.ts`
+- [ ] Task: Detail page UI (manual + E2E verified)
+	- [ ] "Download PDF" button (anchor to route, all statuses, both draft & read-only views)
+	- [ ] "Email client" button (mailto: href); terse labels, ≥44px targets, 390px-safe
+- [ ] Task: Commit `feat(invoices): download and email actions on invoice detail` + git note + plan update
+- [ ] Task: Phase Verification & Checkpoint (Refer to workflow.md)
+
+## Phase 4: E2E, docs, and pre-push gate
+
+- [ ] Task: Playwright E2E — download response headers + PDF magic bytes; DRAFT vs SENT watermark via unit-covered renderer; mobile viewport pass
+- [ ] Task: Update tech-stack.md notes if any deviations surfaced (pdfkit specifics)
+- [ ] Task: Full local review gate — `pnpm biome check --write .`, `tsc --noEmit`, `test:all`, `build`
+- [ ] Task: Push, open PR, merge after green CI
+- [ ] Task: Phase Verification & Checkpoint (Refer to workflow.md)
