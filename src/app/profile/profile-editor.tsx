@@ -21,7 +21,7 @@ import {
 	Typography,
 } from "@mui/material";
 import { useRouter } from "next/navigation";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import {
 	type BusinessProfileInput,
@@ -81,6 +81,14 @@ export function ProfileEditor({
 	const [ruleError, setRuleError] = useState<string | null>(null);
 	const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
 	const deleteTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+	// Clear the delete-confirm timer on unmount so it can't fire late.
+	useEffect(
+		() => () => {
+			if (deleteTimerRef.current) clearTimeout(deleteTimerRef.current);
+		},
+		[],
+	);
 
 	const {
 		register,
