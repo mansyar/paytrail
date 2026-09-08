@@ -1,3 +1,5 @@
+import DownloadIcon from "@mui/icons-material/Download";
+import EmailIcon from "@mui/icons-material/Email";
 import Button from "@mui/material/Button";
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
@@ -6,6 +8,7 @@ import { notFound, redirect } from "next/navigation";
 import { InvoiceBuilder } from "@/components/invoices/invoice-builder";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/db";
+import { buildInvoiceMailto } from "@/lib/invoice-email-draft";
 import { invoiceIdSchema } from "@/lib/invoice-schemas";
 import { getInvoice } from "@/lib/invoices-repo";
 import { isOnboardingComplete } from "@/lib/onboarding";
@@ -67,6 +70,21 @@ export default async function InvoicePage({
 		redirect("/onboarding");
 	}
 
+	const client = await prisma.client.findFirst({
+		where: { id: invoice.clientId, userId },
+		select: { email: true },
+	});
+	const mailtoHref = buildInvoiceMailto({
+		invoiceNumber: invoice.invoiceNumber,
+		clientName: invoice.client.name,
+		clientEmail: client?.email ?? null,
+		currencyCode: invoice.currencyCode,
+		totalMinor: invoice.totals.totalMinor,
+		dueDate: invoice.dueDate,
+		businessName: profile.businessName,
+		paymentTerms: profile.paymentTerms,
+	});
+
 	return (
 		<Stack
 			component="main"
@@ -84,9 +102,33 @@ export default async function InvoicePage({
 				<Typography component="h1" variant="h4">
 					{invoice.invoiceNumber}
 				</Typography>
-				<Button href="/invoices" variant="text">
-					Back to invoices
-				</Button>
+				<Stack
+					direction={{ xs: "column", sm: "row" }}
+					spacing={1}
+					sx={{
+						width: { xs: "100%", sm: "auto" },
+						alignItems: { xs: "stretch", sm: "center" },
+					}}
+				>
+					<Button href="/invoices" variant="text">
+						Back to invoices
+					</Button>
+					<Button
+						component="a"
+						href={mailtoHref}
+						variant="outlined"
+						startIcon={<EmailIcon />}
+					>
+						Email client
+					</Button>
+					<Button
+						href={`/api/invoices/${invoice.id}/pdf`}
+						variant="contained"
+						startIcon={<DownloadIcon />}
+					>
+						Download PDF
+					</Button>
+				</Stack>
 			</Stack>
 
 			<InvoiceBuilder
