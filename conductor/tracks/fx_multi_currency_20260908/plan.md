@@ -23,10 +23,10 @@ Branch: `feat/fx-snapshot-multi-currency` · Spec: [spec.md](./spec.md)
   - [x] Write failing tests: draft created with non-home-currency client stamps `fxRate` + `fxRateCurrency`; draft currency change re-derives snapshot; `sendInvoice` freezes (no refetch/mutation); manual override stamps flagged value; missing-rate case leaves `null`
   - [x] Run tests, confirm red
   - [x] Implement snapshotting in `src/lib/invoices-repo.ts` via rate service; run tests, confirm green
-- [ ] Task: Manual-override server action — TDD red → green
-  - [ ] Write failing tests for action-level validation: Zod output schema (positive decimal, sane bound), draft-only guard, session-user scoping
-  - [ ] Run tests, confirm red
-  - [ ] Implement `setInvoiceFxRate` action in `src/lib/invoices-actions.ts`; run tests, confirm green
+- [x] Task: Manual-override server action — TDD red → green (4b13a92)
+  - [x] Write failing tests for action-level validation: Zod output schema (positive decimal, sane bound), draft-only guard, session-user scoping
+  - [x] Run tests, confirm red
+  - [x] Implement `setInvoiceFxRate` action in `src/lib/invoices-actions.ts`; run tests, confirm green
 - [ ] Task: Phase Verification & Checkpoint (Refer to workflow.md)
 
 ## Phase 3: UI wiring (no unit tests; manual + E2E verified)
