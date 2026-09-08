@@ -25,6 +25,8 @@ model User {
   businessProfile BusinessProfile?
   rateRules       RateRule[]
   clients         Client[]
+  invoices        Invoice[]
+  invoiceNumberCounters InvoiceNumberCounter[]
 
   @@unique([email])
   @@map("user")
@@ -91,6 +93,7 @@ model Client {
   createdAt    DateTime  @default(now())
   updatedAt    DateTime  @updatedAt
   projects     Project[]
+  invoices     Invoice[]
 
   @@index([userId])
   @@map("client")
@@ -104,6 +107,7 @@ model Project {
   description String?
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+  invoices    Invoice[]
 
   @@unique([clientId, name])
   @@index([clientId])
@@ -144,4 +148,63 @@ model RateRule {
 
   @@index([userId])
   @@map("rate_rule")
+}
+
+enum InvoiceStatus {
+  DRAFT
+  SENT
+  PAID
+}
+
+model Invoice {
+  id             String        @id @default(cuid())
+  userId         String
+  user           User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  clientId       String
+  client         Client        @relation(fields: [clientId], references: [id], onDelete: Restrict)
+  projectId      String?
+  project        Project?      @relation(fields: [projectId], references: [id], onDelete: Restrict)
+  invoiceNumber  String
+  status         InvoiceStatus @default(DRAFT)
+  issueDate      DateTime      @db.Date
+  dueDate        DateTime      @db.Date
+  currencyCode   String
+  taxRate        Decimal       @default(0) @db.Decimal(5, 2)
+  discountMinor  Int           @default(0)
+  // FX snapshot, reserved for the FX track (null until populated there).
+  fxRate         Decimal?      @db.Decimal(18, 8)
+  fxRateCurrency String?
+  sentAt         DateTime?
+  paidAt         DateTime?
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+  items          InvoiceItem[]
+
+  @@unique([userId, invoiceNumber])
+  @@index([userId, status])
+  @@index([clientId])
+  @@map("invoice")
+}
+
+model InvoiceItem {
+  id          String  @id @default(cuid())
+  invoiceId   String
+  invoice     Invoice @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+  description String
+  amountMinor Int
+  sortOrder   Int     @default(0)
+
+  @@index([invoiceId])
+  @@map("invoice_item")
+}
+
+model InvoiceNumberCounter {
+  id         String @id @default(cuid())
+  userId     String
+  user       User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  year       Int
+  lastNumber Int    @default(0)
+
+  @@unique([userId, year])
+  @@map("invoice_number_counter")
 }
