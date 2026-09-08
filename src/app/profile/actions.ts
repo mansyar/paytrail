@@ -62,7 +62,10 @@ export async function updateRateRuleAction(
 	try {
 		await assertUniqueKeyword(userId, parsed.data.keyword, ruleId);
 	} catch {
-		return { ok: false, message: "A rate rule with this keyword already exists." };
+		return {
+			ok: false,
+			message: "A rate rule with this keyword already exists.",
+		};
 	}
 	try {
 		await updateRateRule(userId, ruleId, parsed.data);

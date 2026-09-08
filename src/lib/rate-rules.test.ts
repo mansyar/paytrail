@@ -175,14 +175,18 @@ describe("rate-rules mutations", () => {
 
 	describe("assertUniqueKeyword", () => {
 		it("resolves when the keyword is unique for the user", async () => {
-			await seedRules(OWNER_ID, [{ keyword: "standard clean", rateMinor: 4550 }]);
+			await seedRules(OWNER_ID, [
+				{ keyword: "standard clean", rateMinor: 4550 },
+			]);
 			await expect(
 				assertUniqueKeyword(OWNER_ID, "hot tub"),
 			).resolves.toBeUndefined();
 		});
 
 		it("rejects on a case-insensitive duplicate", async () => {
-			await seedRules(OWNER_ID, [{ keyword: "Standard Clean", rateMinor: 4550 }]);
+			await seedRules(OWNER_ID, [
+				{ keyword: "Standard Clean", rateMinor: 4550 },
+			]);
 			await expect(
 				assertUniqueKeyword(OWNER_ID, "standard clean"),
 			).rejects.toThrow();
